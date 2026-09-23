@@ -1,10 +1,11 @@
 package com.beautysalon.Controller.rest;
 
-import com.beautysalon.dto.rest.ClienteRestDTO;
-import com.beautysalon.model.Cliente;
+import com.beautysalon.DTO.ClienteDTO;
+import com.beautysalon.DTO.rest.ClienteRestDTO;
 import com.beautysalon.model.Empresa;
+import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.Inteface.ClienteService;
-import com.beautysalon.Inteface.EmpresaService;
+import com.beautysalon.tenant.TenantContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,26 +22,28 @@ import java.util.List;
 public class ClienteRestController {
 
     private final ClienteService clienteService;
-    private final EmpresaService empresaService;
+    private final EmpresaRepository empresaRepository;
 
-    public ClienteRestController(ClienteService clienteService, EmpresaService empresaService) {
+    public ClienteRestController(ClienteService clienteService, EmpresaRepository empresaRepository) {
         this.clienteService = clienteService;
-        this.empresaService = empresaService;
+        this.empresaRepository = empresaRepository;
     }
 
     private Empresa obterEmpresa(String slug) {
-        return empresaService.buscarPorSlug(slug)
+        Empresa emp = empresaRepository.findBySlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada para o slug: " + slug));
+        TenantContext.setTenant(emp.getSlug(), emp.getId());
+        return emp;
     }
 
-    private ClienteRestDTO.Response toResponse(Cliente cliente) {
+    private ClienteRestDTO.Response toResponse(ClienteDTO dto, Long empresaId) {
         return new ClienteRestDTO.Response(
-                cliente.getId(),
-                cliente.getNome(),
-                cliente.getTelefone(),
-                cliente.getEmail(),
-                cliente.getDataNascimento(),
-                cliente.getEmpresa() != null ? cliente.getEmpresa().getId() : null
+                dto.getId(),
+                dto.getNome(),
+                dto.getTelefone(),
+                dto.getEmail(),
+                dto.getDataNascimento(),
+                empresaId
         );
     }
 
@@ -48,9 +51,9 @@ public class ClienteRestController {
     @Operation(summary = "Listar todos os clientes da empresa")
     public ResponseEntity<List<ClienteRestDTO.Response>> listar(@PathVariable String slug) {
         Empresa empresa = obterEmpresa(slug);
-        List<ClienteRestDTO.Response> response = clienteService.listarPorEmpresa(empresa.getId())
+        List<ClienteRestDTO.Response> response = clienteService.listarTodos()
                 .stream()
-                .map(this::toResponse)
+                .map(c -> toResponse(c, empresa.getId()))
                 .toList();
         return ResponseEntity.ok(response);
     }
@@ -59,9 +62,11 @@ public class ClienteRestController {
     @Operation(summary = "Buscar cliente por ID")
     public ResponseEntity<ClienteRestDTO.Response> buscarPorId(@PathVariable String slug, @PathVariable Long id) {
         Empresa empresa = obterEmpresa(slug);
-        Cliente cliente = clienteService.buscarPorIdEEmpresa(id, empresa.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
-        return ResponseEntity.ok(toResponse(cliente));
+        ClienteDTO dto = clienteService.buscarPorId(id);
+        if (dto == null) {
+            throw new EntityNotFoundException("Cliente com ID " + id + " não encontrado.");
+        }
+        return ResponseEntity.ok(toResponse(dto, empresa.getId()));
     }
 
     @PostMapping
@@ -71,15 +76,14 @@ public class ClienteRestController {
             @Valid @RequestBody ClienteRestDTO.Request request) {
 
         Empresa empresa = obterEmpresa(slug);
-        Cliente novoCliente = new Cliente();
-        novoCliente.setNome(request.nome());
-        novoCliente.setTelefone(request.telefone());
-        novoCliente.setEmail(request.email());
-        novoCliente.setDataNascimento(request.dataNascimento());
-        novoCliente.setEmpresa(empresa);
+        ClienteDTO novo = new ClienteDTO();
+        novo.setNome(request.nome());
+        novo.setTelefone(request.telefone());
+        novo.setEmail(request.email());
+        novo.setDataNascimento(request.dataNascimento());
 
-        Cliente salvo = clienteService.salvar(novoCliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(salvo));
+        ClienteDTO salvo = clienteService.salvar(novo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(salvo, empresa.getId()));
     }
 
     @PutMapping("/{id}")
@@ -90,23 +94,22 @@ public class ClienteRestController {
             @Valid @RequestBody ClienteRestDTO.Request request) {
 
         Empresa empresa = obterEmpresa(slug);
-        Cliente existente = clienteService.buscarPorIdEEmpresa(id, empresa.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
+        ClienteDTO dto = new ClienteDTO();
+        dto.setId(id);
+        dto.setNome(request.nome());
+        dto.setTelefone(request.telefone());
+        dto.setEmail(request.email());
+        dto.setDataNascimento(request.dataNascimento());
 
-        existente.setNome(request.nome());
-        existente.setTelefone(request.telefone());
-        existente.setEmail(request.email());
-        existente.setDataNascimento(request.dataNascimento());
-
-        Cliente atualizado = clienteService.salvar(existente);
-        return ResponseEntity.ok(toResponse(atualizado));
+        ClienteDTO atualizado = clienteService.atualizar(id, dto);
+        return ResponseEntity.ok(toResponse(atualizado, empresa.getId()));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir um cliente")
     public ResponseEntity<Void> excluir(@PathVariable String slug, @PathVariable Long id) {
-        Empresa empresa = obterEmpresa(slug);
-        clienteService.excluir(id, empresa.getId());
+        obterEmpresa(slug);
+        clienteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

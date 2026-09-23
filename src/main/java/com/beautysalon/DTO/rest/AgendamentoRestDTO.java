@@ -1,4 +1,4 @@
-package com.beautysalon.dto.rest;
+package com.beautysalon.DTO.rest;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;

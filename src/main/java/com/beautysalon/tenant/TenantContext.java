@@ -37,6 +37,17 @@ public final class TenantContext {
         CURRENT_EMPRESA_NOME.set(nome);
     }
 
+    public static void setTenant(String slug, Long id) {
+        CURRENT_EMPRESA_SLUG.set(slug);
+        CURRENT_EMPRESA_ID.set(id);
+    }
+
+    public static void setTenant(String slug, Long id, String nome) {
+        CURRENT_EMPRESA_SLUG.set(slug);
+        CURRENT_EMPRESA_ID.set(id);
+        CURRENT_EMPRESA_NOME.set(nome);
+    }
+
     public static String getNome() {
         return CURRENT_EMPRESA_NOME.get();
     }

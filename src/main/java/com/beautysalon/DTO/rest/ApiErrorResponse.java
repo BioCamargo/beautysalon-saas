@@ -1,4 +1,4 @@
-package com.beautysalon.dto.rest;
+package com.beautysalon.DTO.rest;
 
 import java.time.LocalDateTime;
 import java.util.List;

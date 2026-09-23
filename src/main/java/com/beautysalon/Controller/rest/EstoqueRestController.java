@@ -1,11 +1,13 @@
 package com.beautysalon.Controller.rest;
 
-import com.beautysalon.dto.rest.ProdutoRestDTO;
+import com.beautysalon.DTO.rest.ProdutoRestDTO;
 import com.beautysalon.model.Empresa;
 import com.beautysalon.model.MovimentacaoEstoque;
 import com.beautysalon.model.Produto;
-import com.beautysalon.Inteface.EmpresaService;
+import com.beautysalon.model.TipoProduto;
+import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.service.EstoqueService;
+import com.beautysalon.tenant.TenantContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,16 +24,18 @@ import java.util.List;
 public class EstoqueRestController {
 
     private final EstoqueService estoqueService;
-    private final EmpresaService empresaService;
+    private final EmpresaRepository empresaRepository;
 
-    public EstoqueRestController(EstoqueService estoqueService, EmpresaService empresaService) {
+    public EstoqueRestController(EstoqueService estoqueService, EmpresaRepository empresaRepository) {
         this.estoqueService = estoqueService;
-        this.empresaService = empresaService;
+        this.empresaRepository = empresaRepository;
     }
 
     private Empresa obterEmpresa(String slug) {
-        return empresaService.buscarPorSlug(slug)
+        Empresa emp = empresaRepository.findBySlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrada para o slug: " + slug));
+        TenantContext.setTenant(emp.getSlug(), emp.getId());
+        return emp;
     }
 
     private ProdutoRestDTO.Response toResponse(Produto p) {
@@ -43,8 +47,8 @@ public class EstoqueRestController {
                 p.getTipo() != null ? p.getTipo().name() : null,
                 p.getPrecoCusto(),
                 p.getPrecoVenda(),
-                p.getQuantidadeEstoque(),
-                p.getEstoqueMinimo(),
+                p.getQuantidadeEstoque() != null ? java.math.BigDecimal.valueOf(p.getQuantidadeEstoque()) : java.math.BigDecimal.ZERO,
+                p.getEstoqueMinimo() != null ? java.math.BigDecimal.valueOf(p.getEstoqueMinimo()) : java.math.BigDecimal.ZERO,
                 p.getUnidadeMedida(),
                 p.isEstoqueBaixo()
         );
@@ -53,8 +57,8 @@ public class EstoqueRestController {
     @GetMapping("/produtos")
     @Operation(summary = "Listar produtos e saldos atuais")
     public ResponseEntity<List<ProdutoRestDTO.Response>> listarProdutos(@PathVariable String slug) {
-        Empresa empresa = obterEmpresa(slug);
-        List<ProdutoRestDTO.Response> response = estoqueService.listarProdutosPorEmpresa(empresa.getId())
+        obterEmpresa(slug);
+        List<ProdutoRestDTO.Response> response = estoqueService.listarTodos()
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -64,9 +68,8 @@ public class EstoqueRestController {
     @GetMapping("/produtos/{id}")
     @Operation(summary = "Buscar produto por ID")
     public ResponseEntity<ProdutoRestDTO.Response> buscarProdutoPorId(@PathVariable String slug, @PathVariable Long id) {
-        Empresa empresa = obterEmpresa(slug);
-        Produto produto = estoqueService.buscarProdutoPorIdEEmpresa(id, empresa.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+        obterEmpresa(slug);
+        Produto produto = estoqueService.buscarPorId(id);
         return ResponseEntity.ok(toResponse(produto));
     }
 
@@ -82,24 +85,24 @@ public class EstoqueRestController {
         p.setCodigoBarras(request.codigoBarras());
         p.setCategoria(request.categoria());
         if (request.tipo() != null) {
-            p.setTipo(Produto.TipoProduto.valueOf(request.tipo().toUpperCase()));
+            p.setTipo(TipoProduto.valueOf(request.tipo().toUpperCase()));
         }
         p.setPrecoCusto(request.precoCusto());
         p.setPrecoVenda(request.precoVenda());
-        p.setQuantidadeEstoque(request.quantidadeEstoque());
-        p.setEstoqueMinimo(request.estoqueMinimo());
+        p.setQuantidadeEstoque(request.quantidadeEstoque() != null ? request.quantidadeEstoque().intValue() : 0);
+        p.setEstoqueMinimo(request.estoqueMinimo() != null ? request.estoqueMinimo().intValue() : 0);
         p.setUnidadeMedida(request.unidadeMedida());
         p.setEmpresa(empresa);
 
-        Produto salvo = estoqueService.salvarProduto(p);
+        Produto salvo = estoqueService.salvar(p);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(salvo));
     }
 
     @GetMapping("/alertas")
     @Operation(summary = "Listar produtos com estoque abaixo do nível mínimo")
     public ResponseEntity<List<ProdutoRestDTO.Response>> listarAlertas(@PathVariable String slug) {
-        Empresa empresa = obterEmpresa(slug);
-        List<ProdutoRestDTO.Response> response = estoqueService.listarProdutosComEstoqueBaixo(empresa.getId())
+        obterEmpresa(slug);
+        List<ProdutoRestDTO.Response> response = estoqueService.listarEstoqueBaixo()
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -112,22 +115,16 @@ public class EstoqueRestController {
             @PathVariable String slug,
             @Valid @RequestBody ProdutoRestDTO.MovimentacaoRequest request) {
 
-        Empresa empresa = obterEmpresa(slug);
-        MovimentacaoEstoque.TipoMovimentacao tipo = MovimentacaoEstoque.TipoMovimentacao.valueOf(request.tipo().toUpperCase());
-
-        estoqueService.movimentarEstoque(
+        obterEmpresa(slug);
+        estoqueService.registrarMovimentacao(
                 request.produtoId(),
-                empresa.getId(),
-                tipo,
-                request.quantidade(),
+                request.tipo().toUpperCase(),
+                request.quantidade().intValue(),
                 request.motivo(),
-                null,
                 null
         );
 
-        Produto produtoAtualizado = estoqueService.buscarProdutoPorIdEEmpresa(request.produtoId(), empresa.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado após movimentação."));
-
+        Produto produtoAtualizado = estoqueService.buscarPorId(request.produtoId());
         return ResponseEntity.ok(toResponse(produtoAtualizado));
     }
 }

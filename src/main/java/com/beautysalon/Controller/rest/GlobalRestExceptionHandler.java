@@ -1,6 +1,6 @@
 package com.beautysalon.Controller.rest;
 
-import com.beautysalon.dto.rest.ApiErrorResponse;
+import com.beautysalon.DTO.rest.ApiErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
