@@ -1,4 +1,4 @@
-package com.beautysalon.controller.rest;
+package com.beautysalon.Controller.rest;
 
 import com.beautysalon.dto.rest.AgendamentoRestDTO;
 import com.beautysalon.model.Agendamento;
@@ -33,10 +33,10 @@ public class AgendamentoRestController {
     private final UserService userService;
 
     public AgendamentoRestController(AgendamentoService agendamentoService,
-                                     EmpresaService empresaService,
-                                     ClienteService clienteService,
-                                     ServicoService servicoService,
-                                     UserService userService) {
+            EmpresaService empresaService,
+            ClienteService clienteService,
+            ServicoService servicoService,
+            UserService userService) {
         this.agendamentoService = agendamentoService;
         this.empresaService = empresaService;
         this.clienteService = clienteService;
@@ -60,8 +60,7 @@ public class AgendamentoRestController {
                 a.getServico() != null ? a.getServico().getId() : null,
                 a.getServico() != null ? a.getServico().getNome() : null,
                 a.getProfissional() != null ? a.getProfissional().getId() : null,
-                a.getProfissional() != null ? a.getProfissional().getNome() : null
-        );
+                a.getProfissional() != null ? a.getProfissional().getNome() : null);
     }
 
     @GetMapping
@@ -128,12 +127,14 @@ public class AgendamentoRestController {
                 .orElseThrow(() -> new EntityNotFoundException("Agendamento não encontrado."));
 
         try {
-            Agendamento.StatusAgendamento novoStatus = Agendamento.StatusAgendamento.valueOf(request.status().toUpperCase());
+            Agendamento.StatusAgendamento novoStatus = Agendamento.StatusAgendamento
+                    .valueOf(request.status().toUpperCase());
             agendamento.setStatus(novoStatus);
             Agendamento atualizado = agendamentoService.salvar(agendamento);
             return ResponseEntity.ok(toResponse(atualizado));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Status inválido: " + request.status() + ". Valores aceitos: PENDENTE, CONFIRMADO, EM_ATENDIMENTO, REALIZADO, CANCELADO, FALTOU");
+            throw new IllegalArgumentException("Status inválido: " + request.status()
+                    + ". Valores aceitos: PENDENTE, CONFIRMADO, EM_ATENDIMENTO, REALIZADO, CANCELADO, FALTOU");
         }
     }
 

@@ -1,4 +1,4 @@
-package com.beautysalon.controller.rest;
+package com.beautysalon.Controller.rest;
 
 import com.beautysalon.dto.rest.ProdutoRestDTO;
 import com.beautysalon.model.Empresa;
