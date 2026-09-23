@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Estoque | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('estoque')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Gestão de Estoque', 'Produtos de revenda, insumos e capital parado')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <!-- MENSAGENS -->
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${mensagemSucesso}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- CARDS DE KPIS DO ESTOQUE -->
+            <div class="stat-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Capital Parado em Estoque</span>
+                        <span class="stat-value" th:text="'R$ ' + ${valorParado != null ? #numbers.formatDecimal(valorParado, 1, 2, 'COMMA') : '0,00'}">R$ 0,00</span>
+                        <span class="stat-desc"><i class="bi bi-calculator text-primary"></i> Base de custo de aquisição</span>
+                    </div>
+                    <div class="stat-icon-box stat-icon-gold">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Produtos Cadastrados</span>
+                        <span class="stat-value" th:text="${produtos != null ? produtos.size() : 0}">0</span>
+                        <span class="stat-desc"><i class="bi bi-box text-success"></i> Revenda e Consumo</span>
+                    </div>
+                    <div class="stat-icon-box stat-icon-blue">
+                        <i class="bi bi-boxes"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Alerta Estoque Baixo</span>
+                        <span class="stat-value text-danger" th:text="${qtdEstoqueBaixo != null ? qtdEstoqueBaixo : 0}">0</span>
+                        <span class="stat-desc"><i class="bi bi-exclamation-octagon text-danger"></i> Itens no limite mínimo</span>
+                    </div>
+                    <div class="stat-icon-box stat-icon-emerald" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO DE ALERTA SE HOUVER ESTOQUE BAIXO -->
+            <div class="content-card mb-4 border-danger" th:if="${produtosBaixo != null and !produtosBaixo.isEmpty()}">
+                <div class="card-header-custom bg-danger bg-opacity-10">
+                    <h3 class="card-title-custom text-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>Atenção: Produtos com Estoque Crítico / Baixo</span>
+                    </h3>
+                </div>
+                <div class="p-3">
+                    <div class="row g-2">
+                        <div class="col-md-4" th:each="pb : ${produtosBaixo}">
+                            <div class="p-2 border rounded d-flex justify-content-between align-items-center bg-white">
+                                <div>
+                                    <strong th:text="${pb.nome}">Shampoo</strong>
+                                    <div class="small text-muted" th:text="'Estoque: ' + ${pb.quantidadeEstoque} + ' (Mín: ' + ${pb.estoqueMinimo} + ')'">Estoque: 2</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEntrada" th:attr="data-id=${pb.id}, data-nome=${pb.nome}" onclick="abrirModalMov(this.getAttribute('data-id'), this.getAttribute('data-nome'))">
+                                    + Entrada
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELA DE PRODUTOS -->
+            <div class="content-card mb-4">
+                <div class="card-header-custom">
+                    <h2 class="card-title-custom">
+                        <i class="bi bi-box-seam-fill text-primary"></i>
+                        <span>Catálogo de Produtos & Insumos</span>
+                    </h2>
+
+                    <div class="card-actions-custom d-flex gap-2">
+                        <a th:href="@{/{slug}/estoque/produtos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                            <i class="bi bi-plus-circle"></i> Novo Produto
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>Produto / Marca</th>
+                            <th>Tipo</th>
+                            <th>Preço Custo</th>
+                            <th>Preço Venda</th>
+                            <th>Qtd. Estoque</th>
+                            <th>Valor Total Parado</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="p : ${produtos}">
+                            <td>
+                                <strong th:text="${p.nome}">Shampoo Nutritivo</strong>
+                                <div class="small text-muted" th:text="${p.marca} ?: 'Sem marca'">L'Oréal</div>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${p.tipo.name() == 'REVENDA' ? 'bg-primary' : 'bg-secondary'}" th:text="${p.tipo.name()}">REVENDA</span>
+                            </td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(p.precoCusto, 1, 2, 'COMMA')}">R$ 20,00</td>
+                            <td th:text="${p.tipo.name() == 'REVENDA' ? 'R$ ' + #numbers.formatDecimal(p.precoVenda, 1, 2, 'COMMA') : '-'}">R$ 45,00</td>
+                            <td>
+                                <span th:classappend="${p.isEstoqueBaixo() ? 'text-danger fw-bold' : ''}" th:text="${p.quantidadeEstoque}">10</span>
+                                <span class="text-muted small" th:text="' ' + (${p.unidadeMedida} ?: 'UN')">UN</span>
+                            </td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(p.getValorParadoEstoque(), 1, 2, 'COMMA')}">R$ 200,00</td>
+                            <td>
+                                <span th:if="${p.isEstoqueBaixo()}" class="badge bg-danger">Estoque Baixo</span>
+                                <span th:unless="${p.isEstoqueBaixo()}" class="badge bg-success">Normal</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="action-buttons justify-content-end">
+                                    <button class="btn-icon" style="color: #10b981;" title="Lançar Entrada / Ajuste" th:attr="data-id=${p.id}, data-nome=${p.nome}" onclick="abrirModalMov(this.getAttribute('data-id'), this.getAttribute('data-nome'))">
+                                        <i class="bi bi-arrow-left-right"></i>
+                                    </button>
+                                    <a class="btn-icon edit" th:href="@{/{slug}/estoque/produtos/{id}/editar(slug=${empresaSlug}, id=${p.id})}" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${produtos == null or #lists.isEmpty(produtos)}">
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Nenhum produto cadastrado no momento.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO DE MOVIMENTAÇÕES -->
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">
+                        <i class="bi bi-clock-history text-secondary"></i>
+                        <span>Últimas Movimentações de Estoque</span>
+                    </h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Produto</th>
+                            <th>Tipo</th>
+                            <th>Quantidade</th>
+                            <th>Saldo Resultante</th>
+                            <th>Motivo / Referência</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="m : ${movimentacoes}">
+                            <td th:text="${#temporals.format(m.dataHora, 'dd/MM/yyyy HH:mm')}">23/09/2026 10:00</td>
+                            <td th:text="${m.produto.nome}">Shampoo</td>
+                            <td>
+                                <span class="badge" th:classappend="${m.tipo == 'ENTRADA' ? 'bg-success' : (m.tipo == 'SAIDA_VENDA' ? 'bg-primary' : 'bg-warning text-dark')}" th:text="${m.tipo}">ENTRADA</span>
+                            </td>
+                            <td th:text="${m.quantidade}">5</td>
+                            <td th:text="${m.saldoAtual}">15</td>
+                            <td th:text="${m.motivo}">Venda na Comanda CMD-001</td>
+                        </tr>
+                        <tr th:if="${movimentacoes == null or #lists.isEmpty(movimentacoes)}">
+                            <td colspan="6" class="text-center py-3 text-muted">Nenhuma movimentação registrada.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- MODAL DE MOVIMENTAÇÃO DE ESTOQUE -->
+<div class="modal fade" id="modalMovimentacao" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/{slug}/estoque/movimentacao(slug=${empresaSlug})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="produtoId" id="modalProdutoId" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Movimentar Estoque: <span id="modalProdutoNome" class="text-primary"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Movimentação:</label>
+                        <select name="tipo" class="form-select" required>
+                            <option value="ENTRADA">Entrada (Compra / Reposição)</option>
+                            <option value="SAIDA_AVULSA">Saída Avulsa (Avaria / Descarte)</option>
+                            <option value="AJUSTE_MANUAL">Ajuste de Balanço (Definir saldo exato)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade:</label>
+                        <input type="number" name="quantidade" class="form-control" min="1" value="1" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo / Observação:</label>
+                        <input type="text" name="motivo" class="form-control" placeholder="Ex: Compra de lote NFe 1234" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-gold">Confirmar Movimentação</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function abrirModalMov(id, nome) {
+        document.getElementById('modalProdutoId').value = id;
+        document.getElementById('modalProdutoNome').textContent = nome;
+        new bootstrap.Modal(document.getElementById('modalMovimentacao')).show();
+    }
+</script>
+
+</body>
+</html>

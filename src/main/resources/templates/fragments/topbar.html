@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head></head>
+
+<body>
+
+    <header th:fragment="topbar(pageTitle, subtitle)" class="app-topbar">
+        <div class="topbar-left">
+            <button class="btn btn-secondary d-lg-none" type="button" onclick="toggleSidebar()"
+                style="padding: 0.4rem 0.6rem;">
+                <i class="bi bi-list" style="font-size: 1.25rem;"></i>
+            </button>
+            <div>
+                <h1 class="topbar-title">
+                    <span th:text="${pageTitle} ?: 'Beauty Salon'">Dashboard</span>
+                </h1>
+                <div class="topbar-subtitle" th:if="${subtitle != null}" th:text="${subtitle}">Sistema de Gestão do
+                    Estúdio</div>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <!-- Badge de Relógio / Data -->
+            <div class="topbar-time-badge d-none d-md-flex">
+                <i class="bi bi-clock"></i>
+                <span id="topbarLiveClock">Hoje</span>
+            </div>
+        </div>
+
+        <script>
+            function updateLiveClock() {
+                const el = document.getElementById('topbarLiveClock');
+                if (el) {
+                    const now = new Date();
+                    const options = { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' };
+                    el.textContent = now.toLocaleDateString('pt-BR', options);
+                }
+            }
+            updateLiveClock();
+            setInterval(updateLiveClock, 30000);
+
+            function toggleSidebar() {
+                const sidebar = document.getElementById('appSidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('show');
+                }
+            }
+        </script>
+    </header>
+
+</body>
+
+</html>

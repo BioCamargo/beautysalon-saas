@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+<!--    define para onde os logs vão (console, arquivo)-->
+    <!-- Appender para console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para log geral -->
+    <appender name="FILE_GENERAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/general.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/general.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para log de Cliente -->
+    <appender name="FILE_CLIENTE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/cliente.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/cliente.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para log de Servico -->
+    <appender name="FILE_SERVICO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/servico.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/servico.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender para log de Usuario -->
+    <appender name="FILE_USUARIO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/usuario.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/usuario.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Loggers para cada entidade -->
+    <logger name="com.beautysalon.exception.ClienteExceptionLogger" level="ERROR" additivity="false">
+        <appender-ref ref="FILE_CLIENTE"/>
+    </logger>
+
+    <logger name="com.beautysalon.exception.ServicoExceptionLogger" level="ERROR" additivity="false">
+        <appender-ref ref="FILE_SERVICO"/>
+    </logger>
+
+    <logger name="com.beautysalon.exception.UsuarioExceptionLogger" level="ERROR" additivity="false">
+        <appender-ref ref="FILE_USUARIO"/>
+    </logger>
+
+    <!-- Root logger  “global” da aplicação (pega tudo que não foi tratado por loggers específicos).-->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE_GENERAL" />
+    </root>
+
+
+</configuration>

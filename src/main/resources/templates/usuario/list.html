@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipe & Usuários | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Fonts & Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('usuarios')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Equipe & Operadores', 'Gestão de contas e permissões de acesso')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <h2 class="card-title-custom">
+                        <i class="bi bi-person-badge-fill text-primary"></i>
+                        <span>Operadores do Studio</span>
+                    </h2>
+
+                    <div class="card-actions-custom">
+                        <a th:href="@{/{slug}/usuarios/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                            <i class="bi bi-person-plus-fill"></i> Novo Usuário
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-modern" id="usuariosTable">
+                        <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Email Corporativo</th>
+                            <th>Papel / Permissão</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="u : ${usuarios}">
+                            <td>
+                                <div class="user-table-cell">
+                                    <div class="cell-avatar" th:if="${u.imagemUrl != null and !#strings.isEmpty(u.imagemUrl)}">
+                                        <img th:src="@{${u.imagemUrl}}" alt="Avatar" class="cell-avatar-img"
+                                             onerror="this.parentElement.innerHTML='<i class=\'bi bi-person\'></i>';" />
+                                    </div>
+                                    <div class="cell-avatar" th:unless="${u.imagemUrl != null and !#strings.isEmpty(u.imagemUrl)}">
+                                        <span th:text="${u.username != null and !#strings.isEmpty(u.username) ? #strings.substring(u.username, 0, 1).toUpperCase() : 'U'}">U</span>
+                                    </div>
+                                    <div>
+                                        <div class="cell-name" th:text="${u.nome ?: u.username}">admin</div>
+                                        <div class="cell-sub" th:text="'@' + ${u.username}">@admin</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="bi bi-envelope text-muted me-1"></i>
+                                <span th:text="${u.email}">admin@beautysalon.com</span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 700; padding: 0.4rem 0.75rem;" 
+                                      th:text="${u.tenantRole != null ? u.tenantRole.name() : 'FUNCIONARIO'}">OWNER</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="action-buttons justify-content-end">
+                                    <a class="btn-icon edit" th:href="@{/{slug}/usuarios/{id}(slug=${empresaSlug}, id=${u.id})}" title="Editar Usuário">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <form th:action="@{/{slug}/usuarios/{id}/deletar(slug=${empresaSlug}, id=${u.id})}" method="post" style="display:inline; margin: 0;">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn-icon delete"
+                                                onclick="return confirm('Tem certeza que deseja remover este operador do sistema?');" title="Excluir Usuário">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${usuarios == null or #lists.isEmpty(usuarios)}">
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-people" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+                                Nenhum usuário encontrado.<br>
+                                <a th:href="@{/{slug}/usuarios/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
+                                    <i class="bi bi-person-plus"></i> Cadastrar Usuário
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

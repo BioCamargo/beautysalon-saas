@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Serviços | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Fonts & Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('servicos')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Catálogo de Serviços', 'Tabela de procedimentos, tratamentos e valores')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <div class="content-card">
+                <!-- CABEÇALHO DO CARD -->
+                <div class="card-header-custom">
+                    <h2 class="card-title-custom">
+                        <i class="bi bi-scissors text-success"></i>
+                        <span>Serviços & Procedimentos</span>
+                    </h2>
+
+                    <div class="card-actions-custom">
+                        <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                            <i class="bi bi-plus-circle-fill"></i> Novo Serviço
+                        </a>
+                    </div>
+                </div>
+
+                <!-- BARRA DE FILTRO -->
+                <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="servicosFilterInput" placeholder="Filtrar serviços por nome..." onkeyup="filterServicosTable()" />
+                    </div>
+                    <div class="text-muted small">
+                        Total: <strong th:text="${servicos != null ? #lists.size(servicos) : '0'}">0</strong> procedimentos ativos
+                    </div>
+                </div>
+
+                <!-- TABELA DE SERVIÇOS -->
+                <div class="table-responsive">
+                    <table class="table-modern" id="servicosTable">
+                        <thead>
+                        <tr>
+                            <th style="width: 70px;">Imagem</th>
+                            <th>Procedimento</th>
+                            <th>Descrição</th>
+                            <th>Valor (R$)</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="s : ${servicos}">
+                            <td>
+                                <div class="cell-avatar" th:if="${s.imagem != null and !#strings.isEmpty(s.imagem)}">
+                                    <img th:src="@{/uploads/{file}(file=${s.imagem})}" alt="Serviço" class="cell-avatar-img"
+                                         onerror="this.parentElement.innerHTML='<i class=\'bi bi-scissors\'></i>';" />
+                                </div>
+                                <div class="cell-avatar" th:unless="${s.imagem != null and !#strings.isEmpty(s.imagem)}">
+                                    <i class="bi bi-scissors"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-name" th:text="${s.nome}">Corte Feminino</div>
+                                <div class="cell-sub" th:text="'ID: #' + ${s.id}">#1</div>
+                            </td>
+                            <td>
+                                <span class="text-muted" th:text="${s.descricao} ?: 'Sem descrição informada.'">Descrição detalhada...</span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background-color: rgba(197, 160, 89, 0.15); color: #926d27; font-size: 0.95rem; font-weight: 700; padding: 0.4rem 0.75rem;">
+                                    R$ <span th:text="${#numbers.formatDecimal(s.preco, 1, 2, 'POINT')}">120.00</span>
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="action-buttons justify-content-end">
+                                    <a class="btn-icon edit" th:href="@{/{slug}/servicos/edit/{id}(slug=${empresaSlug}, id=${s.id})}" title="Editar Serviço">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a class="btn-icon delete" th:href="@{/{slug}/servicos/delete/{id}(slug=${empresaSlug}, id=${s.id})}"
+                                       onclick="return confirm('Deseja realmente excluir este serviço do catálogo?');" title="Excluir Serviço">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${servicos == null or #lists.isEmpty(servicos)}">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-scissors" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+                                Nenhum serviço cadastrado no catálogo.<br>
+                                <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
+                                    <i class="bi bi-plus-lg"></i> Cadastrar Primeiro Serviço
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function filterServicosTable() {
+        const query = document.getElementById('servicosFilterInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#servicosTable tbody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>

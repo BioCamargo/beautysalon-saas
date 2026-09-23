@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Fonts & Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('clientes')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Gestão de Clientes', 'Cadastro e histórico de contatos do estúdio')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <div class="content-card">
+                <!-- CABEÇALHO DO CARD -->
+                <div class="card-header-custom">
+                    <h2 class="card-title-custom">
+                        <i class="bi bi-people-fill text-primary"></i>
+                        <span>Base de Clientes</span>
+                    </h2>
+
+                    <div class="card-actions-custom">
+                        <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                            <i class="bi bi-person-plus-fill"></i> Novo Cliente
+                        </a>
+                    </div>
+                </div>
+
+                <!-- BARRA DE PESQUISA & FILTROS -->
+                <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light">
+                    <form class="d-flex align-items-center gap-2" method="get" th:action="@{/{slug}/clientes/pesquisar(slug=${empresaSlug})}">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" name="nome" placeholder="Buscar por nome do cliente..." th:value="${param.nome}" />
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-sm">Buscar</button>
+                        <a th:href="@{/{slug}/clientes(slug=${empresaSlug})}" class="btn btn-outline-secondary btn-sm" th:if="${param.nome != null}">Limpar</a>
+                    </form>
+
+                    <div class="text-muted small">
+                        Total: <strong th:text="${clientes != null ? #lists.size(clientes) : '0'}">0</strong> clientes cadastrados
+                    </div>
+                </div>
+
+                <!-- TABELA DE CLIENTES -->
+                <div class="table-responsive">
+                    <table class="table-modern" id="clientesTable">
+                        <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Email de Contato</th>
+                            <th>Telefone / Celular</th>
+                            <th style="text-align: right;">Ações Rápidas</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="c : ${clientes}">
+                            <td>
+                                <div class="client-cell">
+                                    <div class="cell-avatar">
+                                        <span th:text="${c.nome != null and !#strings.isEmpty(c.nome) ? #strings.substring(c.nome, 0, 1).toUpperCase() : 'C'}">C</span>
+                                    </div>
+                                    <div>
+                                        <div class="cell-name" th:text="${c.nome}">Nome do Cliente</div>
+                                        <div class="cell-sub" th:text="'Código #' + ${c.id}">#1</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="bi bi-envelope text-muted me-1"></i>
+                                <span th:text="${c.email} ?: 'Não informado'">email@exemplo.com</span>
+                            </td>
+                            <td>
+                                <i class="bi bi-telephone text-muted me-1"></i>
+                                <span th:text="${c.telefone} ?: 'Não informado'">(11) 98888-7777</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div class="action-buttons justify-content-end">
+                                    <!-- HISTÓRICO & CRM -->
+                                    <a class="btn-icon" style="color: #a855f7; border-color: rgba(168,85,247,0.2); background: rgba(168,85,247,0.05);"
+                                       th:href="@{/{slug}/fidelizacao/cliente/{id}/historico(slug=${empresaSlug}, id=${c.id})}" title="Ver Histórico & Fidelização">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+
+                                    <!-- BOTÃO ENVIAR SMS / LEMBRETE -->
+                                    <button type="button" class="btn-icon sms" title="Enviar Lembrete por SMS"
+                                            th:attr="data-id=${c.id}, data-name=${c.nome}, data-slug=${empresaSlug}"
+                                            onclick="enviarLembreteSms(this)">
+                                        <i class="bi bi-chat-text-fill"></i>
+                                    </button>
+
+                                    <!-- EDITAR -->
+                                    <a class="btn-icon edit" th:href="@{/{slug}/clientes/edit/{id}(slug=${empresaSlug}, id=${c.id})}" title="Editar Dados">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    <!-- EXCLUIR -->
+                                    <a class="btn-icon delete" th:href="@{/{slug}/clientes/delete/{id}(slug=${empresaSlug}, id=${c.id})}"
+                                       onclick="return confirm('Deseja realmente remover este cliente do sistema?');" title="Excluir Cliente">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${clientes == null or #lists.isEmpty(clientes)}">
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-person-x" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+                                Nenhum cliente encontrado com os critérios de busca.<br>
+                                <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
+                                    <i class="bi bi-person-plus"></i> Cadastrar Novo Cliente
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    function enviarLembreteSms(button) {
+        const clienteId = button.getAttribute('data-id');
+        const clienteNome = button.getAttribute('data-name');
+        const slug = button.getAttribute('data-slug');
+
+        if (confirm(`Deseja disparar um SMS de confirmação para ${clienteNome}?`)) {
+            button.disabled = true;
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            fetch(`/${slug}/clientes/${clienteId}/enviar-sms-confirmacao`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Falha no envio');
+                return res.text();
+            })
+            .then(msg => {
+                alert(`Sucesso: ${msg}`);
+                button.innerHTML = '<i class="bi bi-check-lg text-success"></i>';
+            })
+            .catch(err => {
+                alert('Erro ao enviar SMS: ' + err.message);
+                button.innerHTML = originalIcon;
+                button.disabled = false;
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

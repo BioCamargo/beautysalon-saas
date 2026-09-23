@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Agenda & Atendimentos | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- FullCalendar CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+    <!-- Fonts & Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('agendamentos')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Agenda & Atendimentos', 'Gerenciamento de horários e sessões do estúdio')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <!-- CARD PRINCIPAL COM TABS DE VISUALIZAÇÃO -->
+            <div class="content-card">
+                <div class="card-header-custom">
+                    <div class="d-flex align-items-center gap-3">
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-calendar3 text-warning"></i>
+                            <span>Atendimentos Agendados</span>
+                        </h2>
+
+                        <!-- BOTOES DE ALTERNANCIA TABELA X CALENDARIO -->
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-primary active" id="btnViewTable" onclick="showTableView()">
+                                <i class="bi bi-list-ul"></i> Tabela
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btnViewCalendar" onclick="showCalendarView()">
+                                <i class="bi bi-calendar-week"></i> Calendário
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-actions-custom">
+                        <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                            <i class="bi bi-plus-lg"></i> Novo Agendamento
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 1. VISÃO EM TABELA -->
+                <div id="tableViewSection">
+                    <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="agendamentoSearchInput" placeholder="Filtrar por cliente ou serviço..." onkeyup="filterAgendamentosTable()" />
+                        </div>
+                        <div class="text-muted small">
+                            <span th:text="${agendamentos != null ? #lists.size(agendamentos) : '0'}">0</span> agendamentos registrados
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table-modern" id="agendamentosTable">
+                            <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Profissional</th>
+                                <th>Data</th>
+                                <th>Horário</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="a : ${agendamentos}">
+                                <td>
+                                    <div class="client-cell">
+                                        <div class="cell-avatar">
+                                            <span th:text="${a.clienteNome != null and !#strings.isEmpty(a.clienteNome) ? #strings.substring(a.clienteNome, 0, 1).toUpperCase() : 'C'}">C</span>
+                                        </div>
+                                        <div>
+                                            <div class="cell-name" th:text="${a.clienteNome} ?: 'Cliente não identificado'">Cliente</div>
+                                            <div class="cell-sub" th:if="${a.clienteId != null}" th:text="'ID: #' + ${a.clienteId}"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge" style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 600; padding: 0.4rem 0.65rem;"
+                                          th:text="${a.servicoNome} ?: 'Serviço'">Corte</span>
+                                </td>
+                                <td>
+                                    <i class="bi bi-person-badge text-muted me-1"></i>
+                                    <span th:text="${a.profissionalNome} ?: 'Qualquer disponível'">Keilla</span>
+                                </td>
+                                <td>
+                                    <i class="bi bi-calendar-event text-muted me-1"></i>
+                                    <span th:text="${#temporals.format(a.dataHora, 'dd/MM/yyyy')}">01/01/2026</span>
+                                </td>
+                                <td>
+                                    <i class="bi bi-clock text-muted me-1"></i>
+                                    <strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}">14:00</strong>
+                                </td>
+                                <td>
+                                    <span class="badge-status badge-status-confirmed" th:text="${a.status} ?: 'Agendado'">Agendado</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <div class="action-buttons justify-content-end">
+                                        <a class="btn-icon edit" th:href="@{/{slug}/agendamentos/{id}(slug=${empresaSlug}, id=${a.id})}" title="Editar Atendimento">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <button type="button" class="btn-icon delete btn-delete-agendamento" 
+                                                th:attr="data-id=${a.id}, data-cliente=${a.clienteNome}, data-slug=${empresaSlug}" title="Excluir Atendimento">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar-x" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+                                    Nenhum agendamento encontrado no momento.<br>
+                                    <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
+                                        <i class="bi bi-plus-lg"></i> Criar o primeiro agendamento
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. VISÃO EM CALENDÁRIO INTERATIVO -->
+                <div id="calendarViewSection" style="display: none;" class="p-3">
+                    <div id="fullCalendarAgendamentos"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+    let calendarInstance = null;
+
+    function showTableView() {
+        document.getElementById('tableViewSection').style.display = 'block';
+        document.getElementById('calendarViewSection').style.display = 'none';
+        document.getElementById('btnViewTable').classList.add('active', 'btn-primary');
+        document.getElementById('btnViewTable').classList.remove('btn-secondary');
+        document.getElementById('btnViewCalendar').classList.remove('active', 'btn-primary');
+        document.getElementById('btnViewCalendar').classList.add('btn-secondary');
+    }
+
+    function showCalendarView() {
+        document.getElementById('tableViewSection').style.display = 'none';
+        document.getElementById('calendarViewSection').style.display = 'block';
+        document.getElementById('btnViewCalendar').classList.add('active', 'btn-primary');
+        document.getElementById('btnViewCalendar').classList.remove('btn-secondary');
+        document.getElementById('btnViewTable').classList.remove('active', 'btn-primary');
+        document.getElementById('btnViewTable').classList.add('btn-secondary');
+
+        if (!calendarInstance) {
+            initFullCalendar();
+        } else {
+            calendarInstance.render();
+        }
+    }
+
+    function initFullCalendar() {
+        const calendarEl = document.getElementById('fullCalendarAgendamentos');
+        
+        const events = [];
+        const rows = document.querySelectorAll('#agendamentosTable tbody tr');
+        rows.forEach(r => {
+            const cliente = r.querySelector('.cell-name')?.textContent?.trim();
+            const servico = r.querySelector('td:nth-child(2) span')?.textContent?.trim();
+            const dataText = r.querySelector('td:nth-child(3) span')?.textContent?.trim();
+            const horaText = r.querySelector('td:nth-child(4) strong')?.textContent?.trim();
+            
+            if (dataText && horaText && cliente) {
+                const parts = dataText.split('/');
+                if (parts.length === 3) {
+                    const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}T${horaText}:00`;
+                    events.push({
+                        title: `${cliente} - ${servico || 'Atendimento'}`,
+                        start: isoDate,
+                        backgroundColor: '#c5a059',
+                        borderColor: '#b08d46',
+                        textColor: '#ffffff'
+                    });
+                }
+            }
+        });
+
+        calendarInstance = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            locale: 'pt-br',
+            slotMinTime: "00:00:00",
+            slotMaxTime: "24:00:00",
+            firstDay: 0,
+            allDaySlot: false,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'timeGridDay,timeGridWeek,dayGridMonth'
+            },
+            buttonText: {
+                today: 'Hoje',
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia'
+            },
+            events: events
+        });
+
+        calendarInstance.render();
+    }
+
+    function filterAgendamentosTable() {
+        const query = document.getElementById('agendamentoSearchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#agendamentosTable tbody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    $(document).ready(function() {
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+
+        $('.btn-delete-agendamento').on('click', function(e) {
+            e.preventDefault();
+            const id = $(this).data('id');
+            const cliente = $(this).data('cliente') || 'este agendamento';
+            const slug = $(this).data('slug');
+
+            if (confirm(`Tem certeza que deseja cancelar e excluir o agendamento de ${cliente}?`)) {
+                $.ajax({
+                    type: 'POST',
+                    url: `/${slug}/agendamentos/deletar/${id}`,
+                    headers: { [header]: token },
+                    data: { _csrf: token },
+                    success: function() {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Erro ao excluir agendamento: ' + (xhr.responseText || 'Falha na requisição'));
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

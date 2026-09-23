@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Novo Agendamento | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('agendamentos')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Agendamento', 'Marcação de horário no estúdio')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+            <div class="form-container-card">
+                <div class="form-header">
+                    <h2 class="form-title">
+                        <i class="bi bi-calendar-plus text-warning me-2"></i>
+                        <span th:text="${agendamento.id == null ? 'Novo Agendamento' : 'Editar Agendamento'}">Agendamento</span>
+                    </h2>
+                    <p class="form-subtitle">Preencha os dados abaixo para reservar um horário para o cliente.</p>
+                </div>
+
+                <form th:action="${agendamento.id == null ? '/' + empresaSlug + '/agendamentos' : '/' + empresaSlug + '/agendamentos/' + agendamento.id + '/atualizar'}" 
+                      method="post" th:object="${agendamento}">
+                    <input type="hidden" th:field="*{id}"/>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <!-- CLIENTE -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="clienteId">
+                            <i class="bi bi-person-fill text-muted me-1"></i> Cliente:
+                        </label>
+                        <select id="clienteId" th:field="*{clienteId}" class="form-control-modern" required>
+                            <option value="">-- Selecione o Cliente --</option>
+                            <option th:each="c : ${clientes}"
+                                     th:value="${c.id}"
+                                     th:text="${c.nome}"
+                                     th:selected="${agendamento.clienteId == c.id}"></option>
+                        </select>
+                        <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></span>
+                    </div>
+
+                    <!-- SERVIÇO -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="servicoId">
+                            <i class="bi bi-scissors text-muted me-1"></i> Serviço / Procedimento:
+                        </label>
+                        <select id="servicoId" th:field="*{servicoId}" class="form-control-modern" required>
+                            <option value="">-- Selecione o Serviço --</option>
+                            <option th:each="s : ${servicos}"
+                                     th:value="${s.id}"
+                                     th:text="${s.nome} + ' (R$ ' + ${#numbers.formatDecimal(s.preco, 1, 2, 'POINT')} + ')'"
+                                     th:selected="${agendamento.servicoId == s.id}"></option>
+                        </select>
+                        <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('servicoId')}" th:errors="*{servicoId}"></span>
+                    </div>
+
+                    <!-- PROFISSIONAL / ATENDENTE -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="profissionalId">
+                            <i class="bi bi-person-badge text-muted me-1"></i> Profissional Responsável:
+                        </label>
+                        <select id="profissionalId" th:field="*{profissionalId}" class="form-control-modern">
+                            <option value="">-- Qualquer Profissional Disponível --</option>
+                            <option th:each="p : ${profissionais}"
+                                     th:value="${p.id}"
+                                     th:text="${p.nome} + (${p.especialidade != null ? ' - ' + p.especialidade : ''})"
+                                     th:selected="${agendamento.profissionalId == p.id}"></option>
+                        </select>
+                        <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('profissionalId')}" th:errors="*{profissionalId}"></span>
+                    </div>
+
+                    <!-- DATA E HORA -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="dataHora">
+                            <i class="bi bi-clock text-muted me-1"></i> Data e Horário:
+                        </label>
+                        <input type="datetime-local" id="dataHora" name="dataHora" 
+                               th:value="${agendamento.dataHora != null ? #temporals.format(agendamento.dataHora, 'yyyy-MM-dd''T''HH:mm') : ''}" 
+                               class="form-control-modern" required />
+                        <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('dataHora')}" th:errors="*{dataHora}"></span>
+                    </div>
+
+                    <!-- OBSERVAÇÕES -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="observacoes">
+                            <i class="bi bi-chat-left-text text-muted me-1"></i> Observações / Preferências:
+                        </label>
+                        <input type="text" id="observacoes" th:field="*{observacoes}" class="form-control-modern" placeholder="Ex: Cliente prefere atendimento pontual, alérgica a esmalte X" />
+                    </div>
+
+                    <!-- BOTÕES DE AÇÃO -->
+                    <div class="form-actions-bar">
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${agendamento.id == null ? 'Confirmar Agendamento' : 'Salvar Alterações'}">Salvar</span>
+                        </button>
+                        <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug})}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
