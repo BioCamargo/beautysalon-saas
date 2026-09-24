@@ -95,11 +95,29 @@ O **BeautySalon** (LUMORA / Proj_Studio) é uma plataforma web empresarial compl
 
 ---
 
-### 6. 📊 Dashboard & Relatórios Gerenciais
+### 6. 🌐 Agendamento Online Público (Link Exclusivo do Salão)
+* **Portal de Autoatendimento do Cliente (`/{slug}/agendar`)**:
+  * Escolha de serviços com duração e preço em tempo real.
+  * Seleção opcional de profissional preferido ou "Qualquer Profissional".
+  * **Cálculo de Slots Livres & Prevenção de Concorrência**: bloqueio dinâmico de horários ocupados.
+  * Cadastro automático de novos clientes na primeira reserva.
+
+---
+
+### 7. 📲 Mensageria & Notificações Automatizadas via WhatsApp
+* **Integração com WhatsApp Evolution API**:
+  * Confirmação instantânea de agendamentos realizados online.
+  * **Robô Agendador de Lembretes (`@Scheduled`)**: disparos automatizados de lembretes horas antes do atendimento para redução de faltas (*no-show*).
+  * Templates dinâmicos com dados do salão, profissional, data, hora e valor.
+
+---
+
+### 8. 📊 Dashboard & Relatórios Gerenciais
 * **Dashboard em Tempo Real**:
   * Indicadores de status do caixa diário, atendimentos do dia, valor parado em estoque e aniversariantes do mês.
 * **Relatórios Financeiros Executivos**:
   * Faturamento bruto, total de comissões pagas, lucro operacional líquido e ticket médio por atendimento.
+  * Extrato analítico e detalhado de comissões por profissional.
 
 ---
 
