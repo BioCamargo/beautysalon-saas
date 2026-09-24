@@ -2,13 +2,16 @@
 
 # ✂️ BeautySalon / LUMORA - Sistema Completo de Gestão para Salão de Beleza, Estética & Barbearias (Multi-Tenant SaaS)
 
-![Java](https://img.shields.io/badge/Java-17%20%2F%2025-orange.svg?logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg?logo=springboot)
-![Spring Security](https://img.shields.io/badge/Spring%20Security-6-green.svg?logo=springsecurity)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-42.7.5-blue.svg?logo=postgresql)
-![Thymeleaf](https://img.shields.io/badge/Thymeleaf-SSR-005F0F.svg?logo=thymeleaf)
-![Swagger](https://img.shields.io/badge/OpenAPI%20%2F%20Swagger-v3-85EA2D.svg?logo=swagger)
-![Maven](https://img.shields.io/badge/Build-Maven-C71A36.svg?logo=apachemaven)
+![Java](https://img.shields.io/badge/Java-17%20%2F%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-SSR-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Swagger](https://img.shields.io/badge/OpenAPI_3-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
 O **BeautySalon** (LUMORA / Proj_Studio) é uma plataforma web empresarial completa desenvolvida com **Spring Boot 3.5**, projetada para otimizar os processos operacionais, financeiros e de fidelização de salões de beleza, clínicas de estética e barbearias com arquitetura **Multi-Tenant SaaS** (isolamento de dados por empresa via rota `/{slug}/`).
 
