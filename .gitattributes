@@ -1,2 +1,8 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# Instruir o GitHub Linguist a classificar templates e estáticos como vendored/documentation
+# para que o Java seja a linguagem primária (100%) do repositório
+src/main/resources/templates/** linguist-vendored
+src/main/resources/static/** linguist-vendored
+*.html linguist-detectable=false
