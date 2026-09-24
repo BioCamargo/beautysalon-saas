@@ -124,6 +124,110 @@
                 </div>
             </div>
 
+            <!-- MOVIMENTAÇÕES DO CAIXA ATUAL (SANGRIA / REFORÇO / ENTRADAS) -->
+            <div class="content-card mb-4" th:if="${caixaAberto != null}">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <h3 class="card-title-custom">
+                        <i class="bi bi-clock-history text-secondary"></i>
+                        <span>Movimentações do Caixa Atual (#<span th:text="${caixaAberto.id}"></span>)</span>
+                    </h3>
+                    <span class="badge bg-success">Caixa em Operação</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Tipo</th>
+                            <th>Descrição / Categoria</th>
+                            <th>Operador</th>
+                            <th>Valor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="m : ${movimentacoesCaixa}">
+                            <td th:text="${#temporals.format(m.dataHora, 'HH:mm:ss')}">14:20:00</td>
+                            <td>
+                                <span class="badge" th:classappend="${m.tipo == 'ENTRADA_COMANDA' or m.tipo == 'REFORCO' ? 'bg-success' : 'bg-danger'}" th:text="${m.tipo}">SANGRIA</span>
+                            </td>
+                            <td>
+                                <strong th:text="${m.descricao}">Sangria</strong>
+                                <span th:if="${m.categoria != null}" class="text-muted small d-block" th:text="'Cat: ' + ${m.categoria}"></span>
+                            </td>
+                            <td th:text="${m.usuario != null ? m.usuario.nome : 'Sistema'}">Operador</td>
+                            <td>
+                                <strong th:classappend="${m.tipo == 'ENTRADA_COMANDA' or m.tipo == 'REFORCO' ? 'text-success' : 'text-danger'}"
+                                        th:text="${(m.tipo == 'SANGRIA' or m.tipo == 'DESPESA_AVULSA') ? '- R$ ' : '+ R$ '} + ${#numbers.formatDecimal(m.valor, 1, 2, 'COMMA')}">
+                                    R$ 50,00
+                                </strong>
+                            </td>
+                        </tr>
+                        <tr th:if="${movimentacoesCaixa == null or #lists.isEmpty(movimentacoesCaixa)}">
+                            <td colspan="5" class="text-center py-3 text-muted">Nenhuma movimentação avulsa registrada no caixa atual.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO DE FECHAMENTOS DE CAIXA ANTERIORES -->
+            <div class="content-card mb-4">
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">
+                        <i class="bi bi-archive-fill text-secondary"></i>
+                        <span>Histórico de Fechamentos de Caixa</span>
+                    </h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Abertura</th>
+                            <th>Fechamento</th>
+                            <th>Saldo Inicial</th>
+                            <th>Entradas</th>
+                            <th>Saídas</th>
+                            <th>Saldo Esperado</th>
+                            <th>Saldo Contado</th>
+                            <th>Diferença</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Ação</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="cx : ${historicoCaixas}">
+                            <td><strong th:text="'#' + ${cx.id}">#1</strong></td>
+                            <td th:text="${#temporals.format(cx.dataAbertura, 'dd/MM/yyyy HH:mm')}">23/09 08:00</td>
+                            <td th:text="${cx.dataFechamento != null ? #temporals.format(cx.dataFechamento, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(cx.saldoInicial, 1, 2, 'COMMA')}">R$ 100,00</td>
+                            <td class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(cx.totalEntradas, 1, 2, 'COMMA')}">R$ 500,00</td>
+                            <td class="text-danger" th:text="'R$ ' + ${#numbers.formatDecimal(cx.totalSaidas, 1, 2, 'COMMA')}">R$ 50,00</td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(cx.saldoFinalEsperado, 1, 2, 'COMMA')}">R$ 550,00</td>
+                            <td th:text="${cx.saldoFinalContado != null ? 'R$ ' + #numbers.formatDecimal(cx.saldoFinalContado, 1, 2, 'COMMA') : '-'}">-</td>
+                            <td>
+                                <span th:if="${cx.diferencaFechamento != null}"
+                                      th:classappend="${cx.diferencaFechamento.compareTo(T(java.math.BigDecimal).ZERO) < 0 ? 'text-danger fw-bold' : (cx.diferencaFechamento.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? 'text-success fw-bold' : 'text-muted')}"
+                                      th:text="'R$ ' + ${#numbers.formatDecimal(cx.diferencaFechamento, 1, 2, 'COMMA')}">R$ 0,00</span>
+                                <span th:unless="${cx.diferencaFechamento != null}">-</span>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${cx.status == 'ABERTO' ? 'bg-success' : 'bg-secondary'}" th:text="${cx.status}">ABERTO</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <a th:href="@{/{slug}/financeiro/caixas/{id}(slug=${empresaSlug}, id=${cx.id})}" class="btn btn-sm btn-outline-primary" title="Ver Extrato Completo">
+                                    <i class="bi bi-file-earmark-text"></i> Extrato
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${historicoCaixas == null or #lists.isEmpty(historicoCaixas)}">
+                            <td colspan="11" class="text-center py-4 text-muted">Nenhum histórico de caixa registrado.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- HISTÓRICO RECENTE DE COMANDAS FINALIZADAS -->
             <div class="content-card">
                 <div class="card-header-custom">
@@ -142,16 +246,22 @@
                             <th>Forma Pagamento</th>
                             <th>Total Pago</th>
                             <th>Comissões Geradas</th>
+                            <th style="text-align: right;">Ação</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="tc : ${todasComandas}" th:if="${tc.status == 'PAGA'}">
-                            <td th:text="${tc.numeroComanda}">CMD-001</td>
+                            <td><strong class="text-primary" th:text="${tc.numeroComanda}">CMD-001</strong></td>
                             <td th:text="${tc.cliente != null ? tc.cliente.nome : tc.clienteNomeAvulso}">Cliente</td>
                             <td th:text="${#temporals.format(tc.dataFechamento, 'dd/MM/yyyy HH:mm')}">23/09 15:00</td>
                             <td><span class="badge bg-light text-dark border" th:text="${tc.formaPagamento}">PIX</span></td>
                             <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(tc.valorTotal, 1, 2, 'COMMA')}">R$ 150,00</strong></td>
                             <td th:text="'R$ ' + ${#numbers.formatDecimal(tc.totalComissoes, 1, 2, 'COMMA')}">R$ 45,00</td>
+                            <td style="text-align: right;">
+                                <a th:href="@{/{slug}/financeiro/comandas/{id}(slug=${empresaSlug}, id=${tc.id})}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i> Detalhes
+                                </a>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

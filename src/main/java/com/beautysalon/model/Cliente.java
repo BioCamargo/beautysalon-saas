@@ -33,6 +33,19 @@ public class Cliente {
 
     private java.time.LocalDate dataNascimento;
 
+    // Ficha de Anamnese e Histórico Técnico
+    @Column(columnDefinition = "TEXT")
+    private String alergias;
+
+    @Column(columnDefinition = "TEXT")
+    private String tipoCabeloPele;
+
+    @Column(columnDefinition = "TEXT")
+    private String historicoQuimico;
+
+    @Column(columnDefinition = "TEXT")
+    private String observacoesTecnicas;
+
     /**
      * Empresa (tenant) à qual este cliente pertence.
      */

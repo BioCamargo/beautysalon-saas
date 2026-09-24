@@ -25,7 +25,7 @@ public class AgendamentoRestController {
     private final EmpresaRepository empresaRepository;
 
     public AgendamentoRestController(AgendamentoService agendamentoService,
-                                     EmpresaRepository empresaRepository) {
+            EmpresaRepository empresaRepository) {
         this.agendamentoService = agendamentoService;
         this.empresaRepository = empresaRepository;
     }
@@ -48,8 +48,7 @@ public class AgendamentoRestController {
                 a.getServicoId(),
                 a.getServicoNome(),
                 a.getProfissionalId(),
-                a.getProfissionalNome()
-        );
+                a.getProfissionalNome());
     }
 
     @GetMapping

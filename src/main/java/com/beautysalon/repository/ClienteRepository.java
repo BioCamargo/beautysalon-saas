@@ -21,5 +21,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query("SELECT c FROM Cliente c WHERE c.empresa.id = :empresaId AND c.dataNascimento IS NOT NULL AND EXTRACT(MONTH FROM c.dataNascimento) = :mes ORDER BY EXTRACT(DAY FROM c.dataNascimento) ASC")
     List<Cliente> findAniversariantesDoMes(@Param("empresaId") Long empresaId, @Param("mes") int mes);
 
+    Optional<Cliente> findFirstByTelefoneAndEmpresaId(String telefone, Long empresaId);
+
+    List<Cliente> findByTelefoneAndEmpresaId(String telefone, Long empresaId);
+
     long countByEmpresaId(Long empresaId);
 }

@@ -72,6 +72,7 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/error",
                                 "/api/**",
+                                "/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"

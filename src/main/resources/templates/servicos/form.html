@@ -98,6 +98,96 @@
                     </div>
                 </form>
             </div>
+
+            <!-- FICHA TÉCNICA / INSUMOS DO SERVIÇO (EXIBIDA NO MODO EDITAR) -->
+            <div class="form-container-card mt-4" th:if="${servico.id != null}">
+                <div class="form-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h2 class="form-title">
+                            <i class="bi bi-box-seam text-warning me-2"></i>
+                            <span>Ficha Técnica & Insumos de Consumo</span>
+                        </h2>
+                        <p class="form-subtitle">Cadastre os produtos e as quantidades gastas a cada execução deste serviço para baixa automática no estoque ao concluir a comanda.</p>
+                    </div>
+                </div>
+
+                <!-- ALERTA DE SUCESSO -->
+                <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${mensagemSucesso}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- FORMULÁRIO DE ADIÇÃO DE INSUMO -->
+                <div class="p-3 mb-4 rounded bg-dark border border-secondary border-opacity-25">
+                    <form th:action="@{/{slug}/servicos/{id}/insumos/adicionar(slug=${empresaSlug}, id=${servico.id})}" method="post" class="row g-3 align-items-end">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <div class="col-md-7">
+                            <label class="form-label-modern mb-1"><i class="bi bi-box me-1"></i> Selecionar Produto / Insumo do Estoque:</label>
+                            <select name="produtoId" class="form-control-modern" required>
+                                <option value="" disabled selected>Escolha o produto consumido...</option>
+                                <option th:each="p : ${produtosInsumo}" th:value="${p.id}" th:text="${p.nome} + ' (Estoque atual: ' + ${p.quantidadeEstoque} + ' ' + (${p.unidadeMedida} ?: 'UN') + ' - ' + ${p.tipo} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label-modern mb-1"><i class="bi bi-calculator me-1"></i> Qtd gasta por serviço:</label>
+                            <input type="number" name="quantidadeGasta" min="1" value="1" class="form-control-modern" required />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-gold w-100 py-2">
+                                <i class="bi bi-plus-lg"></i> Vincular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TABELA DE INSUMOS VINCULADOS -->
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>Insumo / Produto</th>
+                            <th>Tipo de Produto</th>
+                            <th>Estoque Atual</th>
+                            <th>Consumo por Atendimento</th>
+                            <th style="text-align: right;">Ação</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="ins : ${insumos}">
+                            <td>
+                                <strong th:text="${ins.produto.nome}">Shampoo Especial</strong>
+                                <div class="small text-muted" th:text="'Marca: ' + (${ins.produto.marca} ?: 'N/D')"></div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary" th:text="${ins.produto.tipo}">CONSUMO_INTERNO</span>
+                            </td>
+                            <td>
+                                <span th:text="${ins.produto.quantidadeEstoque}">10</span>
+                                <span class="text-muted small" th:text="' ' + (${ins.produto.unidadeMedida} ?: 'UN')"></span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning text-dark font-monospace" style="font-size: 0.9rem;" th:text="${ins.quantidadeGasta} + ' ' + (${ins.produto.unidadeMedida} ?: 'UN')">1 UN</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <form th:action="@{/{slug}/servicos/{id}/insumos/{insumoId}/remover(slug=${empresaSlug}, id=${servico.id}, insumoId=${ins.id})}" method="post" class="d-inline" onsubmit="return confirm('Deseja desvincular este insumo?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn-icon delete" title="Remover Insumo">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${insumos == null or #lists.isEmpty(insumos)}">
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="bi bi-info-circle me-1"></i> Nenhum insumo vinculado a este serviço ainda.<br>
+                                Vincule insumos acima para que o estoque seja debitado automaticamente quando uma comanda com este serviço for finalizada.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
 </div>

@@ -177,6 +177,7 @@ public class FinanceiroRestController {
                 request.formaPagamento().toUpperCase(),
                 request.descontoGeral(),
                 request.acrescimoGeral(),
+                request.cupomCodigo(),
                 null
         );
 

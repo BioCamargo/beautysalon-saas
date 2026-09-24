@@ -7,8 +7,6 @@ import com.beautysalon.model.Empresa;
 import com.beautysalon.repository.ClienteRepository;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.tenant.TenantContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +15,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ClienteServiceImpl.class);
 
     private final ClienteRepository clienteRepository;
     private final EmpresaRepository empresaRepository;
@@ -55,6 +51,11 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail());
         cliente.setTelefone(dto.getTelefone());
+        cliente.setDataNascimento(dto.getDataNascimento());
+        cliente.setAlergias(dto.getAlergias());
+        cliente.setTipoCabeloPele(dto.getTipoCabeloPele());
+        cliente.setHistoricoQuimico(dto.getHistoricoQuimico());
+        cliente.setObservacoesTecnicas(dto.getObservacoesTecnicas());
         cliente.setEmpresa(empresa);
 
         return toDTO(clienteRepository.save(cliente));
@@ -77,6 +78,11 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.setNome(dto.getNome());
         cliente.setEmail(dto.getEmail());
         cliente.setTelefone(dto.getTelefone());
+        cliente.setDataNascimento(dto.getDataNascimento());
+        cliente.setAlergias(dto.getAlergias());
+        cliente.setTipoCabeloPele(dto.getTipoCabeloPele());
+        cliente.setHistoricoQuimico(dto.getHistoricoQuimico());
+        cliente.setObservacoesTecnicas(dto.getObservacoesTecnicas());
         return toDTO(clienteRepository.save(cliente));
     }
 
@@ -94,6 +100,11 @@ public class ClienteServiceImpl implements ClienteService {
         dto.setNome(c.getNome());
         dto.setEmail(c.getEmail());
         dto.setTelefone(c.getTelefone());
+        dto.setDataNascimento(c.getDataNascimento());
+        dto.setAlergias(c.getAlergias());
+        dto.setTipoCabeloPele(c.getTipoCabeloPele());
+        dto.setHistoricoQuimico(c.getHistoricoQuimico());
+        dto.setObservacoesTecnicas(c.getObservacoesTecnicas());
         return dto;
     }
 }

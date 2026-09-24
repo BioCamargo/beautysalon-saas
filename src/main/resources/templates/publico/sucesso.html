@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Agendamento Confirmado! | Beauty Salon</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0f1115;
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-card {
+            background: #181c24;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            padding: 3rem 2rem;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container p-3">
+    <div class="success-card mx-auto">
+        <div class="icon-circle">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <h2 class="fw-bold text-gradient-gold mb-2">Agendamento Confirmado!</h2>
+        <p class="text-muted mb-4">Seu horário foi reservado com sucesso em nosso estúdio.</p>
+
+        <div class="p-3 mb-4 rounded bg-dark border border-secondary border-opacity-25 text-start">
+            <div class="mb-2">
+                <span class="text-muted small">Cliente:</span>
+                <strong class="d-block text-light" th:text="${clienteNome} ?: 'Cliente'">Nome do Cliente</strong>
+            </div>
+            <div class="mb-2">
+                <span class="text-muted small">Data & Horário:</span>
+                <strong class="d-block text-warning" th:text="${dataAgendamento} ?: 'Horário confirmado'">23/09/2026 às 14:00</strong>
+            </div>
+            <div>
+                <span class="text-muted small">Local:</span>
+                <strong class="d-block text-light" th:text="${empresa != null ? empresa.getNome() : 'Studio & Estética'}">Beauty Salon</strong>
+            </div>
+        </div>
+
+        <p class="small text-muted mb-4">
+            <i class="bi bi-bell-fill text-gold me-1"></i>
+            Enviaremos um lembrete próximo ao horário do seu procedimento.
+        </p>
+
+        <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" class="btn btn-outline-secondary w-100 py-2">
+            <i class="bi bi-calendar-plus me-1"></i> Fazer Outro Agendamento
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

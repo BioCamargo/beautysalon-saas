@@ -11,27 +11,30 @@ import java.util.Optional;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
-    @EntityGraph(attributePaths = {"cliente", "servicos", "profissional"})
+    @EntityGraph(attributePaths = { "cliente", "servicos", "profissional" })
     List<Agendamento> findAllByEmpresaId(Long empresaId);
 
-    @EntityGraph(attributePaths = {"cliente", "servicos", "profissional"})
+    @EntityGraph(attributePaths = { "cliente", "servicos", "profissional" })
     Optional<Agendamento> findByIdAndEmpresaId(Long id, Long empresaId);
 
     @Query("SELECT a FROM Agendamento a JOIN a.servicos s WHERE s.id = :servicoId AND a.empresa.id = :empresaId")
-    List<Agendamento> findByServicoIdAndEmpresaId(@Param("servicoId") Long servicoId, @Param("empresaId") Long empresaId);
+    List<Agendamento> findByServicoIdAndEmpresaId(@Param("servicoId") Long servicoId,
+            @Param("empresaId") Long empresaId);
 
-    @EntityGraph(attributePaths = {"cliente", "servicos", "profissional"})
+    @EntityGraph(attributePaths = { "cliente", "servicos", "profissional" })
     List<Agendamento> findByEmpresaIdAndProfissionalIdOrderByDataHoraAsc(Long empresaId, Long profissionalId);
 
-    @EntityGraph(attributePaths = {"cliente", "servicos", "profissional"})
+    @EntityGraph(attributePaths = { "cliente", "servicos", "profissional" })
     List<Agendamento> findByEmpresaIdAndClienteIdOrderByDataHoraDesc(Long empresaId, Long clienteId);
 
+    @EntityGraph(attributePaths = { "cliente", "servicos", "profissional" })
     @Query("SELECT a FROM Agendamento a WHERE a.empresa.id = :empresaId AND a.dataHora BETWEEN :inicio AND :fim ORDER BY a.dataHora ASC")
     List<Agendamento> findByEmpresaIdAndDataHoraBetween(@Param("empresaId") Long empresaId,
-                                                       @Param("inicio") java.time.LocalDateTime inicio,
-                                                       @Param("fim") java.time.LocalDateTime fim);
+            @Param("inicio") java.time.LocalDateTime inicio,
+            @Param("fim") java.time.LocalDateTime fim);
 
-    long countByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+    long countByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio,
+            java.time.LocalDateTime fim);
 
     // Mantido para compatibilidade com método legado em AgendamentoServiceImpl
     @Query("SELECT a FROM Agendamento a JOIN a.servicos s WHERE s.id = :servicoId")

@@ -19,10 +19,10 @@
         <div th:replace="~{fragments/topbar :: topbar('Relatórios & Métricas', 'Faturamento, comissões de profissionais e rentabilidade')}"></div>
 
         <main class="page-content">
-            <!-- FILTRO DE PERÍODO -->
-            <div class="content-card mb-4">
-                <div class="p-3 bg-light">
-                    <form class="row g-3 align-items-end" method="get" th:action="@{/{slug}/relatorios(slug=${empresaSlug})}">
+            <!-- FILTRO DE PERÍODO & AÇÕES DE EXPORTAÇÃO -->
+            <div class="content-card mb-4 no-print">
+                <div class="p-3 bg-light d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <form class="row g-2 align-items-end flex-grow-1" method="get" th:action="@{/{slug}/relatorios(slug=${empresaSlug})}">
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">Data Início:</label>
                             <input type="date" name="dataInicio" class="form-control form-control-sm" th:value="${dataInicio}" required />
@@ -37,6 +37,15 @@
                             </button>
                         </div>
                     </form>
+
+                    <div class="d-flex gap-2">
+                        <button onclick="window.print()" class="btn btn-outline-dark btn-sm">
+                            <i class="bi bi-printer"></i> Imprimir Relatório
+                        </button>
+                        <button onclick="exportarTabelaCSV()" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +112,7 @@
                             <th>Especialidade</th>
                             <th>Comissão Padrão</th>
                             <th>Total a Receber no Período</th>
+                            <th style="text-align: right;">Ação</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -115,9 +125,14 @@
                             <td>
                                 <strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(rc.comissao, 1, 2, 'COMMA')}">R$ 0,00</strong>
                             </td>
+                            <td style="text-align: right;">
+                                <a th:href="@{/{slug}/relatorios/comissoes/{id}(slug=${empresaSlug}, id=${rc.profissional.id}, dataInicio=${dataInicio}, dataFim=${dataFim})}" class="btn btn-sm btn-gold">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> Ver Extrato
+                                </a>
+                            </td>
                         </tr>
                         <tr th:if="${relatorioComissoes == null or #lists.isEmpty(relatorioComissoes)}">
-                            <td colspan="4" class="text-center py-4 text-muted">Nenhuma comissão registrada para o período selecionado.</td>
+                            <td colspan="5" class="text-center py-4 text-muted">Nenhuma comissão registrada para o período selecionado.</td>
                         </tr>
                         </tbody>
                     </table>
@@ -163,6 +178,68 @@
         </main>
     </div>
 </div>
+
+<style>
+@media print {
+    .no-print, .sidebar, .app-sidebar, .app-topbar, .btn {
+        display: none !important;
+    }
+    .app-layout {
+        display: block !important;
+    }
+    .app-main, .page-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .content-card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+    @page {
+        margin: 15mm;
+        size: auto;
+    }
+}
+</style>
+
+<script>
+function exportarTabelaCSV() {
+    let csv = [];
+    csv.push(["RELATÓRIO FINANCEIRO GERENCIAL"]);
+    csv.push(["Data de Emissão", new Date().toLocaleDateString('pt-BR')]);
+    csv.push([]);
+    
+    // Extrato de comissões
+    csv.push(["COMISSÕES POR PROFISSIONAL"]);
+    csv.push(["Profissional", "Especialidade", "Comissão %", "Total a Receber (R$)"]);
+    document.querySelectorAll("table:first-of-type tbody tr").forEach(row => {
+        let cols = Array.from(row.querySelectorAll("td")).map(td => td.innerText.trim().replace(/,/g, '.'));
+        if (cols.length >= 4) {
+            csv.push([cols[0], cols[1], cols[2], cols[3]]);
+        }
+    });
+
+    csv.push([]);
+    csv.push(["COMANDAS FATURADAS"]);
+    csv.push(["Nº Comanda", "Cliente", "Data Fechamento", "Forma Pagamento", "Total (R$)", "Comissões (R$)"]);
+    document.querySelectorAll("table:last-of-type tbody tr").forEach(row => {
+        let cols = Array.from(row.querySelectorAll("td")).map(td => td.innerText.trim().replace(/,/g, '.'));
+        if (cols.length >= 6) {
+            csv.push(cols);
+        }
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csv.map(e => e.join(";")).join("\n");
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `relatorio_gerencial_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
 
 </body>
 </html>

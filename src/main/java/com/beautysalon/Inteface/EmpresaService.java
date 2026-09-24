@@ -2,7 +2,6 @@ package com.beautysalon.Inteface;
 
 import com.beautysalon.DTO.EmpresaDTO;
 import com.beautysalon.DTO.RegisterEmpresaDTO;
-import com.beautysalon.model.Empresa;
 
 import java.util.List;
 

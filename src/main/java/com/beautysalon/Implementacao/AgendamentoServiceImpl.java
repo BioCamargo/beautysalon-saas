@@ -26,17 +26,20 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     private final ServicoRepository servicoRepository;
     private final EmpresaRepository empresaRepository;
     private final com.beautysalon.repository.UserRepository userRepository;
+    private final com.beautysalon.service.WhatsAppService whatsAppService;
 
     public AgendamentoServiceImpl(AgendamentoRepository agendamentoRepository,
                                   ClienteRepository clienteRepository,
                                   ServicoRepository servicoRepository,
                                   EmpresaRepository empresaRepository,
-                                  com.beautysalon.repository.UserRepository userRepository) {
+                                  com.beautysalon.repository.UserRepository userRepository,
+                                  com.beautysalon.service.WhatsAppService whatsAppService) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.empresaRepository = empresaRepository;
         this.userRepository = userRepository;
+        this.whatsAppService = whatsAppService;
     }
 
     @Override
@@ -77,6 +80,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.setObservacoes(dto.getObservacoes());
 
         if (dto.getProfissionalId() != null) {
+            validarConflitoHorario(empresaId, dto.getProfissionalId(), dto.getDataHora(), servico, null);
             agendamento.setProfissional(userRepository.findByIdAndEmpresaId(dto.getProfissionalId(), empresaId).orElse(null));
         }
 
@@ -86,6 +90,14 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.getServicos().add(servico);
 
         Agendamento salvo = agendamentoRepository.save(agendamento);
+
+        // Dispara mensagem de confirmação no WhatsApp do cliente
+        try {
+            whatsAppService.enviarConfirmacaoAgendamento(salvo);
+        } catch (Exception e) {
+            // Ignora falha de WhatsApp para não interromper agendamento
+        }
+
         return toDTO(salvo);
     }
 
@@ -102,6 +114,13 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Servico servico = servicoRepository.findByIdAndEmpresaId(dto.getServicoId(), empresaId)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado nesta empresa"));
 
+        if (dto.getProfissionalId() != null) {
+            validarConflitoHorario(empresaId, dto.getProfissionalId(), dto.getDataHora(), servico, id);
+            existente.setProfissional(userRepository.findByIdAndEmpresaId(dto.getProfissionalId(), empresaId).orElse(null));
+        } else {
+            existente.setProfissional(null);
+        }
+
         existente.setDataHora(dto.getDataHora());
         existente.setCliente(cliente);
         if (dto.getStatus() != null) existente.setStatus(dto.getStatus());
@@ -111,6 +130,39 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
         Agendamento salvo = agendamentoRepository.save(existente);
         return toDTO(salvo);
+    }
+
+    private void validarConflitoHorario(Long empresaId, Long profissionalId, java.time.LocalDateTime novoInicio, Servico servico, Long agendamentoIdIgnorar) {
+        int duracaoMin = (servico.getDuracaoMinutos() != null && servico.getDuracaoMinutos() > 0) ? servico.getDuracaoMinutos() : 30;
+        java.time.LocalDateTime novoFim = novoInicio.plusMinutes(duracaoMin);
+
+        List<Agendamento> agendamentos = agendamentoRepository.findByEmpresaIdAndProfissionalIdOrderByDataHoraAsc(empresaId, profissionalId);
+
+        for (Agendamento ag : agendamentos) {
+            if (agendamentoIdIgnorar != null && ag.getId().equals(agendamentoIdIgnorar)) {
+                continue;
+            }
+            if ("CANCELADO".equalsIgnoreCase(ag.getStatus()) || "NAO_COMPARECEU".equalsIgnoreCase(ag.getStatus())) {
+                continue;
+            }
+
+            java.time.LocalDateTime existenteInicio = ag.getDataHora();
+            int duracaoExistente = 30;
+            if (ag.getServicos() != null && !ag.getServicos().isEmpty() && ag.getServicos().get(0).getDuracaoMinutos() != null) {
+                duracaoExistente = ag.getServicos().get(0).getDuracaoMinutos();
+            }
+            java.time.LocalDateTime existenteFim = existenteInicio.plusMinutes(duracaoExistente);
+
+            // Intervalos [novoInicio, novoFim) e [existenteInicio, existenteFim) se sobrepõem se:
+            // novoInicio < existenteFim && novoFim > existenteInicio
+            if (novoInicio.isBefore(existenteFim) && novoFim.isAfter(existenteInicio)) {
+                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+                throw new RuntimeException(String.format(
+                        "Conflito de agenda: O profissional já possui atendimento entre %s e %s.",
+                        existenteInicio.format(fmt), existenteFim.format(fmt)
+                ));
+            }
+        }
     }
 
     @Override
@@ -138,6 +190,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         if (a.getCliente() != null) {
             dto.setClienteId(a.getCliente().getId());
             dto.setClienteNome(a.getCliente().getNome());
+            dto.setClienteTelefone(a.getCliente().getTelefone());
         }
 
         if (a.getProfissional() != null) {
@@ -149,6 +202,9 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             Servico servico = a.getServicos().get(0);
             dto.setServicoId(servico.getId());
             dto.setServicoNome(servico.getNome());
+            dto.setDuracaoMinutos(servico.getDuracaoMinutos() != null ? servico.getDuracaoMinutos() : 30);
+        } else {
+            dto.setDuracaoMinutos(30);
         }
 
         return dto;

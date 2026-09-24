@@ -78,6 +78,43 @@
                 </a>
             </div>
 
+            <!-- GRÁFICOS VISUAIS INTERATIVOS (CHART.JS) -->
+            <div class="row g-4 mb-4">
+                <!-- GRÁFICO 1: EVOLUÇÃO DO FATURAMENTO (ÚLTIMOS 7 DIAS) -->
+                <div class="col-lg-7">
+                    <div class="content-card h-100">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-graph-up-arrow text-success"></i>
+                                <span>Faturamento Recente (Últimos 7 dias)</span>
+                            </h3>
+                            <span class="badge bg-success">Em tempo real</span>
+                        </div>
+                        <div class="p-3">
+                            <canvas id="faturamentoChart" height="130"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICO 2: TOP SERVIÇOS & PRODUTOS MAIS VENDIDOS -->
+                <div class="col-lg-5">
+                    <div class="content-card h-100">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-pie-chart-fill text-primary"></i>
+                                <span>Top 5 Mais Vendidos</span>
+                            </h3>
+                            <span class="badge" style="background-color: var(--accent-gold); color: #000;">Ranking</span>
+                        </div>
+                        <div class="p-3 d-flex align-items-center justify-content-center">
+                            <div style="max-height: 220px; width: 100%;">
+                                <canvas id="topItensChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ATALHOS RÁPIDOS -->
             <div class="content-card mb-4">
                 <div class="card-header-custom">
@@ -122,20 +159,17 @@
                     <table class="table-modern">
                         <thead>
                         <tr>
-                            <th>Horário</th>
                             <th>Cliente</th>
-                            <th>Serviço(s)</th>
+                            <th>Serviço</th>
                             <th>Profissional</th>
+                            <th>Data</th>
+                            <th>Horário</th>
                             <th>Status</th>
                             <th style="text-align: right;">Ações</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="ag : ${listaAgendamentosHoje}">
-                            <td>
-                                <i class="bi bi-clock text-primary me-1"></i>
-                                <strong class="fs-6" th:text="${#temporals.format(ag.dataHora, 'HH:mm')}">14:00</strong>
-                            </td>
                             <td>
                                 <div class="client-cell">
                                     <div class="cell-avatar">
@@ -148,17 +182,36 @@
                                 </div>
                             </td>
                             <td>
-                                <span th:each="s : ${ag.servicos}" class="badge bg-light text-dark border me-1" th:text="${s.nome}">Corte</span>
+                                <span th:each="s : ${ag.servicos}" class="badge" style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 600; padding: 0.4rem 0.65rem;" th:text="${s.nome}">Corte</span>
+                                <span th:if="${ag.servicos == null or #lists.isEmpty(ag.servicos)}" class="text-muted small">Não informado</span>
                             </td>
                             <td>
                                 <i class="bi bi-person-badge text-muted me-1"></i>
-                                <span th:text="${ag.profissional != null ? ag.profissional.nome : 'Não informado'}">Profissional</span>
+                                <span th:text="${ag.profissional != null ? ag.profissional.nome : 'Qualquer disponível'}">Profissional</span>
                             </td>
                             <td>
-                                <span class="badge" th:classappend="${ag.status == 'CONCLUIDO' ? 'bg-success' : (ag.status == 'CANCELADO' ? 'bg-danger' : 'bg-primary')}" th:text="${ag.status} ?: 'AGENDADO'">AGENDADO</span>
+                                <i class="bi bi-calendar-event text-muted me-1"></i>
+                                <span th:text="${#temporals.format(ag.dataHora, 'dd/MM/yyyy')}">01/01/2026</span>
+                            </td>
+                            <td>
+                                <i class="bi bi-clock text-muted me-1"></i>
+                                <strong th:text="${#temporals.format(ag.dataHora, 'HH:mm')}">14:00</strong>
+                            </td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${ag.status == 'CONCLUIDO' ? 'bg-success text-white' : (ag.status == 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (ag.status == 'CANCELADO' ? 'bg-danger text-white' : 'bg-primary text-white'))}" 
+                                      th:text="${ag.status} ?: 'AGENDADO'">AGENDADO</span>
                             </td>
                             <td style="text-align: right;">
                                 <div class="action-buttons justify-content-end">
+                                    <form th:if="${ag.status != 'CONCLUIDO' and ag.status != 'CANCELADO'}" 
+                                          th:action="@{/{slug}/agendamentos/{id}/iniciar-comanda(slug=${empresaSlug}, id=${ag.id})}" 
+                                          method="post" style="display: inline-block;">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-gold" title="Iniciar Atendimento & Abrir Comanda" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                            <i class="bi bi-play-circle-fill"></i> Atender
+                                        </button>
+                                    </form>
                                     <a th:href="@{/{slug}/agendamentos/{id}(slug=${empresaSlug}, id=${ag.id})}" class="btn-icon edit" title="Editar Atendimento">
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
@@ -166,7 +219,7 @@
                             </td>
                         </tr>
                         <tr th:if="${listaAgendamentosHoje == null or #lists.isEmpty(listaAgendamentosHoje)}">
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="bi bi-calendar-check" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--accent-gold);"></i>
                                 Não há atendimentos agendados para o dia de hoje.<br>
                                 <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
@@ -181,6 +234,84 @@
         </main>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Gráfico de Faturamento
+        const faturamentoLabels = /*[[${diasLabels}]]*/ ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        const faturamentoData = /*[[${faturamentoDias}]]*/ [0, 0, 0, 0, 0, 0, 0];
+
+        const ctxFat = document.getElementById('faturamentoChart');
+        if (ctxFat) {
+            new Chart(ctxFat, {
+                type: 'line',
+                data: {
+                    labels: faturamentoLabels,
+                    datasets: [{
+                        label: 'Faturamento (R$)',
+                        data: faturamentoData,
+                        borderColor: '#c5a059',
+                        backgroundColor: 'rgba(197, 160, 89, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#b08d46'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return 'R$ ' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Gráfico de Top Mais Vendidos
+        const topLabels = /*[[${topItensLabels}]]*/ [];
+        const topData = /*[[${topItensQtds}]]*/ [];
+
+        const ctxTop = document.getElementById('topItensChart');
+        if (ctxTop && topLabels.length > 0) {
+            new Chart(ctxTop, {
+                type: 'doughnut',
+                data: {
+                    labels: topLabels,
+                    datasets: [{
+                        data: topData,
+                        backgroundColor: [
+                            '#c5a059',
+                            '#1e293b',
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

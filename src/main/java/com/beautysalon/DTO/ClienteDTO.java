@@ -20,6 +20,10 @@ public class ClienteDTO
 
     private String telefone; 
     private LocalDate dataNascimento; 
+    private String alergias;
+    private String tipoCabeloPele;
+    private String historicoQuimico;
+    private String observacoesTecnicas;
 
     public ClienteDTO (Long id, String nome, String email, String telefone, LocalDate dataNascimento)
     {
@@ -46,5 +50,17 @@ public class ClienteDTO
 
     public LocalDate getDataNascimento() {return dataNascimento;}
     public void setDataNascimento(LocalDate dataNascimento) {this.dataNascimento = dataNascimento;}
+
+    public String getAlergias() { return alergias; }
+    public void setAlergias(String alergias) { this.alergias = alergias; }
+
+    public String getTipoCabeloPele() { return tipoCabeloPele; }
+    public void setTipoCabeloPele(String tipoCabeloPele) { this.tipoCabeloPele = tipoCabeloPele; }
+
+    public String getHistoricoQuimico() { return historicoQuimico; }
+    public void setHistoricoQuimico(String historicoQuimico) { this.historicoQuimico = historicoQuimico; }
+
+    public String getObservacoesTecnicas() { return observacoesTecnicas; }
+    public void setObservacoesTecnicas(String observacoesTecnicas) { this.observacoesTecnicas = observacoesTecnicas; }
 
 }

@@ -1,6 +1,5 @@
 package com.beautysalon.Controller;
 
-import com.beautysalon.Inteface.ClienteService;
 import com.beautysalon.Inteface.ServicoService;
 import com.beautysalon.model.CupomDesconto;
 import com.beautysalon.model.PacoteCombo;
@@ -18,14 +17,11 @@ import java.time.LocalDate;
 public class FidelizacaoController {
 
     private final FidelizacaoService fidelizacaoService;
-    private final ClienteService clienteService;
     private final ServicoService servicoService;
 
     public FidelizacaoController(FidelizacaoService fidelizacaoService,
-                                 ClienteService clienteService,
                                  ServicoService servicoService) {
         this.fidelizacaoService = fidelizacaoService;
-        this.clienteService = clienteService;
         this.servicoService = servicoService;
     }
 

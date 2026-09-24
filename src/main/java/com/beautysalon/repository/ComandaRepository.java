@@ -14,16 +14,16 @@ import java.util.Optional;
 @Repository
 public interface ComandaRepository extends JpaRepository<Comanda, Long> {
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"cliente", "caixa", "agendamento", "itens"})
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"empresa", "cliente", "caixa", "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto"})
     List<Comanda> findByEmpresaIdOrderByDataAberturaDesc(Long empresaId);
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"cliente", "caixa", "agendamento", "itens"})
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"empresa", "cliente", "caixa", "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto"})
     List<Comanda> findByEmpresaIdAndStatusOrderByDataAberturaDesc(Long empresaId, String status);
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"cliente", "caixa", "agendamento", "itens"})
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"empresa", "cliente", "caixa", "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto"})
     List<Comanda> findByClienteIdAndEmpresaIdOrderByDataAberturaDesc(Long clienteId, Long empresaId);
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"cliente", "caixa", "agendamento", "itens"})
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"empresa", "cliente", "caixa", "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto"})
     Optional<Comanda> findByIdAndEmpresaId(Long id, Long empresaId);
 
     @Query("SELECT c FROM Comanda c WHERE c.empresa.id = :empresaId AND c.status = 'PAGA' AND c.dataFechamento BETWEEN :inicio AND :fim")

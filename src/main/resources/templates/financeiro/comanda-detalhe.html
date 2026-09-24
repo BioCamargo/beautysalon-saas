@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,176 +8,534 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tom Select for Autocomplete -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .ts-control {
+            border-radius: var(--radius-sm) !important;
+            padding: 0.5rem 0.75rem !important;
+            border: 1px solid var(--border-color) !important;
+            font-size: 0.88rem !important;
+            min-height: 38px !important;
+            background: #ffffff !important;
+        }
+        .ts-dropdown {
+            border-radius: var(--radius-sm) !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+            z-index: 9999 !important;
+            font-size: 0.88rem !important;
+            border: 1px solid var(--border-color) !important;
+            background: #ffffff !important;
+        }
+        .ts-dropdown .active {
+            background-color: var(--accent-gold-light) !important;
+            color: var(--text-main) !important;
+            font-weight: 600;
+        }
+        .content-card, .tab-content, .tab-pane {
+            overflow: visible !important;
+        }
+
+        /* ESTILO PARA IMPRESSÃO DE COMPROVANTE (RECIBO 80mm / TÉRMICA) */
+        @page {
+            size: auto;
+            margin: 0mm; /* Remove cabeçalho e rodapé padrão do navegador (data, URL, título) */
+        }
+        @media print {
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .app-layout, .app-sidebar, .app-topbar, .page-content, .card-header-custom, nav, .btn, .btn-icon {
+                display: none !important;
+            }
+            #thermalReceipt {
+                display: block !important;
+                position: relative !important;
+                width: 76mm !important;
+                max-width: 100% !important;
+                margin: 5mm auto !important;
+                padding: 4mm !important;
+                font-family: 'Courier New', Courier, monospace !important;
+                font-size: 12px !important;
+                color: #000000 !important;
+                background: #ffffff !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="app-layout">
-    <div th:replace="~{fragments/sidebar :: sidebar('financeiro')}"></div>
+    <div class="app-layout">
+        <div th:replace="~{fragments/sidebar :: sidebar('financeiro')}"></div>
 
-    <div class="app-main">
-        <div th:replace="~{fragments/topbar :: topbar('Comanda ' + ${comanda.numeroComanda}, 'Lançamento de serviços, produtos e recebimento')}"></div>
-
-        <main class="page-content">
-            <div class="row g-4">
-                <!-- COLUNA ESQUERDA: ITENS DA COMANDA -->
-                <div class="col-lg-8">
-                    <div class="content-card mb-4">
-                        <div class="card-header-custom d-flex justify-content-between align-items-center">
-                            <h3 class="card-title-custom">
-                                <i class="bi bi-receipt-cutoff text-primary"></i>
-                                <span>Itens Consumidos / Executados</span>
-                            </h3>
-                            <span class="badge" th:classappend="${comanda.status == 'PAGA' ? 'bg-success' : 'bg-warning text-dark'}" th:text="${comanda.status}">ABERTA</span>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table-modern">
-                                <thead>
-                                <tr>
-                                    <th>Item / Descrição</th>
-                                    <th>Profissional</th>
-                                    <th>Qtd.</th>
-                                    <th>Unitário</th>
-                                    <th>Total</th>
-                                    <th>Comissão</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="item : ${comanda.itens}">
-                                    <td>
-                                        <strong th:text="${item.descricaoItem}">Corte Feminino</strong>
-                                        <span class="badge bg-light text-muted ms-1" th:text="${item.tipo}">SERVICO</span>
-                                    </td>
-                                    <td th:text="${item.profissional != null ? item.profissional.nome : '-'}">Keilla</td>
-                                    <td th:text="${item.quantidade}">1</td>
-                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario, 1, 2, 'COMMA')}">R$ 50,00</td>
-                                    <td><strong th:text="'R$ ' + ${#numbers.formatDecimal(item.valorTotal, 1, 2, 'COMMA')}">R$ 50,00</strong></td>
-                                    <td class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(item.valorComissao, 1, 2, 'COMMA')} + ' (' + ${item.percentualComissao} + '%)'">R$ 15,00 (30%)</td>
-                                </tr>
-                                <tr th:if="${comanda.itens == null or #lists.isEmpty(comanda.itens)}">
-                                    <td colspan="6" class="text-center py-4 text-muted">Nenhum item adicionado ainda.</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- ADICIONAR PRODUTO DE REVENDA OU SERVIÇO EXTRA NA COMANDA -->
-                    <div class="content-card" th:if="${comanda.status == 'ABERTA'}">
-                        <div class="card-header-custom">
-                            <h4 class="card-title-custom">
-                                <i class="bi bi-cart-plus text-success"></i>
-                                <span>Adicionar Produto de Revenda na Comanda</span>
-                            </h4>
-                        </div>
-                        <div class="p-3">
-                            <form th:action="@{/{slug}/financeiro/comandas/{id}/adicionar-item(slug=${empresaSlug}, id=${comanda.id})}" method="post">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <input type="hidden" name="tipo" value="PRODUTO" />
-                                <div class="row g-3">
-                                    <div class="col-md-5">
-                                        <label class="form-label small">Produto (Revenda):</label>
-                                        <select name="produtoId" class="form-select" required>
-                                            <option value="" disabled selected>Selecione o produto...</option>
-                                            <option th:each="pr : ${produtosRevenda}" th:value="${pr.id}"
-                                                    th:text="${pr.nome} + ' (R$ ' + ${pr.precoVenda} + ' | Estoque: ' + ${pr.quantidadeEstoque} + ')'"></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label small">Profissional Vendedor:</label>
-                                        <select name="profissionalId" class="form-select">
-                                            <option value="">Sem comissão / Balcão</option>
-                                            <option th:each="pf : ${profissionais}" th:value="${pf.id}" th:text="${pf.nome} + ' (' + ${pf.percentualComissao} + '%)'"></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label small">Qtd:</label>
-                                        <input type="number" name="quantidade" class="form-control" value="1" min="1" required />
-                                    </div>
-                                    <div class="col-md-1 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-gold w-100" title="Adicionar Item">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- COLUNA DIREITA: RESUMO FINANCEIRO & FECHAMENTO -->
-                <div class="col-lg-4">
-                    <div class="content-card">
-                        <div class="card-header-custom">
-                            <h4 class="card-title-custom">
-                                <i class="bi bi-wallet2 text-primary"></i>
-                                <span>Resumo do Pagamento</span>
-                            </h4>
-                        </div>
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Subtotal Serviços:</span>
-                                <strong th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalServicos, 1, 2, 'COMMA')}">R$ 0,00</strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Subtotal Produtos:</span>
-                                <strong th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalProdutos, 1, 2, 'COMMA')}">R$ 0,00</strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2" th:if="${comanda.desconto > 0}">
-                                <span class="text-danger">Desconto:</span>
-                                <strong class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(comanda.desconto, 1, 2, 'COMMA')}">- R$ 0,00</strong>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-4">
-                                <span class="fs-5 fw-bold">Total a Pagar:</span>
-                                <span class="fs-4 fw-bold text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(comanda.valorTotal, 1, 2, 'COMMA')}">R$ 0,00</span>
-                            </div>
-
-                            <!-- FORMULÁRIO DE FECHAMENTO SE ESTIVER ABERTA -->
-                            <form th:if="${comanda.status == 'ABERTA'}" th:action="@{/{slug}/financeiro/comandas/{id}/fechar(slug=${empresaSlug}, id=${comanda.id})}" method="post">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold">Forma de Pagamento:</label>
-                                    <select name="formaPagamento" class="form-select" required>
-                                        <option value="PIX">PIX</option>
-                                        <option value="CARTAO_CREDITO">Cartão de Crédito</option>
-                                        <option value="CARTAO_DEBITO">Cartão de Débito</option>
-                                        <option value="DINHEIRO">Dinheiro / Espécie</option>
-                                        <option value="VOUCHER">Voucher / Vale Presente</option>
-                                    </select>
-                                </div>
-
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <label class="form-label small">Desconto (R$):</label>
-                                        <input type="number" step="0.01" name="desconto" class="form-control" value="0.00" />
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small">Acréscimo (R$):</label>
-                                        <input type="number" step="0.01" name="acrescimo" class="form-control" value="0.00" />
-                                    </div>
-                                </div>
-
-                                <button type="submit" class="btn btn-gold w-100 py-2 fs-6">
-                                    <i class="bi bi-check2-circle"></i> Receber & Fechar Comanda
-                                </button>
-                            </form>
-
-                            <div th:if="${comanda.status == 'PAGA'}" class="alert alert-success text-center mb-0">
-                                <i class="bi bi-check-circle-fill fs-3 d-block mb-1"></i>
-                                <strong>Comanda Paga!</strong><br>
-                                <span class="small" th:text="'Forma: ' + ${comanda.formaPagamento}">PIX</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="app-main">
+            <div
+                th:replace="~{fragments/topbar :: topbar('Comanda ' + ${comanda.numeroComanda}, 'Lançamento de serviços, produtos e recebimento')}">
             </div>
-        </main>
-    </div>
-</div>
 
+            <main class="page-content">
+                <div class="row g-4">
+                    <!-- COLUNA ESQUERDA: ITENS DA COMANDA -->
+                    <div class="col-lg-8">
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                                <h3 class="card-title-custom">
+                                    <i class="bi bi-receipt-cutoff text-primary"></i>
+                                    <span>Itens Consumidos / Executados</span>
+                                </h3>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a th:if="${comanda.status == 'PAGA' and comanda.cliente != null and comanda.cliente.telefone != null}"
+                                       th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(comanda.cliente.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${comanda.cliente.nome} + '%21%20Segue%20o%20resumo%20do%20seu%20atendimento%20no%20Studio%3A%0A💳%20*Comanda%3A*%20' + ${comanda.numeroComanda} + '%0A💰%20*Total%3A*%20R%24%20' + ${#numbers.formatDecimal(comanda.valorTotal, 1, 2, 'POINT')} + '%0A💳%20*Forma%3A*%20' + ${comanda.formaPagamento} + '%0A%0AMuito%20obrigado%20pela%20prefer%C3%AAncia%21%20Volte%20sempre%21%20✨'"
+                                       target="_blank" class="btn btn-sm btn-outline-success" title="Enviar Comprovante no WhatsApp do Cliente">
+                                        <i class="bi bi-whatsapp"></i> WhatsApp
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-secondary" onclick="window.print()" title="Imprimir Comprovante / Recibo">
+                                        <i class="bi bi-printer"></i> Imprimir Recibo
+                                    </button>
+                                    <span class="badge"
+                                        th:classappend="${comanda.status == 'PAGA' ? 'bg-success' : 'bg-warning text-dark'}"
+                                        th:text="${comanda.status}">ABERTA</span>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table-modern">
+                                    <thead>
+                                        <tr>
+                                            <th>Item / Descrição</th>
+                                            <th>Profissional</th>
+                                            <th>Qtd.</th>
+                                            <th>Unitário</th>
+                                            <th>Total</th>
+                                            <th>Comissão</th>
+                                            <th th:if="${comanda.status == 'ABERTA'}" style="text-align: right;">Ação
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${comanda.itens}">
+                                            <td>
+                                                <strong th:text="${item.descricaoItem} ?: 'Item'">Corte
+                                                    Feminino</strong>
+                                                <span class="badge ms-1"
+                                                    th:classappend="${item.tipo == 'SERVICO' ? 'bg-primary text-white' : 'bg-success text-white'}"
+                                                    th:text="${item.tipo}">SERVICO</span>
+                                            </td>
+                                            <td
+                                                th:text="${item.profissional != null ? item.profissional.nome : 'Sem comissão'}">
+                                                Keilla</td>
+                                            <td th:text="${item.quantidade} ?: 1">1</td>
+                                            <td
+                                                th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario != null ? item.precoUnitario : 0, 1, 2, 'COMMA')}">
+                                                R$ 50,00</td>
+                                            <td><strong
+                                                    th:text="'R$ ' + ${#numbers.formatDecimal(item.valorTotal != null ? item.valorTotal : 0, 1, 2, 'COMMA')}">R$
+                                                    50,00</strong></td>
+                                            <td class="text-success"
+                                                th:text="'R$ ' + ${#numbers.formatDecimal(item.valorComissao != null ? item.valorComissao : 0, 1, 2, 'COMMA')} + ' (' + (${item.percentualComissao != null ? item.percentualComissao : 0}) + '%)'">
+                                                R$ 15,00 (30%)</td>
+                                            <td th:if="${comanda.status == 'ABERTA'}" style="text-align: right;">
+                                                <form
+                                                    th:action="@{/{slug}/financeiro/comandas/{id}/itens/{itemId}/remover(slug=${empresaSlug}, id=${comanda.id}, itemId=${item.id})}"
+                                                    method="post" style="display: inline-block;">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}"
+                                                        th:value="${_csrf.token}" />
+                                                    <button type="submit" class="btn-icon delete"
+                                                        title="Remover item da comanda"
+                                                        onclick="return confirm('Deseja remover este item da comanda?')">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${comanda.itens == null or #lists.isEmpty(comanda.itens)}">
+                                            <td colspan="7" class="text-center py-4 text-muted">Nenhum item adicionado
+                                                ainda.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ADICIONAR SERVIÇO OU PRODUTO DE REVENDA NA COMANDA COM AUTOCOMPLETE -->
+                        <div class="content-card mb-4" th:if="${comanda.status == 'ABERTA'}">
+                            <div class="card-header-custom">
+                                <ul class="nav nav-tabs card-header-tabs" id="comandaTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="servico-tab" data-bs-toggle="tab"
+                                            data-bs-target="#servico-pane" type="button" role="tab">
+                                            <i class="bi bi-scissors text-primary me-1"></i> Adicionar Serviço
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="produto-tab" data-bs-toggle="tab"
+                                            data-bs-target="#produto-pane" type="button" role="tab">
+                                            <i class="bi bi-box-seam text-success me-1"></i> Adicionar Produto (Revenda)
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="p-3 tab-content">
+                                <!-- TAB 1: SERVIÇO -->
+                                <div class="tab-pane fade show active" id="servico-pane" role="tabpanel">
+                                    <form
+                                        th:action="@{/{slug}/financeiro/comandas/{id}/adicionar-item(slug=${empresaSlug}, id=${comanda.id})}"
+                                        method="post">
+                                        <input type="hidden" th:name="${_csrf.parameterName}"
+                                            th:value="${_csrf.token}" />
+                                        <input type="hidden" name="tipo" value="SERVICO" />
+                                        <div class="row g-3">
+                                            <div class="col-md-5">
+                                                <label class="form-label small">Serviço / Procedimento:</label>
+                                                <select name="servicoId" class="tom-select-comanda" required placeholder="Digite o nome do serviço...">
+                                                    <option value=""></option>
+                                                    <option th:each="sv : ${servicos}" th:value="${sv.id}"
+                                                        th:text="${sv.nome} + ' (R$ ' + ${#numbers.formatDecimal(sv.preco != null ? sv.preco : 0, 1, 2, 'POINT')} + ')'">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small">Profissional Executor:</label>
+                                                <select name="profissionalId" class="tom-select-comanda" placeholder="Profissional...">
+                                                    <option value=""></option>
+                                                    <option th:each="pf : ${profissionais}" th:value="${pf.id}"
+                                                        th:text="${pf.nome} + ' (' + (${pf.percentualComissao != null ? pf.percentualComissao : 0}) + '%)'">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small">Qtd:</label>
+                                                <input type="number" name="quantidade" class="form-control" value="1"
+                                                    min="1" required />
+                                            </div>
+                                            <div class="col-md-1 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-gold w-100"
+                                                    title="Adicionar Serviço">
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- TAB 2: PRODUTO -->
+                                <div class="tab-pane fade" id="produto-pane" role="tabpanel">
+                                    <div th:if="${produtosRevenda == null or #lists.isEmpty(produtosRevenda)}"
+                                        class="alert alert-warning mb-0 py-2">
+                                        <i class="bi bi-info-circle me-1"></i> Nenhum produto com o tipo
+                                        <strong>REVENDA</strong> cadastrado ou ativo no estoque.
+                                        <a th:href="@{/{slug}/estoque(slug=${empresaSlug})}"
+                                            class="alert-link ms-1">Cadastrar produto no estoque</a>.
+                                    </div>
+                                    <form th:if="${produtosRevenda != null and !#lists.isEmpty(produtosRevenda)}"
+                                        th:action="@{/{slug}/financeiro/comandas/{id}/adicionar-item(slug=${empresaSlug}, id=${comanda.id})}"
+                                        method="post">
+                                        <input type="hidden" th:name="${_csrf.parameterName}"
+                                            th:value="${_csrf.token}" />
+                                        <input type="hidden" name="tipo" value="PRODUTO" />
+                                        <div class="row g-3">
+                                            <div class="col-md-5">
+                                                <label class="form-label small">Produto (Revenda):</label>
+                                                <select name="produtoId" class="tom-select-comanda" required placeholder="Digite o produto...">
+                                                    <option value=""></option>
+                                                    <option th:each="pr : ${produtosRevenda}" th:value="${pr.id}"
+                                                        th:text="${pr.nome} + ' (R$ ' + ${#numbers.formatDecimal(pr.precoVenda != null ? pr.precoVenda : 0, 1, 2, 'POINT')} + ' | Est: ' + (${pr.quantidadeEstoque != null ? pr.quantidadeEstoque : 0}) + ')'">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small">Profissional Vendedor:</label>
+                                                <select name="profissionalId" class="tom-select-comanda" placeholder="Vendedor...">
+                                                    <option value=""></option>
+                                                    <option th:each="pf : ${profissionais}" th:value="${pf.id}"
+                                                        th:text="${pf.nome} + ' (' + (${pf.percentualComissao != null ? pf.percentualComissao : 0}) + '%)'">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small">Qtd:</label>
+                                                <input type="number" name="quantidade" class="form-control" value="1"
+                                                    min="1" required />
+                                            </div>
+                                            <div class="col-md-1 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-gold w-100"
+                                                    title="Adicionar Produto">
+                                                    <i class="bi bi-plus-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA: RESUMO FINANCEIRO & FECHAMENTO -->
+                    <div class="col-lg-4">
+                        <div class="content-card">
+                            <div class="card-header-custom">
+                                <h4 class="card-title-custom">
+                                    <i class="bi bi-wallet2 text-primary"></i>
+                                    <span>Resumo do Pagamento</span>
+                                </h4>
+                            </div>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Subtotal Serviços:</span>
+                                    <strong
+                                        th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalServicos != null ? comanda.subtotalServicos : 0, 1, 2, 'COMMA')}">R$
+                                        0,00</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Subtotal Produtos:</span>
+                                    <strong
+                                        th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalProdutos != null ? comanda.subtotalProdutos : 0, 1, 2, 'COMMA')}">R$
+                                        0,00</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2"
+                                    th:if="${comanda.desconto != null and comanda.desconto > 0}">
+                                    <span class="text-danger">Desconto:</span>
+                                    <strong class="text-danger"
+                                        th:text="'- R$ ' + ${#numbers.formatDecimal(comanda.desconto, 1, 2, 'COMMA')}">-
+                                        R$ 0,00</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <span class="fs-5 fw-bold">Total a Pagar:</span>
+                                    <span class="fs-4 fw-bold text-primary"
+                                        th:text="'R$ ' + ${#numbers.formatDecimal(comanda.valorTotal != null ? comanda.valorTotal : 0, 1, 2, 'COMMA')}">R$
+                                        0,00</span>
+                                                    <!-- FORMULÁRIO DE FECHAMENTO SE ESTIVER ABERTA -->
+                                <form th:if="${comanda.status == 'ABERTA'}"
+                                    th:action="@{/{slug}/financeiro/comandas/{id}/fechar(slug=${empresaSlug}, id=${comanda.id})}"
+                                    method="post" id="formFecharComanda">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Cupom de Desconto (opcional):</label>
+                                        <select id="selectCupom" name="cupomCodigo" class="form-select">
+                                            <option value="">Nenhum cupom selecionado</option>
+                                            <option th:each="cp : ${cupons}" 
+                                                    th:value="${cp.codigo}" 
+                                                    th:attr="data-tipo=${cp.tipoDesconto}, data-valor=${cp.valorDesconto}"
+                                                    th:text="${cp.codigo} + ' - ' + ${cp.descricao} + ' (' + (${cp.tipoDesconto == 'PERCENTUAL' ? cp.valorDesconto + '%' : 'R$ ' + cp.valorDesconto}) + ')'">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Forma de Pagamento:</label>
+                                        <select name="formaPagamento" id="selectFormaPagamento" class="form-select" required onchange="toggleMultiploPagamento()">
+                                            <option value="PIX">PIX</option>
+                                            <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                                            <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                                            <option value="DINHEIRO">Dinheiro / Espécie</option>
+                                            <option value="VOUCHER">Voucher / Vale Presente</option>
+                                            <option value="MULTIPLO">✨ Pagamento Misto / Múltiplo</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- CAMPO ADICIONAL PARA PAGAMENTO MISTO -->
+                                    <div class="mb-3 p-2 border rounded bg-light" id="boxMultiploPagamento" style="display: none;">
+                                        <label class="form-label small fw-bold text-primary">
+                                            <i class="bi bi-pie-chart-fill me-1"></i> Detalhe do Pagamento Misto:
+                                        </label>
+                                        <input type="text" name="detalheMultiplo" id="detalheMultiplo" class="form-control form-control-sm" 
+                                               placeholder="Ex: R$ 50 no PIX + R$ 30 no Cartão" />
+                                        <span class="text-muted small" style="font-size: 0.75rem;">
+                                            Descreva as formas e os valores divididos pelo cliente.
+                                        </span>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                             <label class="form-label small">Desconto (R$):</label>
+                                            <input type="number" step="0.01" name="desconto" id="inputDesconto" class="form-control"
+                                                th:value="${comanda.desconto != null ? comanda.desconto : '0.00'}" />
+                                        </div>
+                                        <div class="col-6">
+                                             <label class="form-label small">Acréscimo (R$):</label>
+                                            <input type="number" step="0.01" name="acrescimo" id="inputAcrescimo" class="form-control"
+                                                th:value="${comanda.acrescimo != null ? comanda.acrescimo : '0.00'}" />
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-gold w-100 py-2 fs-6">
+                                        <i class="bi bi-check2-circle"></i> Receber & Fechar Comanda
+                                    </button>
+                                </form>
+
+                                <div th:if="${comanda.status == 'PAGA'}" class="alert alert-success text-center mb-0">
+                                    <i class="bi bi-check-circle-fill fs-3 d-block mb-1"></i>
+                                    <strong>Comanda Paga!</strong><br>
+                                    <span class="small" th:text="'Forma: ' + ${comanda.formaPagamento}">PIX</span>
+                                    <div class="mt-1" th:if="${comanda.cupomAplicado != null and !#strings.isEmpty(comanda.cupomAplicado)}">
+                                        <span class="badge bg-dark" th:text="'Cupom: ' + ${comanda.cupomAplicado}">Cupom: PROMO10</span>
+                                    </div>
+                                </div>                       </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- CUPOM / RECIBO TÉRMICO OCULTO PARA IMPRESSÃO -->
+    <div id="thermalReceipt" style="display: none;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: bold; text-transform: uppercase;"
+                th:text="${comanda.empresa != null ? comanda.empresa.nome : (empresaNome != null ? empresaNome : 'STUDIO DE BELEZA')}">NOME DO STUDIO</h3>
+            <p style="margin: 2px 0; font-size: 11px;">Comprovante de Atendimento</p>
+            <p style="margin: 2px 0; font-size: 11px;" th:text="'Comanda: ' + ${comanda.numeroComanda}">CMD-001</p>
+            <p style="margin: 2px 0; font-size: 11px;" th:text="'Data: ' + ${#temporals.format(comanda.dataAbertura, 'dd/MM/yyyy HH:mm')}">01/01/2026</p>
+            <p style="margin: 2px 0; font-size: 11px;" th:if="${comanda.cliente != null}" th:text="'Cliente: ' + ${comanda.cliente.nome}">Cliente</p>
+            <p style="margin: 2px 0; font-size: 11px;" th:if="${comanda.clienteNomeAvulso != null}" th:text="'Cliente: ' + ${comanda.clienteNomeAvulso}">Cliente</p>
+            <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+        </div>
+
+        <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #000;">
+                    <th style="text-align: left;">Item</th>
+                    <th style="text-align: center;">Qtd</th>
+                    <th style="text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="it : ${comanda.itens}">
+                    <td th:text="${it.descricaoItem}">Corte</td>
+                    <td style="text-align: center;" th:text="${it.quantidade}">1</td>
+                    <td style="text-align: right;" th:text="'R$ ' + ${#numbers.formatDecimal(it.valorTotal, 1, 2, 'COMMA')}">R$ 50,00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="border-bottom: 1px dashed #000; margin: 8px 0;"></div>
+
+        <div style="font-size: 11px;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Subtotal Serviços:</span>
+                <span th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalServicos != null ? comanda.subtotalServicos : 0, 1, 2, 'COMMA')}">R$ 0,00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Subtotal Produtos:</span>
+                <span th:text="'R$ ' + ${#numbers.formatDecimal(comanda.subtotalProdutos != null ? comanda.subtotalProdutos : 0, 1, 2, 'COMMA')}">R$ 0,00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-top: 5px;">
+                <span>TOTAL:</span>
+                <span th:text="'R$ ' + ${#numbers.formatDecimal(comanda.valorTotal != null ? comanda.valorTotal : 0, 1, 2, 'COMMA')}">R$ 0,00</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 3px;" th:if="${comanda.formaPagamento != null}">
+                <span>Pagamento:</span>
+                <span th:text="${comanda.formaPagamento}">PIX</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px; font-size: 10px; border-top: 1px dashed #000; padding-top: 5px;">
+            Agradecemos a sua preferência!<br>
+            Volte sempre!
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script th:inline="javascript">
+        function toggleMultiploPagamento() {
+            const select = document.getElementById('selectFormaPagamento');
+            const box = document.getElementById('boxMultiploPagamento');
+            const detalhe = document.getElementById('detalheMultiplo');
+            if (select && box) {
+                if (select.value === 'MULTIPLO') {
+                    box.style.display = 'block';
+                    if (detalhe) detalhe.required = true;
+                } else {
+                    box.style.display = 'none';
+                    if (detalhe) detalhe.required = false;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializa TomSelect na comanda
+            document.querySelectorAll('.tom-select-comanda').forEach(function(el) {
+                const ts = new TomSelect(el, {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: el.getAttribute('placeholder') || 'Digite para pesquisar...',
+                    allowEmptyOption: false,
+                    maxOptions: 100,
+                    plugins: ['clear_button'],
+                    onFocus: function() {
+                        this.open();
+                    }
+                });
+                if (!el.value) {
+                    ts.clear(true);
+                }
+            });
+
+            // Aplicação dinâmica de cupom de desconto
+            const selectCupom = document.getElementById('selectCupom');
+            const inputDesconto = document.getElementById('inputDesconto');
+            const subtotalServicos = /*[[${comanda.subtotalServicos != null ? comanda.subtotalServicos : 0}]]*/ 0;
+            const subtotalProdutos = /*[[${comanda.subtotalProdutos != null ? comanda.subtotalProdutos : 0}]]*/ 0;
+            const subtotalTotal = subtotalServicos + subtotalProdutos;
+
+            if (selectCupom && inputDesconto) {
+                selectCupom.addEventListener('change', function() {
+                    const opt = selectCupom.options[selectCupom.selectedIndex];
+                    if (!opt || !opt.value) {
+                        return;
+                    }
+                    const tipo = opt.getAttribute('data-tipo');
+                    const valor = parseFloat(opt.getAttribute('data-valor')) || 0;
+
+                    if (tipo === 'PERCENTUAL') {
+                        const desc = (subtotalTotal * (valor / 100)).toFixed(2);
+                        inputDesconto.value = desc;
+                    } else {
+                        inputDesconto.value = valor.toFixed(2);
+                    }
+                });
+            }
+
+            // Gerenciamento de abas
+            const servicoTab = document.getElementById('servico-tab');
+            const produtoTab = document.getElementById('produto-tab');
+            const servicoPane = document.getElementById('servico-pane');
+            const produtoPane = document.getElementById('produto-pane');
+
+            if (servicoTab && produtoTab && servicoPane && produtoPane) {
+                servicoTab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    servicoTab.classList.add('active');
+                    produtoTab.classList.remove('active');
+                    servicoPane.classList.add('show', 'active');
+                    produtoPane.classList.remove('show', 'active');
+                });
+
+                produtoTab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    produtoTab.classList.add('active');
+                    servicoTab.classList.remove('active');
+                    produtoPane.classList.add('show', 'active');
+                    servicoPane.classList.remove('show', 'active');
+                });
+            }
+        });
+    </script>
 </body>
+
 </html>

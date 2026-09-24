@@ -1,7 +1,6 @@
 package com.beautysalon.Controller;
 
 import com.beautysalon.model.User;
-import com.beautysalon.repository.AgendamentoRepository;
 import com.beautysalon.repository.ComandaItemRepository;
 import com.beautysalon.repository.ComandaRepository;
 import com.beautysalon.repository.UserRepository;
@@ -27,18 +26,15 @@ public class RelatorioController {
 
     private final ComandaRepository comandaRepository;
     private final ComandaItemRepository comandaItemRepository;
-    private final AgendamentoRepository agendamentoRepository;
     private final UserRepository userRepository;
     private final EstoqueService estoqueService;
 
     public RelatorioController(ComandaRepository comandaRepository,
                                ComandaItemRepository comandaItemRepository,
-                               AgendamentoRepository agendamentoRepository,
                                UserRepository userRepository,
                                EstoqueService estoqueService) {
         this.comandaRepository = comandaRepository;
         this.comandaItemRepository = comandaItemRepository;
-        this.agendamentoRepository = agendamentoRepository;
         this.userRepository = userRepository;
         this.estoqueService = estoqueService;
     }
@@ -96,5 +92,42 @@ public class RelatorioController {
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Relatórios Financeiros & Gerenciais");
         return "relatorios/index";
+    }
+
+    @GetMapping("/comissoes/{profissionalId}")
+    public String extratoProfissional(@PathVariable String slug,
+                                      @PathVariable Long profissionalId,
+                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+                                      Model model) {
+        Long empresaId = TenantContext.getEmpresaId();
+        if (dataInicio == null) {
+            dataInicio = LocalDate.now().withDayOfMonth(1);
+        }
+        if (dataFim == null) {
+            dataFim = LocalDate.now();
+        }
+
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
+
+        User profissional = userRepository.findById(profissionalId)
+                .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+
+        var itens = comandaItemRepository.findItensPorProfissionalEPeriodo(empresaId, profissionalId, inicio, fim);
+        BigDecimal totalComissao = comandaItemRepository.sumComissaoProfissional(empresaId, profissionalId, inicio, fim);
+        BigDecimal totalFaturado = itens.stream()
+                .map(com.beautysalon.model.ComandaItem::getValorTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("profissional", profissional);
+        model.addAttribute("itens", itens);
+        model.addAttribute("totalComissao", totalComissao);
+        model.addAttribute("totalFaturado", totalFaturado);
+        model.addAttribute("dataInicio", dataInicio);
+        model.addAttribute("dataFim", dataFim);
+        model.addAttribute("empresaSlug", slug);
+        model.addAttribute("pageTitle", "Extrato de Comissões: " + profissional.getNome());
+        return "relatorios/comissao-detalhe";
     }
 }

@@ -1,6 +1,5 @@
 package com.beautysalon.DTO;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -9,22 +8,27 @@ public class AgendamentoDTO
 {
     private Long id;
 
-    @NotNull(message = "The date is not mandatory")
-    @FutureOrPresent(message = "Date and time must be in present or future")
+    @NotNull(message = "A data e horário são obrigatórios")
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dataHora;
 
-    @NotNull(message = "The client ID is required")
+    @NotNull(message = "O cliente é obrigatório")
     private Long clienteId;
 
-    @NotNull(message = "The client ID is required")
+    @NotNull(message = "O serviço é obrigatório")
     private Long servicoId;
 //-------------------------------------------------
     private String clienteNome;
+    private String clienteTelefone;
     private String servicoNome;
     private Long profissionalId;
     private String profissionalNome;
     private String observacoes;
     private String status; // AGENDADO, EM_ATENDIMENTO, CONCLUIDO, CANCELADO
+    private Integer duracaoMinutos;
+
+    public Integer getDuracaoMinutos() { return duracaoMinutos; }
+    public void setDuracaoMinutos(Integer duracaoMinutos) { this.duracaoMinutos = duracaoMinutos; }
 
     public Long getProfissionalId() { return profissionalId; }
     public void setProfissionalId(Long profissionalId) { this.profissionalId = profissionalId; }
@@ -55,4 +59,6 @@ public class AgendamentoDTO
     public void setServicoNome(String servicoNome) { this.servicoNome = servicoNome; }
     public String getClienteNome() { return clienteNome; }
     public void setClienteNome(String clienteNome) { this.clienteNome = clienteNome; }
+    public String getClienteTelefone() { return clienteTelefone; }
+    public void setClienteTelefone(String clienteTelefone) { this.clienteTelefone = clienteTelefone; }
 }

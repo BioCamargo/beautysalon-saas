@@ -52,7 +52,10 @@
                         </div>
                     </div>
 
-                    <div class="card-actions-custom">
+                    <div class="card-actions-custom d-flex gap-2">
+                        <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" target="_blank" class="btn btn-outline-secondary btn-sm" title="Abrir página pública de autoatendimento que o cliente usa">
+                            <i class="bi bi-box-arrow-up-right"></i> Link de Agendamento Online
+                        </a>
                         <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
                             <i class="bi bi-plus-lg"></i> Novo Agendamento
                         </a>
@@ -85,7 +88,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="a : ${agendamentos}">
+                            <tr th:each="a : ${agendamentos}" th:attr="data-duracao=${a.duracaoMinutos != null ? a.duracaoMinutos : 30}">
                                 <td>
                                     <div class="client-cell">
                                         <div class="cell-avatar">
@@ -100,6 +103,9 @@
                                 <td>
                                     <span class="badge" style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 600; padding: 0.4rem 0.65rem;"
                                           th:text="${a.servicoNome} ?: 'Serviço'">Corte</span>
+                                    <div class="text-muted small mt-1" th:if="${a.duracaoMinutos != null}">
+                                        <i class="bi bi-hourglass-split"></i> <span th:text="${a.duracaoMinutos} + ' min'">30 min</span>
+                                    </div>
                                 </td>
                                 <td>
                                     <i class="bi bi-person-badge text-muted me-1"></i>
@@ -114,10 +120,26 @@
                                     <strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}">14:00</strong>
                                 </td>
                                 <td>
-                                    <span class="badge-status badge-status-confirmed" th:text="${a.status} ?: 'Agendado'">Agendado</span>
+                                    <span class="badge" 
+                                          th:classappend="${a.status == 'CONCLUIDO' ? 'bg-success text-white' : (a.status == 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (a.status == 'CANCELADO' ? 'bg-danger text-white' : 'bg-primary text-white'))}"
+                                          th:text="${a.status} ?: 'AGENDADO'">AGENDADO</span>
                                 </td>
                                 <td style="text-align: right;">
                                     <div class="action-buttons justify-content-end">
+                                        <form th:if="${a.status != 'CONCLUIDO' and a.status != 'CANCELADO'}" 
+                                              th:action="@{/{slug}/agendamentos/{id}/iniciar-comanda(slug=${empresaSlug}, id=${a.id})}" 
+                                              method="post" style="display: inline-block;">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" class="btn btn-sm btn-gold" title="Iniciar Atendimento & Abrir Comanda" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                <i class="bi bi-play-circle-fill"></i> Atender
+                                            </button>
+                                        </form>
+                                        <!-- BOTAO WHATSAPP LEMBRETE -->
+                                        <a th:if="${a.clienteTelefone != null and !#strings.isEmpty(a.clienteTelefone)}"
+                                           th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(a.clienteTelefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${a.clienteNome} + '%21%20Passando%20para%20confirmar%20seu%20atendimento%20de%20' + ${a.servicoNome != null ? a.servicoNome : 'Servi%C3%A7o'} + '%20no%20Studio%20no%20dia%20' + ${#temporals.format(a.dataHora, 'dd/MM/yyyy')} + '%20%C3%A0s%20' + ${#temporals.format(a.dataHora, 'HH:mm')} + '.%20Podemos%20confirmar%3F'"
+                                           target="_blank" class="btn-icon sms" title="Enviar Lembrete / Confirmação via WhatsApp" style="color: #25D366; border-color: rgba(37, 211, 102, 0.3);">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
                                         <a class="btn-icon edit" th:href="@{/{slug}/agendamentos/{id}(slug=${empresaSlug}, id=${a.id})}" title="Editar Atendimento">
                                             <i class="bi bi-pencil-fill"></i>
                                         </a>
@@ -129,7 +151,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="bi bi-calendar-x" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
                                     Nenhum agendamento encontrado no momento.<br>
                                     <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
@@ -187,19 +209,40 @@
         rows.forEach(r => {
             const cliente = r.querySelector('.cell-name')?.textContent?.trim();
             const servico = r.querySelector('td:nth-child(2) span')?.textContent?.trim();
-            const dataText = r.querySelector('td:nth-child(3) span')?.textContent?.trim();
-            const horaText = r.querySelector('td:nth-child(4) strong')?.textContent?.trim();
+            const profissional = r.querySelector('td:nth-child(3) span')?.textContent?.trim();
+            const dataText = r.querySelector('td:nth-child(4) span')?.textContent?.trim();
+            const horaText = r.querySelector('td:nth-child(5) strong')?.textContent?.trim();
+            const status = r.querySelector('td:nth-child(6) span')?.textContent?.trim();
+            const duracao = parseInt(r.getAttribute('data-duracao')) || 30;
             
             if (dataText && horaText && cliente) {
                 const parts = dataText.split('/');
                 if (parts.length === 3) {
-                    const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}T${horaText}:00`;
+                    const isoDateStart = `${parts[2]}-${parts[1]}-${parts[0]}T${horaText}:00`;
+                    const startDateObj = new Date(isoDateStart);
+                    const endDateObj = new Date(startDateObj.getTime() + duracao * 60000);
+                    const isoDateEnd = endDateObj.toISOString().slice(0, 19);
+                    
+                    let bg = '#c5a059';
+                    let border = '#b08d46';
+                    if (status === 'CONCLUIDO') {
+                        bg = '#198754';
+                        border = '#157347';
+                    } else if (status === 'EM_ATENDIMENTO') {
+                        bg = '#ffc107';
+                        border = '#e0a800';
+                    } else if (status === 'CANCELADO') {
+                        bg = '#dc3545';
+                        border = '#bb2d3b';
+                    }
+
                     events.push({
-                        title: `${cliente} - ${servico || 'Atendimento'}`,
-                        start: isoDate,
-                        backgroundColor: '#c5a059',
-                        borderColor: '#b08d46',
-                        textColor: '#ffffff'
+                        title: `${cliente} (${servico || 'Atendimento'}${profissional ? ' - ' + profissional : ''})`,
+                        start: isoDateStart,
+                        end: isoDateEnd,
+                        backgroundColor: bg,
+                        borderColor: border,
+                        textColor: status === 'EM_ATENDIMENTO' ? '#212529' : '#ffffff'
                     });
                 }
             }

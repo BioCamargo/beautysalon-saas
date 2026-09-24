@@ -26,29 +26,46 @@ public class FinanceiroController {
     private final ProfissionalService profissionalService;
     private final FidelizacaoService fidelizacaoService;
     private final UserRepository userRepository;
+    private final com.beautysalon.Inteface.ServicoService servicoService;
 
     public FinanceiroController(FinanceiroService financeiroService,
                                 EstoqueService estoqueService,
                                 ProfissionalService profissionalService,
                                 FidelizacaoService fidelizacaoService,
-                                UserRepository userRepository) {
+                                UserRepository userRepository,
+                                com.beautysalon.Inteface.ServicoService servicoService) {
         this.financeiroService = financeiroService;
         this.estoqueService = estoqueService;
         this.profissionalService = profissionalService;
         this.fidelizacaoService = fidelizacaoService;
         this.userRepository = userRepository;
+        this.servicoService = servicoService;
     }
 
     @GetMapping
     public String index(@PathVariable String slug, Model model) {
         Optional<Caixa> caixaAbertoOpt = financeiroService.buscarCaixaAberto();
-        model.addAttribute("caixaAberto", caixaAbertoOpt.orElse(null));
+        Caixa caixaAberto = caixaAbertoOpt.orElse(null);
+        model.addAttribute("caixaAberto", caixaAberto);
+        if (caixaAberto != null) {
+            model.addAttribute("movimentacoesCaixa", financeiroService.listarMovimentacoesCaixa(caixaAberto.getId()));
+        }
         model.addAttribute("historicoCaixas", financeiroService.listarHistoricoCaixas());
         model.addAttribute("comandasAbertas", financeiroService.listarComandasAbertas());
         model.addAttribute("todasComandas", financeiroService.listarComandas());
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Financeiro & Caixa");
         return "financeiro/index";
+    }
+
+    @GetMapping("/caixas/{id}")
+    public String detalheCaixa(@PathVariable String slug, @PathVariable Long id, Model model) {
+        Caixa caixa = financeiroService.buscarCaixaPorId(id);
+        model.addAttribute("caixa", caixa);
+        model.addAttribute("movimentacoes", financeiroService.listarMovimentacoesCaixa(id));
+        model.addAttribute("empresaSlug", slug);
+        model.addAttribute("pageTitle", "Extrato do Caixa #" + caixa.getId());
+        return "financeiro/caixa-detalhe";
     }
 
     @PostMapping("/caixa/abrir")
@@ -124,6 +141,7 @@ public class FinanceiroController {
     public String detalheComanda(@PathVariable String slug, @PathVariable Long id, Model model) {
         Comanda comanda = financeiroService.buscarComandaPorId(id);
         model.addAttribute("comanda", comanda);
+        model.addAttribute("servicos", servicoService.listarTodos());
         model.addAttribute("produtosRevenda", estoqueService.listarPorTipo(com.beautysalon.model.TipoProduto.REVENDA));
         model.addAttribute("profissionais", profissionalService.listarProfissionaisAtivos());
         model.addAttribute("cupons", fidelizacaoService.listarCupons());
@@ -157,17 +175,37 @@ public class FinanceiroController {
         return "redirect:/" + slug + "/financeiro/comandas/" + id;
     }
 
+    @PostMapping("/comandas/{id}/itens/{itemId}/remover")
+    public String removerItemComanda(@PathVariable String slug,
+                                     @PathVariable Long id,
+                                     @PathVariable Long itemId,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            financeiroService.removerItemComanda(id, itemId);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Item removido da comanda.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+        }
+        return "redirect:/" + slug + "/financeiro/comandas/" + id;
+    }
+
     @PostMapping("/comandas/{id}/fechar")
     public String fecharComanda(@PathVariable String slug,
                                 @PathVariable Long id,
                                 @RequestParam String formaPagamento,
+                                @RequestParam(required = false) String detalheMultiplo,
                                 @RequestParam(required = false) BigDecimal desconto,
                                 @RequestParam(required = false) BigDecimal acrescimo,
+                                @RequestParam(required = false) String cupomCodigo,
                                 Authentication auth,
                                 RedirectAttributes redirectAttributes) {
         User operador = auth != null ? userRepository.findByUsername(auth.getName()).orElse(null) : null;
         try {
-            financeiroService.fecharComanda(id, formaPagamento, desconto, acrescimo, operador);
+            String formaFinal = formaPagamento;
+            if ("MULTIPLO".equalsIgnoreCase(formaPagamento) && detalheMultiplo != null && !detalheMultiplo.isBlank()) {
+                formaFinal = "MÚLTIPLO: " + detalheMultiplo.trim();
+            }
+            financeiroService.fecharComanda(id, formaFinal, desconto, acrescimo, cupomCodigo, operador);
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Comanda finalizada e paga com sucesso!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());

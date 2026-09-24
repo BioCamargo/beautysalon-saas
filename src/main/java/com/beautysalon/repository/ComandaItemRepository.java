@@ -26,4 +26,7 @@ public interface ComandaItemRepository extends JpaRepository<ComandaItem, Long> 
                                        @Param("profissionalId") Long profissionalId,
                                        @Param("inicio") LocalDateTime inicio,
                                        @Param("fim") LocalDateTime fim);
+
+    @Query("SELECT i.descricaoItem as nome, SUM(i.quantidade) as qtd, SUM(i.valorTotal) as total FROM ComandaItem i WHERE i.comanda.empresa.id = :empresaId AND i.comanda.status = 'PAGA' GROUP BY i.descricaoItem ORDER BY SUM(i.quantidade) DESC")
+    List<Object[]> findTopItensMaisVendidos(@Param("empresaId") Long empresaId);
 }

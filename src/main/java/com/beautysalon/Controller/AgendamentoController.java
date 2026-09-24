@@ -26,15 +26,21 @@ public class AgendamentoController {
     private final ClienteService clienteService;
     private final ServicoService servicoService;
     private final com.beautysalon.repository.UserRepository userRepository;
+    private final com.beautysalon.repository.AgendamentoRepository agendamentoRepository;
+    private final com.beautysalon.service.FinanceiroService financeiroService;
 
     public AgendamentoController(AgendamentoService agendamentoService,
                                  ClienteService clienteService,
                                  ServicoService servicoService,
-                                 com.beautysalon.repository.UserRepository userRepository) {
+                                 com.beautysalon.repository.UserRepository userRepository,
+                                 com.beautysalon.repository.AgendamentoRepository agendamentoRepository,
+                                 com.beautysalon.service.FinanceiroService financeiroService) {
         this.agendamentoService = agendamentoService;
         this.clienteService = clienteService;
         this.servicoService = servicoService;
         this.userRepository = userRepository;
+        this.agendamentoRepository = agendamentoRepository;
+        this.financeiroService = financeiroService;
     }
 
     @GetMapping
@@ -78,6 +84,7 @@ public class AgendamentoController {
         if (result.hasErrors()) {
             model.addAttribute("clientes", clienteService.listarTodos());
             model.addAttribute("servicos", servicoService.listarTodos());
+            model.addAttribute("profissionais", userRepository.findAllByEmpresaIdAndAtivoTrue(com.beautysalon.tenant.TenantContext.getEmpresaId()));
             model.addAttribute("empresaSlug", slug);
             return "agendamentos/form";
         }
@@ -89,6 +96,7 @@ public class AgendamentoController {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("clientes", clienteService.listarTodos());
             model.addAttribute("servicos", servicoService.listarTodos());
+            model.addAttribute("profissionais", userRepository.findAllByEmpresaIdAndAtivoTrue(com.beautysalon.tenant.TenantContext.getEmpresaId()));
             model.addAttribute("empresaSlug", slug);
             return "agendamentos/form";
         }
@@ -103,6 +111,7 @@ public class AgendamentoController {
         if (result.hasErrors()) {
             model.addAttribute("clientes", clienteService.listarTodos());
             model.addAttribute("servicos", servicoService.listarTodos());
+            model.addAttribute("profissionais", userRepository.findAllByEmpresaIdAndAtivoTrue(com.beautysalon.tenant.TenantContext.getEmpresaId()));
             model.addAttribute("empresaSlug", slug);
             return "agendamentos/form";
         }
@@ -118,6 +127,32 @@ public class AgendamentoController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/iniciar-comanda")
+    public String iniciarComanda(@PathVariable String slug,
+                                 @PathVariable Long id,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            com.beautysalon.model.Agendamento agendamento = agendamentoRepository.findByIdAndEmpresaId(id, com.beautysalon.tenant.TenantContext.getEmpresaId())
+                    .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+            
+            agendamento.setStatus("EM_ATENDIMENTO");
+            agendamentoRepository.save(agendamento);
+
+            com.beautysalon.model.Comanda comanda = financeiroService.criarComanda(
+                    agendamento.getCliente(),
+                    agendamento.getCliente() != null ? agendamento.getCliente().getNome() : "Cliente Agendado",
+                    agendamento,
+                    "Comanda gerada a partir do agendamento #" + id
+            );
+
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Atendimento iniciado! Comanda criada com sucesso.");
+            return "redirect:/" + slug + "/financeiro/comandas/" + comanda.getId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao iniciar comanda: " + e.getMessage());
+            return "redirect:/" + slug + "/agendamentos";
         }
     }
 

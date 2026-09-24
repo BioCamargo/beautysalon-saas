@@ -16,26 +16,35 @@ public class FinanceiroService {
 
     private final CaixaRepository caixaRepository;
     private final ComandaRepository comandaRepository;
-    private final ComandaItemRepository comandaItemRepository;
     private final MovimentacaoFinanceiraRepository movimentacaoFinanceiraRepository;
     private final ServicoInsumoRepository servicoInsumoRepository;
     private final EstoqueService estoqueService;
     private final EmpresaRepository empresaRepository;
+    private final ServicoRepository servicoRepository;
+    private final UserRepository userRepository;
+    private final WhatsAppService whatsAppService;
+    private final AgendamentoRepository agendamentoRepository;
 
     public FinanceiroService(CaixaRepository caixaRepository,
                              ComandaRepository comandaRepository,
-                             ComandaItemRepository comandaItemRepository,
                              MovimentacaoFinanceiraRepository movimentacaoFinanceiraRepository,
                              ServicoInsumoRepository servicoInsumoRepository,
                              EstoqueService estoqueService,
-                             EmpresaRepository empresaRepository) {
+                             EmpresaRepository empresaRepository,
+                             ServicoRepository servicoRepository,
+                             UserRepository userRepository,
+                             WhatsAppService whatsAppService,
+                             AgendamentoRepository agendamentoRepository) {
         this.caixaRepository = caixaRepository;
         this.comandaRepository = comandaRepository;
-        this.comandaItemRepository = comandaItemRepository;
         this.movimentacaoFinanceiraRepository = movimentacaoFinanceiraRepository;
         this.servicoInsumoRepository = servicoInsumoRepository;
         this.estoqueService = estoqueService;
         this.empresaRepository = empresaRepository;
+        this.servicoRepository = servicoRepository;
+        this.userRepository = userRepository;
+        this.whatsAppService = whatsAppService;
+        this.agendamentoRepository = agendamentoRepository;
     }
 
     public Optional<Caixa> buscarCaixaAberto() {
@@ -49,6 +58,10 @@ public class FinanceiroService {
     public Caixa buscarCaixaPorId(Long id) {
         return caixaRepository.findByIdAndEmpresaId(id, TenantContext.getEmpresaId())
                 .orElseThrow(() -> new IllegalArgumentException("Caixa não encontrado: " + id));
+    }
+
+    public List<MovimentacaoFinanceira> listarMovimentacoesCaixa(Long caixaId) {
+        return movimentacaoFinanceiraRepository.findByCaixaIdOrderByDataHoraDesc(caixaId);
     }
 
     @Transactional
@@ -196,24 +209,55 @@ public class FinanceiroService {
             throw new IllegalStateException("Não é possível adicionar itens em uma comanda fechada/cancelada.");
         }
 
+        User profissional = null;
+        if (profissionalId != null) {
+            profissional = userRepository.findByIdAndEmpresaId(profissionalId, TenantContext.getEmpresaId()).orElse(null);
+        }
+
+        BigDecimal percComissaoFinal = percentualComissao;
+        if (percComissaoFinal == null || percComissaoFinal.compareTo(BigDecimal.ZERO) == 0) {
+            if (profissional != null && profissional.getPercentualComissao() != null) {
+                percComissaoFinal = profissional.getPercentualComissao();
+            } else {
+                percComissaoFinal = BigDecimal.ZERO;
+            }
+        }
+
         ComandaItem item = ComandaItem.builder()
                 .comanda(comanda)
                 .tipo(tipo)
                 .quantidade(quantidade > 0 ? quantidade : 1)
-                .precoUnitario(precoUnitario != null ? precoUnitario : BigDecimal.ZERO)
-                .percentualComissao(percentualComissao != null ? percentualComissao : BigDecimal.ZERO)
+                .profissional(profissional)
+                .percentualComissao(percComissaoFinal)
                 .build();
 
         if ("SERVICO".equals(tipo) && servicoId != null) {
-            // Vincula serviço
-            item.setDescricaoItem("Serviço #" + servicoId);
+            Servico servico = servicoRepository.findByIdAndEmpresaId(servicoId, TenantContext.getEmpresaId())
+                    .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado: " + servicoId));
+            item.setServico(servico);
+            item.setDescricaoItem(servico.getNome());
+            BigDecimal precoServico = servico.getPreco() != null ? servico.getPreco() : BigDecimal.ZERO;
+            item.setPrecoUnitario(precoUnitario != null && precoUnitario.compareTo(BigDecimal.ZERO) > 0 ? precoUnitario : precoServico);
+            if (servico.getPercentualComissao() != null && servico.getPercentualComissao().compareTo(BigDecimal.ZERO) > 0) {
+                item.setPercentualComissao(servico.getPercentualComissao());
+            }
         } else if ("PRODUTO".equals(tipo) && produtoId != null) {
             Produto prod = estoqueService.buscarPorId(produtoId);
             item.setProduto(prod);
             item.setDescricaoItem(prod.getNome());
-            if (precoUnitario == null || precoUnitario.compareTo(BigDecimal.ZERO) == 0) {
-                item.setPrecoUnitario(prod.getPrecoVenda());
+            BigDecimal precoProd = prod.getPrecoVenda() != null ? prod.getPrecoVenda() : BigDecimal.ZERO;
+            item.setPrecoUnitario(precoUnitario != null && precoUnitario.compareTo(BigDecimal.ZERO) > 0 ? precoUnitario : precoProd);
+        } else {
+            if (item.getPrecoUnitario() == null) {
+                item.setPrecoUnitario(BigDecimal.ZERO);
             }
+            if (item.getDescricaoItem() == null) {
+                item.setDescricaoItem("Item");
+            }
+        }
+
+        if (item.getPercentualComissao() == null) {
+            item.setPercentualComissao(BigDecimal.ZERO);
         }
 
         item.recalcularLinha();
@@ -223,7 +267,18 @@ public class FinanceiroService {
     }
 
     @Transactional
-    public Comanda fecharComanda(Long comandaId, String formaPagamento, BigDecimal desconto, BigDecimal acrescimo, User operador) {
+    public Comanda removerItemComanda(Long comandaId, Long itemId) {
+        Comanda comanda = buscarComandaPorId(comandaId);
+        if (!"ABERTA".equals(comanda.getStatus())) {
+            throw new IllegalStateException("Não é possível alterar itens em uma comanda já fechada.");
+        }
+        comanda.getItens().removeIf(it -> it.getId() != null && it.getId().equals(itemId));
+        comanda.recalcularTotais();
+        return comandaRepository.save(comanda);
+    }
+
+    @Transactional
+    public Comanda fecharComanda(Long comandaId, String formaPagamento, BigDecimal desconto, BigDecimal acrescimo, String cupomCodigo, User operador) {
         Comanda comanda = buscarComandaPorId(comandaId);
         if (!"ABERTA".equals(comanda.getStatus())) {
             throw new IllegalStateException("Esta comanda já foi finalizada ou cancelada.");
@@ -237,11 +292,21 @@ public class FinanceiroService {
 
         comanda.setCaixa(caixa);
         comanda.setFormaPagamento(formaPagamento);
+        if (cupomCodigo != null && !cupomCodigo.isBlank()) {
+            comanda.setCupomAplicado(cupomCodigo.trim().toUpperCase());
+        }
         if (desconto != null) comanda.setDesconto(desconto);
         if (acrescimo != null) comanda.setAcrescimo(acrescimo);
         comanda.recalcularTotais();
         comanda.setStatus("PAGA");
         comanda.setDataFechamento(LocalDateTime.now());
+
+        // Atualiza o agendamento original como CONCLUIDO
+        if (comanda.getAgendamento() != null) {
+            com.beautysalon.model.Agendamento ag = comanda.getAgendamento();
+            ag.setStatus("CONCLUIDO");
+            agendamentoRepository.save(ag);
+        }
 
         // Baixa automática no estoque para produtos de revenda ou insumos de serviços
         for (ComandaItem item : comanda.getItens()) {
@@ -273,11 +338,15 @@ public class FinanceiroService {
         caixa.setSaldoFinalEsperado(caixa.getSaldoInicial().add(caixa.getTotalEntradas()).subtract(caixa.getTotalSaidas()));
         caixaRepository.save(caixa);
 
-        // Atualiza agendamento se houver
-        if (comanda.getAgendamento() != null) {
-            comanda.getAgendamento().setStatus("CONCLUIDO");
+        Comanda salva = comandaRepository.save(comanda);
+
+        // Dispara comprovante de pagamento via WhatsApp se configurado
+        try {
+            whatsAppService.enviarReciboComanda(salva);
+        } catch (Exception e) {
+            // Ignora falha de WhatsApp para não interromper fechamento financeiro
         }
 
-        return comandaRepository.save(comanda);
+        return salva;
     }
 }

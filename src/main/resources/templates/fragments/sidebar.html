@@ -85,6 +85,13 @@
                 <i class="bi bi-person-badge-fill"></i>
                 <span>Equipe & Comissões</span>
             </a>
+
+            <a th:href="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+                th:classappend="${activePage == 'whatsapp'} ? 'active' : ''"
+                sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
+                <i class="bi bi-whatsapp text-success"></i>
+                <span>Integração WhatsApp</span>
+            </a>
         </nav>
 
         <!-- USUÁRIO LOGADO & LOGOUT -->

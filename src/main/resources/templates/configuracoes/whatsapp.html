@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integração WhatsApp | Beauty Salon</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .provider-card {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+        .provider-card:hover {
+            border-color: var(--accent-gold);
+            background: rgba(197, 160, 89, 0.03);
+        }
+        .provider-card.selected {
+            border-color: #25D366;
+            background: rgba(37, 211, 102, 0.05);
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pill.online {
+            background: rgba(37, 211, 102, 0.15);
+            color: #15803d;
+        }
+        .status-pill.offline {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+    <div th:replace="~{fragments/sidebar :: sidebar('whatsapp')}"></div>
+
+    <div class="app-main">
+        <div th:replace="~{fragments/topbar :: topbar('Integração WhatsApp', 'Automação de mensagens, lembretes e confirmações')}"></div>
+
+        <main class="page-content">
+            <!-- MENSAGENS -->
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${mensagemSucesso}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${mensagemErro}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row g-4">
+                <!-- COLUNA ESQUERDA: CONFIGURAÇÕES DA CONEXÃO -->
+                <div class="col-lg-8">
+                    <form th:action="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug})}" method="post" th:object="${config}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <!-- CARD: STATUS & ATIVAÇÃO GERAL -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                                <h3 class="card-title-custom">
+                                    <i class="bi bi-whatsapp text-success"></i>
+                                    <span>Status do Serviço WhatsApp</span>
+                                </h3>
+                                <div>
+                                    <span class="status-pill online" th:if="${config.ativo}">
+                                        <i class="bi bi-dot fs-4"></i> Ativo & Conectado
+                                    </span>
+                                    <span class="status-pill offline" th:unless="${config.ativo}">
+                                        <i class="bi bi-dot fs-4"></i> Desativado
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="form-check form-switch fs-5">
+                                    <input class="form-check-input" type="checkbox" id="ativoSwitch" name="ativo" th:checked="${config.ativo}">
+                                    <label class="form-check-label fs-6 fw-bold ms-2" for="ativoSwitch">
+                                        Habilitar envio automático de mensagens via WhatsApp
+                                    </label>
+                                </div>
+                                <p class="text-muted small mt-2 mb-0">
+                                    Quando ativado, o estúdio enviará mensagens automáticas de confirmação de agendamento e comprovantes aos clientes.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- CARD: ESCOLHA DO PROVEDOR -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom">
+                                <h4 class="card-title-custom">
+                                    <i class="bi bi-cpu text-primary"></i>
+                                    <span>Modo de Conexão</span>
+                                </h4>
+                            </div>
+                            <div class="p-4">
+                                <div class="row g-3 mb-4">
+                                    <!-- PROVEDOR 1: META OFICIAL (SEM RISCO DE BAN) -->
+                                    <div class="col-md-6">
+                                        <label class="provider-card d-block h-100" id="cardMeta" for="provMeta">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="radio" name="provider" value="META_OFFICIAL" id="provMeta" th:checked="${config.provider == 'META_OFFICIAL' or config.provider == null}" onchange="toggleProviderFields()">
+                                                    <strong class="fs-6">Meta Cloud API (Oficial)</strong>
+                                                </div>
+                                                <span class="badge bg-success">Risco 0% de Ban</span>
+                                            </div>
+                                            <p class="text-muted small mb-0">
+                                                API oficial do WhatsApp/Facebook. 1.000 mensagens grátis por mês. Conexão estável e segura via Token e Phone ID.
+                                            </p>
+                                        </label>
+                                    </div>
+
+                                    <!-- PROVEDOR 2: EVOLUTION API / QR CODE -->
+                                    <div class="col-md-6">
+                                        <label class="provider-card d-block h-100" id="cardEvolution" for="provEvolution">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="radio" name="provider" value="EVOLUTION_API" id="provEvolution" th:checked="${config.provider == 'EVOLUTION_API'}" onchange="toggleProviderFields()">
+                                                    <strong class="fs-6">Evolution API / QR Code</strong>
+                                                </div>
+                                                <span class="badge bg-warning text-dark">Open-Source / QR</span>
+                                            </div>
+                                            <p class="text-muted small mb-0">
+                                                Conexão rápida pareando o WhatsApp Web com QR Code. Envia mensagens diretamente pelo número conectado.
+                                            </p>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- CAMPOS META OFICIAL -->
+                                <div id="metaFieldsSection">
+                                    <h5 class="fw-bold mb-3"><i class="bi bi-key text-primary me-2"></i>Credenciais da Meta (Facebook Developers)</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Phone Number ID:</label>
+                                            <input type="text" name="metaPhoneNumberId" th:value="${config.metaPhoneNumberId}" class="form-control" placeholder="Ex: 109283746592837" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">WhatsApp Business Account ID:</label>
+                                            <input type="text" name="metaBusinessAccountId" th:value="${config.metaBusinessAccountId}" class="form-control" placeholder="Ex: 987654321012345" />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold">Permanent Access Token (Token de Acesso):</label>
+                                            <textarea name="metaAccessToken" th:text="${config.metaAccessToken}" class="form-control" rows="2" placeholder="EAAB..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CAMPOS EVOLUTION API / QR CODE -->
+                                <div id="evolutionFieldsSection" style="display: none;">
+                                    <h5 class="fw-bold mb-3"><i class="bi bi-qr-code-scan text-success me-2"></i>Configurações Evolution API / Z-API</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">URL da API (Endpoint):</label>
+                                            <input type="url" name="apiUrl" th:value="${config.apiUrl}" class="form-control" placeholder="Ex: http://localhost:8080 ou https://sua-api.com" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Nome da Instância:</label>
+                                            <input type="text" name="instanceName" th:value="${config.instanceName}" class="form-control" placeholder="Ex: studio-principal" />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small fw-bold">API Key / Token da Instância:</label>
+                                            <input type="text" name="apiKey" th:value="${config.apiKey}" class="form-control" placeholder="Chave de segurança da API" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD: GATILHOS DE AUTOMAÇÃO -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom">
+                                <h4 class="card-title-custom">
+                                    <i class="bi bi-bell text-warning"></i>
+                                    <span>Gatilhos de Envio Automático</span>
+                                </h4>
+                            </div>
+                            <div class="p-4">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                        <div>
+                                            <strong>Confirmação de Agendamento</strong>
+                                            <div class="text-muted small">Dispara mensagem instantânea quando um horário é agendado no estúdio ou pelo link público.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="notificarAgendamento" th:checked="${config.notificarAgendamento}">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                        <div>
+                                            <strong>Lembrete de Véspera / Horário</strong>
+                                            <div class="text-muted small">Envia lembrete para a cliente no dia do atendimento com os dados do profissional e horário.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="notificarLembrete" th:checked="${config.notificarLembrete}">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                        <div>
+                                            <strong>Recibo ao Fechar Comanda</strong>
+                                            <div class="text-muted small">Envia o comprovante de pagamento detalhado quando a comanda é fechada e recebida no caixa.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="notificarComandaFechada" th:checked="${config.notificarComandaFechada}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTÃO SALVAR -->
+                        <button type="submit" class="btn btn-gold py-2 px-4 fs-6">
+                            <i class="bi bi-save2"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+
+                <!-- COLUNA DIREITA: TESTADOR DE CONEXÃO & INSTRUÇÕES -->
+                <div class="col-lg-4">
+                    <!-- TESTADOR DE ENVIO -->
+                    <div class="content-card mb-4">
+                        <div class="card-header-custom">
+                            <h4 class="card-title-custom">
+                                <i class="bi bi-send-check text-primary"></i>
+                                <span>Testar Envio</span>
+                            </h4>
+                        </div>
+                        <div class="p-4">
+                            <form th:action="@{/{slug}/configuracoes/whatsapp/teste(slug=${empresaSlug})}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Número de WhatsApp para teste:</label>
+                                    <input type="tel" name="telefoneTeste" class="form-control" placeholder="(11) 99999-8888" required />
+                                    <div class="form-text small text-muted">Digite o DDD + Número com 9 dígitos.</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-send-fill"></i> Disparar Mensagem de Teste
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- GUIA RÁPIDO -->
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <h4 class="card-title-custom">
+                                <i class="bi bi-info-circle text-info"></i>
+                                <span>Como Obter as Credenciais</span>
+                            </h4>
+                        </div>
+                        <div class="p-4 small text-muted">
+                            <p class="mb-2"><strong>Meta Cloud API (Oficial):</strong></p>
+                            <ol class="ps-3 mb-3">
+                                <li>Acesse <code>developers.facebook.com</code>.</li>
+                                <li>Crie um App do tipo <strong>Business</strong> e adicione o produto <strong>WhatsApp</strong>.</li>
+                                <li>Copie o <strong>Phone Number ID</strong> e gere um <strong>Token Permanente</strong> em Usuários do Sistema.</li>
+                            </ol>
+                            <p class="mb-2"><strong>Evolution API / Z-API:</strong></p>
+                            <ol class="ps-3 mb-0">
+                                <li>Inicie a instância com o nome do seu estúdio.</li>
+                                <li>Copie o endereço da URL e a API Key configurada.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleProviderFields() {
+        const isMeta = document.getElementById('provMeta').checked;
+        const metaSection = document.getElementById('metaFieldsSection');
+        const evoSection = document.getElementById('evolutionFieldsSection');
+        const cardMeta = document.getElementById('cardMeta');
+        const cardEvolution = document.getElementById('cardEvolution');
+
+        if (isMeta) {
+            metaSection.style.display = 'block';
+            evoSection.style.display = 'none';
+            cardMeta.classList.add('selected');
+            cardEvolution.classList.remove('selected');
+        } else {
+            metaSection.style.display = 'none';
+            evoSection.style.display = 'block';
+            cardMeta.classList.remove('selected');
+            cardEvolution.classList.add('selected');
+        }
+    }
+    toggleProviderFields();
+</script>
+
+</body>
+</html>

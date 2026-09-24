@@ -10,8 +10,42 @@
     <!-- Bootstrap 5 & Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Tom Select for Autocomplete Search -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .ts-control {
+            border-radius: var(--radius-sm) !important;
+            padding: 0.65rem 1rem !important;
+            border: 1px solid var(--border-color) !important;
+            font-size: 0.92rem !important;
+            min-height: 44px !important;
+            box-shadow: none !important;
+        }
+        .ts-control:focus, .ts-wrapper.focus .ts-control {
+            border-color: var(--accent-gold) !important;
+            box-shadow: 0 0 0 3px var(--accent-gold-glow) !important;
+        }
+        .ts-dropdown {
+            border-radius: var(--radius-sm) !important;
+            box-shadow: var(--shadow-lg) !important;
+            border: 1px solid var(--border-color) !important;
+            font-size: 0.92rem !important;
+            z-index: 1050 !important;
+        }
+        .ts-dropdown .active {
+            background-color: var(--accent-gold-light) !important;
+            color: var(--text-main) !important;
+            font-weight: 600;
+        }
+        .ts-dropdown .option:hover {
+            background-color: #f8fafc;
+        }
+    </style>
 </head>
 <body>
 
@@ -32,36 +66,42 @@
                         <i class="bi bi-calendar-plus text-warning me-2"></i>
                         <span th:text="${agendamento.id == null ? 'Novo Agendamento' : 'Editar Agendamento'}">Agendamento</span>
                     </h2>
-                    <p class="form-subtitle">Preencha os dados abaixo para reservar um horário para o cliente.</p>
+                    <p class="form-subtitle">Preencha ou busque os dados para reservar o atendimento no estúdio.</p>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
 
                 <form th:action="${agendamento.id == null ? '/' + empresaSlug + '/agendamentos' : '/' + empresaSlug + '/agendamentos/' + agendamento.id + '/atualizar'}" 
-                      method="post" th:object="${agendamento}">
+                      method="post" th:object="${agendamento}" id="agendamentoForm">
                     <input type="hidden" th:field="*{id}"/>
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                    <!-- CLIENTE -->
+                    <!-- CLIENTE COM AUTOCOMPLETE -->
                     <div class="form-group-modern">
                         <label class="form-label-modern" for="clienteId">
-                            <i class="bi bi-person-fill text-muted me-1"></i> Cliente:
+                            <i class="bi bi-person-fill text-muted me-1"></i> Cliente (digite para buscar):
                         </label>
-                        <select id="clienteId" th:field="*{clienteId}" class="form-control-modern" required>
-                            <option value="">-- Selecione o Cliente --</option>
+                        <select id="clienteId" th:field="*{clienteId}" class="form-control-modern tom-select-autocomplete" required placeholder="Digite o nome ou telefone do cliente...">
+                            <option value=""></option>
                             <option th:each="c : ${clientes}"
                                      th:value="${c.id}"
-                                     th:text="${c.nome}"
+                                     th:text="${c.nome} + (${c.telefone != null and !#strings.isEmpty(c.telefone)} ? ' - ' + ${c.telefone} : '')"
                                      th:selected="${agendamento.clienteId == c.id}"></option>
                         </select>
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></span>
                     </div>
 
-                    <!-- SERVIÇO -->
+                    <!-- SERVIÇO COM AUTOCOMPLETE -->
                     <div class="form-group-modern">
                         <label class="form-label-modern" for="servicoId">
-                            <i class="bi bi-scissors text-muted me-1"></i> Serviço / Procedimento:
+                            <i class="bi bi-scissors text-muted me-1"></i> Serviço / Procedimento (digite para buscar):
                         </label>
-                        <select id="servicoId" th:field="*{servicoId}" class="form-control-modern" required>
-                            <option value="">-- Selecione o Serviço --</option>
+                        <select id="servicoId" th:field="*{servicoId}" class="form-control-modern tom-select-autocomplete" required placeholder="Digite o nome do serviço...">
+                            <option value=""></option>
                             <option th:each="s : ${servicos}"
                                      th:value="${s.id}"
                                      th:text="${s.nome} + ' (R$ ' + ${#numbers.formatDecimal(s.preco, 1, 2, 'POINT')} + ')'"
@@ -70,13 +110,13 @@
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('servicoId')}" th:errors="*{servicoId}"></span>
                     </div>
 
-                    <!-- PROFISSIONAL / ATENDENTE -->
+                    <!-- PROFISSIONAL COM AUTOCOMPLETE -->
                     <div class="form-group-modern">
                         <label class="form-label-modern" for="profissionalId">
-                            <i class="bi bi-person-badge text-muted me-1"></i> Profissional Responsável:
+                            <i class="bi bi-person-badge text-muted me-1"></i> Profissional Responsável (digite para buscar):
                         </label>
-                        <select id="profissionalId" th:field="*{profissionalId}" class="form-control-modern">
-                            <option value="">-- Qualquer Profissional Disponível --</option>
+                        <select id="profissionalId" th:field="*{profissionalId}" class="form-control-modern tom-select-autocomplete" placeholder="Digite o nome do profissional...">
+                            <option value=""></option>
                             <option th:each="p : ${profissionais}"
                                      th:value="${p.id}"
                                      th:text="${p.nome} + (${p.especialidade != null ? ' - ' + p.especialidade : ''})"
@@ -85,28 +125,46 @@
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('profissionalId')}" th:errors="*{profissionalId}"></span>
                     </div>
 
-                    <!-- DATA E HORA -->
+                    <!-- DATA E HORA COM VALIDAÇÃO DE HORÁRIO ATUAL -->
                     <div class="form-group-modern">
                         <label class="form-label-modern" for="dataHora">
-                            <i class="bi bi-clock text-muted me-1"></i> Data e Horário:
+                            <i class="bi bi-clock text-muted me-1"></i> Data e Horário (a partir de agora):
                         </label>
                         <input type="datetime-local" id="dataHora" name="dataHora" 
                                th:value="${agendamento.dataHora != null ? #temporals.format(agendamento.dataHora, 'yyyy-MM-dd''T''HH:mm') : ''}" 
                                class="form-control-modern" required />
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle me-1"></i> Horários passados não são permitidos para novos agendamentos.
+                        </div>
+                        <span class="text-danger small mt-1 d-block" id="dataHoraValidationMsg" style="display:none;"></span>
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('dataHora')}" th:errors="*{dataHora}"></span>
+                    </div>
+
+                    <!-- STATUS (EXIBIDO NA EDIÇÃO OU CRIAÇÃO) -->
+                    <div class="form-group-modern">
+                        <label class="form-label-modern" for="status">
+                            <i class="bi bi-tag-fill text-muted me-1"></i> Situação / Status:
+                        </label>
+                        <select id="status" th:field="*{status}" class="form-control-modern">
+                            <option value="AGENDADO" th:selected="${agendamento.status == null or agendamento.status == 'AGENDADO'}">Agendado</option>
+                            <option value="EM_ATENDIMENTO" th:selected="${agendamento.status == 'EM_ATENDIMENTO'}">Em Atendimento</option>
+                            <option value="CONCLUIDO" th:selected="${agendamento.status == 'CONCLUIDO'}">Concluído</option>
+                            <option value="CANCELADO" th:selected="${agendamento.status == 'CANCELADO'}">Cancelado</option>
+                            <option value="NAO_COMPARECEU" th:selected="${agendamento.status == 'NAO_COMPARECEU'}">Não Compareceu (No-show)</option>
+                        </select>
                     </div>
 
                     <!-- OBSERVAÇÕES -->
                     <div class="form-group-modern">
                         <label class="form-label-modern" for="observacoes">
-                            <i class="bi bi-chat-left-text text-muted me-1"></i> Observações / Preferências:
+                            <i class="bi bi-card-text text-muted me-1"></i> Observações (opcional):
                         </label>
-                        <input type="text" id="observacoes" th:field="*{observacoes}" class="form-control-modern" placeholder="Ex: Cliente prefere atendimento pontual, alérgica a esmalte X" />
+                        <textarea id="observacoes" th:field="*{observacoes}" class="form-control-modern" placeholder="Ex: Preferência por produtos específicos, observações técnicas..."></textarea>
                     </div>
 
                     <!-- BOTÕES DE AÇÃO -->
                     <div class="form-actions-bar">
-                        <button type="submit" class="btn btn-gold">
+                        <button type="submit" class="btn btn-gold" id="btnSubmit">
                             <i class="bi bi-check-circle-fill"></i>
                             <span th:text="${agendamento.id == null ? 'Confirmar Agendamento' : 'Salvar Alterações'}">Salvar</span>
                         </button>
@@ -119,6 +177,87 @@
         </main>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializa Autocomplete com TomSelect
+        document.querySelectorAll('.tom-select-autocomplete').forEach(function(el) {
+            const hasPreselected = el.getAttribute('data-has-value') || el.value;
+            const ts = new TomSelect(el, {
+                create: false,
+                sortField: { field: "text", direction: "asc" },
+                placeholder: el.getAttribute('placeholder') || 'Digite para pesquisar...',
+                allowEmptyOption: false,
+                maxOptions: 100,
+                plugins: ['clear_button'],
+                onFocus: function() {
+                    // Quando foca no campo, abre o dropdown imediatamente
+                    this.open();
+                }
+            });
+
+            // Se for um novo agendamento e não houver valor prévio selecionado, garante campo limpo exibindo placeholder
+            if (!el.value) {
+                ts.clear(true);
+            }
+        });
+
+        // Configura data/hora mínima permitida (Agora)
+        const dataHoraInput = document.getElementById('dataHora');
+        const form = document.getElementById('agendamentoForm');
+        const validationMsg = document.getElementById('dataHoraValidationMsg');
+
+        function formatToLocalISO(date) {
+            const pad = (n) => String(n).padStart(2, '0');
+            const year = date.getFullYear();
+            const month = pad(date.getMonth() + 1);
+            const day = pad(date.getDate());
+            const hours = pad(date.getHours());
+            const minutes = pad(date.getMinutes());
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        const now = new Date();
+        const minDateTimeString = formatToLocalISO(now);
+        dataHoraInput.min = minDateTimeString;
+
+        // Se for um novo agendamento e o campo estiver vazio, sugere a hora atual arredondada para o próximo múltiplo de 30 min
+        if (!dataHoraInput.value) {
+            const roundedDate = new Date(now.getTime());
+            const remainder = 30 - (roundedDate.getMinutes() % 30);
+            roundedDate.setMinutes(roundedDate.getMinutes() + remainder);
+            roundedDate.setSeconds(0);
+            roundedDate.setMilliseconds(0);
+            dataHoraInput.value = formatToLocalISO(roundedDate);
+        }
+
+        // Validação no submit para garantir que data/hora >= agora
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const selectedDate = new Date(dataHoraInput.value);
+                const currentNow = new Date();
+                
+                // Dá uma tolerância de 2 minutos para evitar erro de segundos durante o preenchimento
+                currentNow.setMinutes(currentNow.getMinutes() - 2);
+
+                if (selectedDate < currentNow) {
+                    e.preventDefault();
+                    if (validationMsg) {
+                        validationMsg.textContent = 'Não é permitido selecionar uma data ou horário anterior ao momento atual.';
+                        validationMsg.style.display = 'block';
+                    }
+                    dataHoraInput.focus();
+                } else {
+                    if (validationMsg) {
+                        validationMsg.style.display = 'none';
+                    }
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

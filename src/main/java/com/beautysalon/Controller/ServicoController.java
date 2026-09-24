@@ -19,10 +19,22 @@ import java.util.List;
 public class ServicoController {
 
     private final ServicoService servicoService;
+    private final com.beautysalon.service.EstoqueService estoqueService;
+    private final com.beautysalon.repository.ServicoInsumoRepository servicoInsumoRepository;
+    private final com.beautysalon.repository.ServicoRepository servicoRepository;
+    private final com.beautysalon.repository.EmpresaRepository empresaRepository;
     private final String uploadDir = "C:/beautysalon/uploads/";
 
-    public ServicoController(ServicoService servicoService) {
+    public ServicoController(ServicoService servicoService,
+                             com.beautysalon.service.EstoqueService estoqueService,
+                             com.beautysalon.repository.ServicoInsumoRepository servicoInsumoRepository,
+                             com.beautysalon.repository.ServicoRepository servicoRepository,
+                             com.beautysalon.repository.EmpresaRepository empresaRepository) {
         this.servicoService = servicoService;
+        this.estoqueService = estoqueService;
+        this.servicoInsumoRepository = servicoInsumoRepository;
+        this.servicoRepository = servicoRepository;
+        this.empresaRepository = empresaRepository;
     }
 
     @GetMapping
@@ -75,6 +87,11 @@ public class ServicoController {
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Editar Serviço");
         model.addAttribute("formAction", "/" + slug + "/servicos/" + id + "/atualizar");
+        
+        // Ficha técnica (Insumos)
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        model.addAttribute("insumos", servicoInsumoRepository.findByServicoIdAndEmpresaId(id, empresaId));
+        model.addAttribute("produtosInsumo", estoqueService.listarTodos());
         return "servicos/form";
     }
 
@@ -88,6 +105,9 @@ public class ServicoController {
             model.addAttribute("empresaSlug", slug);
             model.addAttribute("pageTitle", "Editar Serviço");
             model.addAttribute("formAction", "/" + slug + "/servicos/" + id + "/atualizar");
+            Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+            model.addAttribute("insumos", servicoInsumoRepository.findByServicoIdAndEmpresaId(id, empresaId));
+            model.addAttribute("produtosInsumo", estoqueService.listarTodos());
             return "servicos/form";
         }
 
@@ -100,7 +120,41 @@ public class ServicoController {
         }
 
         servicoService.atualizar(id, dto);
-        return "redirect:/" + slug + "/servicos";
+        return "redirect:/" + slug + "/servicos/edit/" + id + "?salvo=true";
+    }
+
+    @PostMapping("/{id}/insumos/adicionar")
+    public String adicionarInsumo(@PathVariable String slug,
+                                  @PathVariable Long id,
+                                  @RequestParam Long produtoId,
+                                  @RequestParam(defaultValue = "1") Integer quantidadeGasta,
+                                  org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        var servicoOpt = servicoRepository.findByIdAndEmpresaId(id, empresaId);
+        var produto = estoqueService.buscarPorId(produtoId);
+        var empresa = empresaRepository.findById(empresaId).orElse(null);
+
+        if (servicoOpt.isPresent() && produto != null && empresa != null) {
+            com.beautysalon.model.ServicoInsumo insumo = com.beautysalon.model.ServicoInsumo.builder()
+                    .servico(servicoOpt.get())
+                    .produto(produto)
+                    .quantidadeGasta(quantidadeGasta > 0 ? quantidadeGasta : 1)
+                    .empresa(empresa)
+                    .build();
+            servicoInsumoRepository.save(insumo);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Insumo adicionado à ficha técnica!");
+        }
+        return "redirect:/" + slug + "/servicos/edit/" + id;
+    }
+
+    @PostMapping("/{id}/insumos/{insumoId}/remover")
+    public String removerInsumo(@PathVariable String slug,
+                                @PathVariable Long id,
+                                @PathVariable Long insumoId,
+                                org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        servicoInsumoRepository.deleteById(insumoId);
+        redirectAttributes.addFlashAttribute("mensagemSucesso", "Insumo removido da ficha técnica!");
+        return "redirect:/" + slug + "/servicos/edit/" + id;
     }
 
     @GetMapping("/delete/{id}")

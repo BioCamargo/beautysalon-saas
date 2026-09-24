@@ -75,6 +75,53 @@
                         </div>
                     </div>
 
+                    <!-- SEÇÃO: FICHA DE ANAMNESE & HISTÓRICO TÉCNICO -->
+                    <div class="mt-4 pt-4 border-top">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-clipboard2-pulse-fill text-gold" style="font-size: 1.3rem;"></i>
+                            <div>
+                                <h4 class="h6 fw-bold mb-0" style="color: var(--text-primary);">Ficha de Anamnese & Histórico Técnico</h4>
+                                <small class="text-muted">Anotações técnicas, restrições e preferências para orientar os profissionais.</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- ALERGIAS E RESTRIÇÕES -->
+                            <div class="col-md-6 form-group-modern">
+                                <label class="form-label-modern" for="alergias">
+                                    <i class="bi bi-exclamation-triangle me-1 text-warning"></i> Alergias & Restrições:
+                                </label>
+                                <textarea id="alergias" th:field="*{alergias}" class="form-control-modern" rows="2" placeholder="Ex: Alergia a amônia, esmaltes com formaldeído, etc."></textarea>
+                            </div>
+
+                            <!-- TIPO DE CABELO / PELE -->
+                            <div class="col-md-6 form-group-modern">
+                                <label class="form-label-modern" for="tipoCabeloPele">
+                                    <i class="bi bi-person-badge me-1 text-muted"></i> Tipo de Cabelo / Pele / Unhas:
+                                </label>
+                                <textarea id="tipoCabeloPele" th:field="*{tipoCabeloPele}" class="form-control-modern" rows="2" placeholder="Ex: Cabelo 3B fino, couro cabeludo sensível, pele mista."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- HISTÓRICO QUÍMICO -->
+                            <div class="col-md-6 form-group-modern">
+                                <label class="form-label-modern" for="historicoQuimico">
+                                    <i class="bi bi-droplet-half me-1 text-muted"></i> Histórico Químico Anterior:
+                                </label>
+                                <textarea id="historicoQuimico" th:field="*{historicoQuimico}" class="form-control-modern" rows="3" placeholder="Ex: Descoloração em mar/2026, progressiva ácida em jan/2026."></textarea>
+                            </div>
+
+                            <!-- OBSERVAÇÕES TÉCNICAS E PREFERÊNCIAS -->
+                            <div class="col-md-6 form-group-modern">
+                                <label class="form-label-modern" for="observacoesTecnicas">
+                                    <i class="bi bi-journal-text me-1 text-muted"></i> Observações Técnicas / Preferências:
+                                </label>
+                                <textarea id="observacoesTecnicas" th:field="*{observacoesTecnicas}" class="form-control-modern" rows="3" placeholder="Ex: Prefere café sem açúcar, gosta de tonalizante frio 9.89."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- AÇÕES -->
                     <div class="form-actions-bar">
                         <button type="submit" class="btn btn-gold">
