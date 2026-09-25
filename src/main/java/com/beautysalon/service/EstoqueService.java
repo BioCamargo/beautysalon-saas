@@ -21,13 +21,16 @@ public class EstoqueService {
     private final ProdutoRepository produtoRepository;
     private final MovimentacaoEstoqueRepository movimentacaoEstoqueRepository;
     private final EmpresaRepository empresaRepository;
+    private final com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer;
 
     public EstoqueService(ProdutoRepository produtoRepository,
                           MovimentacaoEstoqueRepository movimentacaoEstoqueRepository,
-                          EmpresaRepository empresaRepository) {
+                          EmpresaRepository empresaRepository,
+                          com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer) {
         this.produtoRepository = produtoRepository;
         this.movimentacaoEstoqueRepository = movimentacaoEstoqueRepository;
         this.empresaRepository = empresaRepository;
+        this.eventMessageProducer = eventMessageProducer;
     }
 
     public List<Produto> listarTodos() {
@@ -94,6 +97,19 @@ public class EstoqueService {
                 .build();
 
         movimentacaoEstoqueRepository.save(mov);
+
+        // Se o estoque estiver no limite ou abaixo do mínimo, publica evento assíncrono no RabbitMQ
+        if (produto.isEstoqueBaixo()) {
+            eventMessageProducer.publicarAlertaEstoqueBaixo(
+                    new com.beautysalon.config.messaging.event.EstoqueBaixoEvent(
+                            produto.getId(),
+                            produto.getEmpresa() != null ? produto.getEmpresa().getId() : null,
+                            produto.getNome(),
+                            produto.getQuantidadeEstoque(),
+                            produto.getEstoqueMinimo()
+                    )
+            );
+        }
     }
 
     public List<MovimentacaoEstoque> listarMovimentacoes() {

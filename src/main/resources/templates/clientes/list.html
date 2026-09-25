@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Clientes | Beauty Salon</title>
 
     <!-- Bootstrap 5 & Icons -->
@@ -241,6 +243,12 @@
         const clienteId = button.getAttribute('data-id');
         const clienteNome = button.getAttribute('data-name');
         const slug = button.getAttribute('data-slug');
+        const tokenMeta = document.querySelector("meta[name='_csrf']");
+        const headerMeta = document.querySelector("meta[name='_csrf_header']");
+        const headers = {};
+        if (tokenMeta && headerMeta) {
+            headers[headerMeta.getAttribute('content')] = tokenMeta.getAttribute('content');
+        }
 
         if (confirm(`Deseja disparar um SMS de confirmação para ${clienteNome}?`)) {
             button.disabled = true;
@@ -248,7 +256,8 @@
             button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
             fetch(`/${slug}/clientes/${clienteId}/enviar-sms-confirmacao`, {
-                method: 'POST'
+                method: 'POST',
+                headers: headers
             })
             .then(res => {
                 if (!res.ok) throw new Error('Falha no envio');

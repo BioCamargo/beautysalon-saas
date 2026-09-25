@@ -27,19 +27,22 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     private final EmpresaRepository empresaRepository;
     private final com.beautysalon.repository.UserRepository userRepository;
     private final com.beautysalon.service.WhatsAppService whatsAppService;
+    private final com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer;
 
     public AgendamentoServiceImpl(AgendamentoRepository agendamentoRepository,
                                   ClienteRepository clienteRepository,
                                   ServicoRepository servicoRepository,
                                   EmpresaRepository empresaRepository,
                                   com.beautysalon.repository.UserRepository userRepository,
-                                  com.beautysalon.service.WhatsAppService whatsAppService) {
+                                  com.beautysalon.service.WhatsAppService whatsAppService,
+                                  com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer) {
         this.agendamentoRepository = agendamentoRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.empresaRepository = empresaRepository;
         this.userRepository = userRepository;
         this.whatsAppService = whatsAppService;
+        this.eventMessageProducer = eventMessageProducer;
     }
 
     @Override
@@ -90,6 +93,23 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         agendamento.getServicos().add(servico);
 
         Agendamento salvo = agendamentoRepository.save(agendamento);
+
+        // Publica evento assíncrono para RabbitMQ (notificações, lembretes, integrações)
+        try {
+            eventMessageProducer.publicarAgendamentoCriado(
+                    new com.beautysalon.config.messaging.event.AgendamentoCriadoEvent(
+                            salvo.getId(),
+                            empresaId,
+                            salvo.getCliente() != null ? salvo.getCliente().getNome() : "Cliente",
+                            salvo.getCliente() != null ? salvo.getCliente().getTelefone() : "",
+                            servico.getNome(),
+                            salvo.getProfissional() != null ? salvo.getProfissional().getNome() : "Qualquer profissional",
+                            salvo.getDataHora()
+                    )
+            );
+        } catch (Exception e) {
+            // Log e fallback gracioso
+        }
 
         // Dispara mensagem de confirmação no WhatsApp do cliente
         try {
