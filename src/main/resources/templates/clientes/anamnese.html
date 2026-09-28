@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Química & Anamnese Digital | Beauty Salon</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .signature-pad-container {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            background: #fafafa;
+            position: relative;
+            touch-action: none;
+        }
+        .signature-canvas {
+            width: 100%;
+            height: 140px;
+            cursor: crosshair;
+        }
+        .photo-card {
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            transition: transform 0.2s;
+        }
+        .photo-card:hover {
+            transform: translateY(-2px);
+        }
+        .photo-preview {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <div th:replace="~{fragments/sidebar :: sidebar('clientes')}"></div>
+
+    <div class="app-main">
+        <div th:replace="~{fragments/topbar :: topbar('Ficha Química & Anamnese Digital', 'Histórico de fórmulas, fotos de antes/depois e termo de consentimento')}"></div>
+
+        <main class="page-content">
+            <!-- MENSAGEM -->
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${mensagemSucesso}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- CABEÇALHO DO CLIENTE -->
+            <div class="content-card mb-4">
+                <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-person-bounding-box text-primary"></i>
+                            <span th:text="${cliente.nome}">Nome da Cliente</span>
+                        </h2>
+                        <div class="text-muted small mt-1">
+                            <i class="bi bi-telephone me-1"></i> <span th:text="${cliente.telefone} ?: 'Sem telefone'"></span> &bull;
+                            <i class="bi bi-envelope ms-2 me-1"></i> <span th:text="${cliente.email} ?: 'Sem e-mail'"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovaAnamnese">
+                            <i class="bi bi-plus-lg"></i> Novo Procedimento Químico / Fotos
+                        </button>
+                        <a th:href="@{/{slug}/clientes(slug=${empresaSlug})}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE DE PROCEDIMENTOS QUÍMICOS E FOTOS -->
+            <div class="content-card" th:if="${historicoAnamnese != null and !#lists.isEmpty(historicoAnamnese)}">
+                <div class="card-header-custom">
+                    <h3 class="card-title-custom">
+                        <i class="bi bi-journal-album text-secondary"></i>
+                        <span>Histórico Técnico & Galeria de Evolução</span>
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="row g-4">
+                        <div class="col-lg-6" th:each="an : ${historicoAnamnese}">
+                            <div class="card border h-100 shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <strong>
+                                        <i class="bi bi-scissors text-gold me-1"></i>
+                                        <span th:text="${an.procedimentoRealizado}">Mechas Loiras</span>
+                                    </strong>
+                                    <span class="badge bg-secondary" th:text="${#temporals.format(an.dataRegistro, 'dd/MM/yyyy HH:mm')}">23/09/2026</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3" th:if="${an.profissional != null}">
+                                        <small class="text-muted">Profissional Responsável:</small>
+                                        <div class="fw-bold" th:text="${an.profissional.nome}">Nome do Profissional</div>
+                                    </div>
+
+                                    <!-- FÓRMULA QUÍMICA -->
+                                    <div class="mb-3 p-3 bg-light rounded border" th:if="${an.formulaQuimica != null and !#strings.isEmpty(an.formulaQuimica)}">
+                                        <label class="fw-bold text-primary small d-block mb-1">
+                                            <i class="bi bi-eyedropper"></i> Fórmula & Proporções Utilizadas:
+                                        </label>
+                                        <div class="small font-monospace" th:text="${an.formulaQuimica}">Fórmula aqui</div>
+                                    </div>
+
+                                    <!-- FOTOS ANTES E DEPOIS -->
+                                    <div class="row g-2 mb-3" th:if="${(an.fotoAntesUrl != null and !#strings.isEmpty(an.fotoAntesUrl)) or (an.fotoDepoisUrl != null and !#strings.isEmpty(an.fotoDepoisUrl))}">
+                                        <div class="col-6" th:if="${an.fotoAntesUrl != null and !#strings.isEmpty(an.fotoAntesUrl)}">
+                                            <div class="photo-card text-center">
+                                                <img th:src="${an.fotoAntesUrl}" alt="Antes" class="photo-preview" />
+                                                <span class="badge bg-dark w-100 rounded-0">Antes</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6" th:if="${an.fotoDepoisUrl != null and !#strings.isEmpty(an.fotoDepoisUrl)}">
+                                            <div class="photo-card text-center">
+                                                <img th:src="${an.fotoDepoisUrl}" alt="Depois" class="photo-preview" />
+                                                <span class="badge bg-success w-100 rounded-0">Depois ✨</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- OBSERVAÇÕES TÉCNICAS & HISTÓRICO -->
+                                    <div class="small text-muted mb-2" th:if="${an.historicoCapilarAlergias != null and !#strings.isEmpty(an.historicoCapilarAlergias)}">
+                                        <strong>Teste de Mecha / Alergias:</strong> <span th:text="${an.historicoCapilarAlergias}"></span>
+                                    </div>
+                                    <div class="small text-muted" th:if="${an.observacoesTecnicas != null and !#strings.isEmpty(an.observacoesTecnicas)}">
+                                        <strong>Observações:</strong> <span th:text="${an.observacoesTecnicas}"></span>
+                                    </div>
+
+                                    <!-- ASSINATURA DIGITAL DO CLIENTE -->
+                                    <div class="mt-3 pt-2 border-top" th:if="${an.assinaturaDigitalBase64 != null and !#strings.isEmpty(an.assinaturaDigitalBase64)}">
+                                        <small class="text-success fw-bold d-block mb-1">
+                                            <i class="bi bi-shield-check"></i> Termo Assinado Digitalmente pela Cliente:
+                                        </small>
+                                        <img th:src="${an.assinaturaDigitalBase64}" alt="Assinatura" style="max-height: 50px; border-bottom: 1px solid #ccc;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card p-5 text-center text-muted" th:if="${historicoAnamnese == null or #lists.isEmpty(historicoAnamnese)}">
+                <i class="bi bi-clipboard2-plus text-secondary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Nenhum histórico técnico registrado</h5>
+                <p class="small">Cadastre fórmulas químicas, teste de mechas e fotos de antes/depois para proteger o salão e fidelizar a cliente.</p>
+                <button class="btn btn-gold btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalNovaAnamnese">
+                    <i class="bi bi-plus-lg"></i> Cadastrar Primeira Ficha
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- MODAL NOVO PROCEDIMENTO QUÍMICO COM CANVAS TOUCH DE ASSINATURA -->
+<div class="modal fade" id="modalNovaAnamnese" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <form th:action="@{/{slug}/clientes/{id}/anamnese/salvar(slug=${empresaSlug}, id=${cliente.id})}" method="post" id="formAnamnese">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="assinaturaDigitalBase64" id="inputAssinaturaBase64" />
+
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-clipboard-pulse text-primary me-1"></i> Ficha Química & Registro de Procedimento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label class="form-label small fw-bold">Procedimento Realizado:</label>
+                            <input type="text" name="procedimentoRealizado" class="form-control" placeholder="Ex: Mechas Loiras, Morena Iluminada, Botox" required />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold">Profissional:</label>
+                            <select name="profissionalId" class="form-select">
+                                <option value="">Selecione o profissional...</option>
+                                <option th:each="pf : ${profissionais}" th:value="${pf.id}" th:text="${pf.nome}">Profissional</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-primary">
+                                <i class="bi bi-eyedropper"></i> Fórmula Química Exata (Proporções, Volumagem e Tempo):
+                            </label>
+                            <textarea name="formulaQuimica" class="form-control" rows="2" placeholder="Ex: 50g Pó Blondor + 100ml OX 30vol (1:2). Tonalização com 9.89 + 10vol por 20 minutos."></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">URL da Foto ANTES (ou Câmera):</label>
+                            <input type="url" name="fotoAntesUrl" class="form-control form-control-sm" placeholder="https://exemplo.com/foto-antes.jpg" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">URL da Foto DEPOIS:</label>
+                            <input type="url" name="fotoDepoisUrl" class="form-control form-control-sm" placeholder="https://exemplo.com/foto-depois.jpg" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Teste de Mecha / Alergias:</label>
+                            <input type="text" name="historicoCapilarAlergias" class="form-control form-control-sm" placeholder="Ex: Teste de mecha aprovado, sem ardência" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Observações Técnicas:</label>
+                            <input type="text" name="observacoesTecnicas" class="form-control form-control-sm" placeholder="Ex: Recomendar cronograma de hidratação semanal" />
+                        </div>
+
+                        <!-- ASSINATURA DIGITAL TOUCH / MOUSE -->
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-pen-fill text-gold me-1"></i> Assinatura Digital do Cliente (Termo de Consentimento):</span>
+                                <button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="limparAssinatura()">Limpar Assinatura</button>
+                            </label>
+                            <div class="signature-pad-container">
+                                <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                A cliente pode assinar usando o dedo na tela do celular/tablet ou o mouse.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-gold btn-sm">
+                        <i class="bi bi-check2-circle"></i> Salvar Ficha Técnica
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // PAD DE ASSINATURA DIGITAL HTML5 CANVAS
+    const canvas = document.getElementById('signatureCanvas');
+    let ctx, drawing = false;
+
+    if (canvas) {
+        ctx = canvas.getContext('2d');
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 140;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000000';
+        }
+        window.addEventListener('resize', resizeCanvas);
+        document.getElementById('modalNovaAnamnese').addEventListener('shown.bs.modal', resizeCanvas);
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches && e.touches[0]) {
+                return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+            }
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function startDrawing(e) {
+            drawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            e.preventDefault();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDrawing);
+    }
+
+    function limparAssinatura() {
+        if (ctx && canvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    document.getElementById('formAnamnese').addEventListener('submit', function() {
+        if (canvas) {
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('inputAssinaturaBase64').value = dataUrl;
+        }
+    });
+</script>
+</body>
+</html>

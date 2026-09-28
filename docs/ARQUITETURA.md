@@ -1,91 +1,85 @@
-# 🏛️ Documento de Arquitetura de Software - BeautySalon
+# 🏛️ Documento de Arquitetura de Software - BeautySalon (LUMORA SaaS)
 
-Este documento descreve a arquitetura técnica, os padrões de projeto, a estrutura de camadas e o ciclo de vida das requisições do sistema **BeautySalon** (`Proj_Studio`).
+Este documento descreve a arquitetura técnica, os padrões de projeto, a estrutura de camadas, o isolamento multi-tenant e o ciclo de vida das requisições do sistema **BeautySalon** (`Proj_Studio`).
 
 ---
 
 ## 📌 Sumário
 
 1. [Visão Geral da Arquitetura](#1-visão-geral-da-arquitetura)
-2. [Diagrama de Arquitetura em Camadas](#2-diagrama-de-arquitetura-em-camadas)
+2. [Diagrama de Arquitetura em Camadas (Multi-Tenant)](#2-diagrama-de-arquitetura-em-camadas-multi-tenant)
 3. [Detalhamento das Camadas](#3-detalhamento-das-camadas)
-4. [Padrões de Projeto (Design Patterns)](#4-padrões-de-projeto-design-patterns)
-5. [Fluxo e Ciclo de Vida da Requisição](#5-fluxo-e-ciclo-de-vida-da-requisição)
+4. [Isolamento Multi-Tenant e Ciclo de Contexto](#4-isolamento-multi-tenant-e-ciclo-de-contexto)
+5. [Padrões de Projeto (Design Patterns)](#5-padrões-de-projeto-design-patterns)
 6. [Mapeamento dos Pacotes](#6-mapeamento-dos-pacotes)
 
 ---
 
 ## 1. Visão Geral da Arquitetura
 
-O **BeautySalon** adota o estilo arquitetural **Monólito Modular em Camadas (Layered Architecture)** com uma abordagem de comunicação **híbrida**:
+O **BeautySalon** adota o estilo arquitetural **Monólito Modular Multi-Tenant em Camadas (Layered Architecture)** com abordagem de comunicação híbrida:
 
-* **Renderização no Servidor (SSR - Server-Side Rendering)**: Utiliza **Spring MVC** em conjunto com a engine de templates **Thymeleaf**, provendo páginas dinâmicas completas para os fluxos administrativos principais (clientes, agendamentos, catálogo e login).
-* **API RESTful (JSON)**: Expõe endpoints sob o prefixo `/api/**` para operações assíncronas via chamadas AJAX/Fetch disparadas pela interface web e para integrações externas.
-* **Segurança Centralizada**: Camada transversal provida pelo **Spring Security 6**, controlando autenticação, autorização baseada em papéis (RBAC), proteção CSRF e cabeçalhos de segurança.
-* **Persistência Declarativa**: Utiliza **Spring Data JPA** e **Hibernate** sobre banco relacional **PostgreSQL**, com mapeamentos ORM sofisticados (relacionamentos 1:N e N:M).
+* **Renderização no Servidor (SSR - Server-Side Rendering)**: Utiliza **Spring MVC** em conjunto com a engine de templates **Thymeleaf**, provendo páginas dinâmicas, responsivas e integradas a fluxos operacionais (Dashboard, Caixa, Comandas, Estoque, CRM e Relatórios).
+* **API RESTful v1 (JSON)**: Expõe endpoints sob o prefixo `/api/v1/{slug}/**` com contratos DTOs rigorosos, serialização JSON e documentação OpenAPI 3 / Swagger.
+* **Segurança Centralizada**: Camada transversal provida pelo **Spring Security 6**, controlando autenticação, autorização baseada em papéis (RBAC com `OWNER`, `ADMIN`, `FUNCIONARIO`), proteção CSRF e cabeçalhos de segurança.
+* **Isolamento de Tenants**: `TenantInterceptor` intercepta a rota baseada no `{slug}` da URL, carrega o tenant e popula a thread de execução via `TenantContext` (`ThreadLocal`).
+* **Persistência Declarativa**: Utiliza **Spring Data JPA**, **Hibernate** e versionamento por **Flyway Migration** sobre banco relacional **PostgreSQL**.
 
 ---
 
-## 2. Diagrama de Arquitetura em Camadas
-
-O diagrama a seguir ilustra a distribuição dos componentes e a comunicação vertical entre as camadas:
+## 2. Diagrama de Arquitetura em Camadas (Multi-Tenant)
 
 ```mermaid
 graph TD
-    Client[Cliente / Navegador Web]
+    Client[Navegador Web / App Mobile / API Client]
 
-    subgraph "Camada de Segurança (Spring Security 6)"
-        FilterChain[SecurityFilterChain]
-        AuthFilter[Authentication Provider / BCrypt]
-        UserDetails[UserDetailsServiceImpl]
+    subgraph "Camada de Segurança & Contexto Multi-Tenant"
+        FilterChain[SecurityFilterChain - Spring Security 6]
+        TenantFilter[TenantInterceptor - Slug Extraction]
+        TenantContextHolder[TenantContext - ThreadLocal]
     end
 
-    subgraph "Camada de Apresentação (Web & REST)"
-        WebControllers[Controllers MVC<br/>Cliente, Agendamento, Servico, User, Role]
-        RestControllers[REST Controllers<br/>ClienteRest, ServicoRest, Sms, Quotation]
-        ThymeleafEngine[Thymeleaf Template Engine<br/>HTML5 + CSS + Layouts]
+    subgraph "Camada de Apresentação (Web MVC & REST API)"
+        WebControllers[MVC Controllers<br/>Home, Financeiro, Estoque, Fidelizacao, Agendamentos, Relatorios]
+        RestControllers[REST Controllers /api/v1/<br/>AgendamentoRest, ClienteRest, EstoqueRest, FinanceiroRest]
+        ThymeleafEngine[Thymeleaf Engine + HTML5 / CSS / JS]
     end
 
-    subgraph "Camada de Negócio e Aplicação"
-        Services[Service Interfaces & Impls<br/>AgendamentoService, ClienteService, etc.]
-        ExternalServices[Serviços Externos<br/>SmsService, QuotationService, EmailService]
-        Converters[Converters & Mappers<br/>AgendamentoConverter, ClienteConverter]
-        DTOs[Data Transfer Objects - DTOs]
+    subgraph "Camada de Negócio e Serviços (Service Layer)"
+        Services[Core Services<br/>FinanceiroService, EstoqueService, FidelizacaoService, RelatorioService, AgendamentoService]
+        ExternalServices[Integrações Externas<br/>WhatsApp Evolution API, PixService, SmsService]
+        DTOs[DTOs & Records<br/>ClienteDTO, ComandaDTO, DREDTO, Metricas]
     end
 
-    subgraph "Camada de Acesso a Dados (Persistência)"
-        Repositories[Spring Data JPA Repositories<br/>AgendamentoRepo, ClienteRepo, UserRepo, etc.]
-        Entities[JPA Entities<br/>User, Role, Cliente, Servico, Agendamento]
+    subgraph "Camada de Persistência e Dados"
+        Repositories[Spring Data JPA Repositories<br/>EmpresaRepo, ComandaRepo, CaixaRepo, ClienteRepo, etc.]
+        Auditing[AuditableEntity / JPA Listeners]
+        Entities[JPA Entities<br/>Empresa, User, Cliente, Comanda, Produto, Caixa, etc.]
     end
 
-    subgraph "Infraestrutura e Dados"
-        Database[(PostgreSQL Database<br/>Supabase / Local)]
-        ExtAPIs[APIs Externas<br/>AwesomeAPI Dólar / Mocky SMS]
-        FileSystem[Armazenamento de Arquivos<br/>Uploads de Imagens]
+    subgraph "Infraestrutura e Banco"
+        Database[(PostgreSQL Database<br/>Flyway Versioned)]
+        CloudStorage[Uploads de Imagens e Documentos]
     end
 
-    Client -->|HTTP GET/POST| FilterChain
-    FilterChain --> AuthFilter
-    AuthFilter --> UserDetails
-    UserDetails --> Repositories
+    Client -->|HTTP GET/POST/PUT/DELETE| FilterChain
+    FilterChain --> TenantFilter
+    TenantFilter --> TenantContextHolder
 
-    FilterChain --> WebControllers
-    FilterChain --> RestControllers
+    TenantFilter --> WebControllers
+    TenantFilter --> RestControllers
 
     WebControllers --> ThymeleafEngine
     WebControllers --> Services
     RestControllers --> Services
-    RestControllers --> ExternalServices
 
-    Services --> Converters
-    Converters --> DTOs
+    Services --> DTOs
     Services --> Repositories
-    ExternalServices --> ExtAPIs
+    Services --> ExternalServices
 
-    WebControllers --> FileSystem
-
-    Repositories --> Entities
-    Repositories --> Database
+    Repositories --> Auditing
+    Auditing --> Entities
+    Entities --> Database
 ```
 
 ---
@@ -93,111 +87,63 @@ graph TD
 ## 3. Detalhamento das Camadas
 
 ### 3.1. Camada de Segurança e Transversal
-* **Responsabilidade**: Interceptar requisições HTTP antes que atinjam os controladores, autenticar o usuário, checar credenciais em cache ou banco e validar permissões por rota.
+* **Responsabilidade**: Interceptar requisições HTTP, autenticar credenciais via BCrypt, autorizar permissões baseadas em roles (`OWNER`, `ADMIN`, `FUNCIONARIO`) e proteger endpoints.
 * **Componentes Chave**:
-  * [SecurityConfig](file:///c:/Dev/Projetos/Proj_Studio/src/main/java/com/beautysalon/config/SecurityConfig.java): Define as regras de proteção de URL, formulário de login, logout e política de CSRF.
-  * [UserDetailsServiceImpl](file:///c:/Dev/Projetos/Proj_Studio/src/main/java/com/beautysalon/Implementacao/UserDetailsServiceImpl.java): Conecta o Spring Security com o repositório de usuários, mapeando os perfis para autoridades `ROLE_`.
-  * `BCryptPasswordEncoder`: Garante o armazenamento não reversível com salt das senhas dos operadores.
+  * `SecurityConfig`: Configuração central do Spring Security 6.
+  * `UserDetailsServiceImpl`: Conexão entre o repositório de usuários e o provedor de autenticação.
+  * `TenantInterceptor`: Validação de existência do tenant e verificação se o usuário autenticado pertence à respectiva empresa.
 
 ### 3.2. Camada de Apresentação (Web MVC & REST API)
-* **Responsabilidade**: Receber parâmetros da requisição, validar DTOs com Jakarta Validation (`@Valid`), delegar o processamento para a camada de serviço e escolher o retorno (template HTML ou payload JSON).
-* **Controladores MVC**: Localizados no pacote `com.beautysalon.Controller`. Retornam nomes de views Thymeleaf com atributos no `Model`.
-* **Controladores REST**: Localizados em `com.beautysalon.API` e no próprio `Controller` (com anotação `@RestController`). Retornam `ResponseEntity<?>` serializados em JSON.
+* **Responsabilidade**: Receber requisições, validar DTOs com Jakarta Validation (`@Valid`), orquestrar respostas HTML ou JSON formatado.
+* **Controladores MVC**: Residem em `com.beautysalon.Controller`.
+* **Controladores REST**: Residem em `com.beautysalon.Controller.rest` e expõem contratos sob `/api/v1/{slug}/**`.
 
 ### 3.3. Camada de Negócio e Serviços (Service Layer)
-* **Responsabilidade**: Conter as regras de negócio, orquestração de transações, validações de consistência e conversão entre entidades do domínio e DTOs de transporte.
-* **Separação Interface x Implementação**:
-  * As interfaces definem o contrato no pacote `com.beautysalon.Inteface`.
-  * As classes concretas anotadas com `@Service` residem em `com.beautysalon.Implementacao`.
-* **Serviços Especializados**:
-  * `SmsService`: Integração HTTP via biblioteca `OkHttpClient` para envio assíncrono de mensagens de texto aos clientes.
-  * `QuotationService`: Consulta remota em tempo real via HTTP Connection e parsing JSON para cotação cambial.
-  * `EmailService`: Abstração para envio de e-mails, possuindo implementação de produção (`EmailServiceImpl`) e simulação para ambiente de testes (`MockEmailService` ativado via `@Profile("dev")`).
+* **Responsabilidade**: Concentrar todas as regras de negócio, fluxos transacionais (`@Transactional`), comissões, fechamento de caixa, cálculo de DRE e radar anti-churn.
+* **Serviços Principais**:
+  * `FinanceiroService`: Abertura e fechamento de caixa, cálculo de saldo esperado, sangrias, movimentações e detalhamento de comandas.
+  * `EstoqueService`: Movimentação de estoque, cálculo de valor imobilizado e monitoramento de estoque mínimo.
+  * `FidelizacaoService`: Análise de retenção de clientes, aniversariantes do mês, cupons e vouchers de presente.
+  * `RelatorioService` & `InteligenciaNegocioService`: Métricas de ticket médio, DRE gerencial, curva ABC de clientes e ociosidade de agenda.
 
 ### 3.4. Camada de Persistência e Acesso a Dados
-* **Responsabilidade**: Gerenciar o ciclo de vida das entidades de banco de dados, execução de consultas SQL/JPQL, mapeamento objeto-relacional (ORM) e controle transacional.
-* **Spring Data JPA**: Reduz código boilerplate através de interfaces que herdam de `JpaRepository<T, ID>`.
-* **Consultas Customizadas**:
-  * Busca parcial com JPQL case-insensitive: `buscarPorNomeParcial` em `ClienteRepository`.
-  * Otimização de consultas N+1 via anotação `@EntityGraph(attributePaths = {"cliente", "servicos"})` em `AgendamentoRepository`.
+* **Responsabilidade**: Gerenciamento do ciclo de vida das entidades, consultas otimizadas JPQL com `@EntityGraph` para mitigação de consultas N+1.
+* **Auditoria**: Entidades herdam de `AuditableEntity` (`criadoEm`, `atualizadoEm`).
 
 ---
 
-## 4. Padrões de Projeto (Design Patterns)
+## 4. Isolamento Multi-Tenant e Ciclo de Contexto
+
+1. A requisição chega com a URI: `/{slug}/...` ou `/api/v1/{slug}/...`.
+2. O `TenantInterceptor` captura a variável `{slug}`.
+3. Localiza a `Empresa` correspondente no banco de dados.
+4. Armazena o objeto no `TenantContext` através de um `ThreadLocal`.
+5. Os serviços e repositórios consultam o `TenantContext.getCurrentTenant()` para garantir que nenhuma operação vaze para outras empresas.
+6. No bloco `afterCompletion`, o interceptor limpa o `ThreadLocal` (`TenantContext.clear()`) para prevenir *memory leaks* no pool de threads do Tomcat.
+
+---
+
+## 5. Padrões de Projeto (Design Patterns)
 
 | Padrão | Onde é Aplicado | Benefício no Projeto |
 | :--- | :--- | :--- |
-| **Data Transfer Object (DTO)** | Classes no pacote `com.beautysalon.DTO` (`ClienteDTO`, `AgendamentoDTO`, etc.) | Isola o modelo do banco das telas e APIs, evitando vazamento de dados sensíveis e referências cíclicas de serialização. |
-| **Converter / Adapter** | Pacote `com.beautysalon.converter` (`ClienteConverter`, `AgendamentoConverter`) | Centraliza a lógica de conversão bidirecional entre Entidade e DTO, desacoplando os Services. |
-| **Repository Pattern** | Pacote `com.beautysalon.repository` | Fornece uma abstração completa da fonte de dados, permitindo troca ou customização transparente de consultas. |
-| **Service Layer** | Pacotes `Inteface` e `Implementacao` | Encapsula as regras de negócio da aplicação, separando-as do protocolo HTTP de transporte. |
-| **Strategy / Profile** | `MockEmailService` vs `EmailServiceImpl` | Permite alternar o comportamento de envio de e-mails com base no perfil ativo (`dev` vs produção) sem alterar código cliente. |
-| **Dependency Injection (DI)** | Anotações `@Autowired` e construtores em todo o ecossistema | Garante baixo acoplamento e alta testabilidade entre os componentes do sistema. |
-
----
-
-## 5. Fluxo e Ciclo de Vida da Requisição
-
-### Exemplo: Criação de um Novo Agendamento
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Operador / Usuário
-    participant Browser as Navegador
-    participant Security as SecurityFilterChain
-    participant Ctrl as AgendamentoController
-    participant Svc as AgendamentoServiceImpl
-    participant Conv as AgendamentoConverter
-    participant CliRepo as ClienteRepository
-    participant SrvRepo as ServicoRepository
-    participant AgRepo as AgendamentoRepository
-    participant DB as PostgreSQL DB
-
-    User->>Browser: Preenche formulário de agendamento e clica em Salvar
-    Browser->>Security: POST /agendamentos (com CSRF Token e Cookie de Sessão)
-    Security->>Security: Valida autenticação e permissões
-    Security->>Ctrl: Encaminha requisição com AgendamentoDTO validado
-    Ctrl->>Svc: salvar(agendamentoDTO)
-    
-    Svc->>Conv: toEntity(dto)
-    Conv-->>Svc: agendamento
-    
-    Svc->>CliRepo: findById(clienteId)
-    CliRepo->>DB: SELECT * FROM clientes WHERE id = ?
-    DB-->>CliRepo: Cliente data
-    CliRepo-->>Svc: Cliente
-    
-    Svc->>SrvRepo: findById(servicoId)
-    SrvRepo->>DB: SELECT * FROM servicos WHERE id = ?
-    DB-->>SrvRepo: Servico data
-    SrvRepo-->>Svc: Servico
-    
-    Svc->>Svc: Associa Cliente e adiciona Serviço à lista
-    Svc->>AgRepo: save(agendamento)
-    AgRepo->>DB: INSERT INTO agendamento ...
-    DB-->>AgRepo: ID gerado
-    AgRepo-->>Svc: Agendamento persistido
-    
-    Svc->>Conv: toDTO(saved)
-    Conv-->>Svc: AgendamentoDTO
-    Svc-->>Ctrl: AgendamentoDTO
-    Ctrl-->>Browser: Redireciona para /agendamentos/{id} (HTTP 302)
-    Browser->>User: Exibe dados atualizados do agendamento
-```
+| **Data Transfer Object (DTO)** | Pacote `com.beautysalon.DTO` | Desacoplamento entre esquema do banco e payload de exibição/API. |
+| **ThreadLocal Context (TenantContext)** | Pacote `com.beautysalon.tenant` | Propagação transparente do tenant ativo sem poluir assinaturas de métodos. |
+| **Repository Pattern** | Pacote `com.beautysalon.repository` | Abstração completa de persistência com Spring Data JPA. |
+| **Service Layer** | Pacotes `service` e `Implementacao` | Centralização das regras de negócio e controle transacional atômico. |
+| **Intercepting Filter** | `TenantInterceptor` e `SecurityFilterChain` | Processamento transversal de autenticação e multi-tenancy. |
+| **RFC 7807 Problem Details** | `GlobalRestExceptionHandler` | Tratamento e respostas de erros padronizadas para APIs REST. |
 
 ---
 
 ## 6. Mapeamento dos Pacotes
 
-* `com.beautysalon.API`: Controladores REST puramente orientados a payloads JSON.
-* `com.beautysalon.config`: Configurações de segurança (`SecurityConfig`) e integração web (`WebConfig`).
-* `com.beautysalon.Controller`: Controladores responsáveis pelas rotas MVC que alimentam os templates Thymeleaf.
-* `com.beautysalon.converter`: Classes responsáveis pela transformação entre Entidades JPA e DTOs.
-* `com.beautysalon.DTO`: Objetos de valor para entrada e saída de dados.
-* `com.beautysalon.exception`: Tratamento unificado de erros com `@ControllerAdvice` e loggers de exceção.
-* `com.beautysalon.Implementacao`: Implementações concretas de serviços e componentes auxiliares.
-* `com.beautysalon.Inteface`: Contratos de interfaces dos serviços do sistema.
-* `com.beautysalon.model`: Entidades mapeadas para o banco de dados via JPA/Hibernate.
-* `com.beautysalon.repository`: Interfaces de acesso a dados com Spring Data JPA.
-* `com.beautysalon.service`: Serviços utilitários e de integração de rede direta.
+* `com.beautysalon.config`: Configurações de segurança, OpenAPI e MVC.
+* `com.beautysalon.Controller`: Controladores MVC Thymeleaf e subpacote `rest/` com as APIs JSON.
+* `com.beautysalon.converter`: Conversores utilitários entre Entidades e DTOs.
+* `com.beautysalon.DTO`: DTOs de entrada/saída, projeções financeiras e métricas de inteligência.
+* `com.beautysalon.exception`: Tratamento unificado de erros MVC e REST.
+* `com.beautysalon.model`: Entidades JPA de domínio.
+* `com.beautysalon.repository`: Repositórios Spring Data JPA.
+* `com.beautysalon.service`: Serviços de negócio e integrações.
+* `com.beautysalon.tenant`: Interceptor e ThreadLocal de isolamento multi-tenant.

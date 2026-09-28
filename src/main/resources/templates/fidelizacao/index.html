@@ -25,69 +25,105 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
-            <!-- SEÇÃO DE RETENÇÃO E ANIVERSARIANTES -->
+            <!-- ROBÔ DE RESGATE & PREENCHIMENTO DE AGENDA OCIOSA -->
             <div class="row g-4 mb-4">
-                <!-- CLIENTES EM RISCO / AUSENTES -->
-                <div class="col-lg-6">
+                <!-- ROBÔ DE RESGATE AUTOMÁTICO DE CLIENTES (CHURN / CICLO DE RETORNO) -->
+                <div class="col-lg-7">
                     <div class="content-card h-100">
-                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <h3 class="card-title-custom text-danger">
-                                <i class="bi bi-clock-history"></i>
-                                <span>Radar de Retenção (+30 dias sem vir)</span>
+                                <i class="bi bi-robot"></i>
+                                <span>Robô Anti-Churn & Ciclo de Retorno</span>
                             </h3>
-                            <span class="badge bg-danger" th:text="${clientesAusentes != null ? clientesAusentes.size() : 0} + ' clientes'">0 clientes</span>
+                            <span class="badge bg-danger" th:text="${clientesResgate != null ? clientesResgate.size() : 0} + ' em atraso'">0 em atraso</span>
                         </div>
                         <div class="p-3">
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-info-circle me-1"></i> Clientes que ultrapassaram o ciclo ideal de manutenção do serviço e ainda não possuem agendamento futuro:
+                            </p>
                             <div class="list-group list-group-flush">
-                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3" th:each="ca : ${clientesAusentes}">
-                                    <div>
-                                        <strong th:text="${ca.cliente.nome}">Nome</strong>
-                                        <div class="small text-muted" th:text="'Último atendimento há ' + ${ca.diasAusente} + ' dias com ' + ${ca.ultimoProfissional}">Último há 40 dias</div>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <a th:if="${ca.cliente.telefone != null}"
-                                           th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(ca.cliente.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${ca.cliente.nome} + '%2C%20estamos%20com%20saudades%20de%20voc%C3%AA%20aqui%20no%20studio%21%20Que%20tal%20agendar%20um%20hor%C3%A1rio%20com%20um%20desconto%20especial%3F'"
-                                           target="_blank" class="btn btn-sm btn-outline-success" title="Enviar WhatsApp">
-                                            <i class="bi bi-whatsapp"></i> Chamar
-                                        </a>
-                                        <a th:href="@{/{slug}/fidelizacao/cliente/{id}/historico(slug=${empresaSlug}, id=${ca.cliente.id})}" class="btn btn-sm btn-outline-secondary">
-                                            Histórico
-                                        </a>
+                                <div class="list-group-item px-0 py-3 border-bottom" th:each="cr : ${clientesResgate}">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <strong class="fs-6" th:text="${cr.nomeCliente}">Nome da Cliente</strong>
+                                                <span class="badge" th:classappend="${cr.nivelUrgencia == 'CRÍTICO' ? 'bg-danger' : (cr.nivelUrgencia == 'ALTO' ? 'bg-warning text-dark' : 'bg-info text-dark')}"
+                                                      th:text="${cr.nivelUrgencia}">ALTO</span>
+                                            </div>
+                                            <div class="small text-muted mt-1">
+                                                Último procedimento: <strong class="text-dark" th:text="${cr.ultimoServicoNome}">Coloração</strong> com <span th:text="${cr.ultimoProfissionalNome}">Profissional</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                Última visita: <span th:text="${#temporals.format(cr.dataUltimoAtendimento, 'dd/MM/yyyy')}">10/08</span>
+                                                (<strong class="text-danger" th:text="${cr.diasDesdeUltimoAtendimento} + ' dias atrás'">45 dias</strong> | Ciclo ideal: <span th:text="${cr.cicloIdealDias} + ' dias'">30 dias</span>)
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a th:if="${cr.telefone != null}"
+                                               th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(cr.telefone,' ',''),'-',''),'(',''),')','')} + '&text=' + ${#strings.escapeJava(cr.mensagemSugeridaWhatsapp)}"
+                                               target="_blank" class="btn btn-sm btn-outline-success" title="Enviar Mensagem de Resgate pelo WhatsApp">
+                                                <i class="bi bi-whatsapp"></i> Resgatar no Zap
+                                            </a>
+                                            <a th:href="@{/{slug}/fidelizacao/cliente/{id}/historico(slug=${empresaSlug}, id=${cr.clienteId})}" class="btn btn-sm btn-outline-secondary">
+                                                Histórico
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div th:if="${clientesAusentes == null or #lists.isEmpty(clientesAusentes)}" class="text-center py-4 text-muted">
-                                    Nenhum cliente em atraso de retorno no momento. Excelente retenção!
+                                <div th:if="${clientesResgate == null or #lists.isEmpty(clientesResgate)}" class="text-center py-4 text-muted">
+                                    <i class="bi bi-emoji-smile text-success fs-3 d-block mb-1"></i>
+                                    Nenhum cliente em risco de perda! A retenção e retorno do studio estão excelentes.
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ANIVERSARIANTES DO MÊS -->
-                <div class="col-lg-6">
+                <!-- PREENCHIMENTO DE HORÁRIOS OCIOSOS & CAMPANHAS RELÂMPAGO -->
+                <div class="col-lg-5">
                     <div class="content-card h-100">
                         <div class="card-header-custom d-flex justify-content-between align-items-center">
-                            <h3 class="card-title-custom text-warning">
-                                <i class="bi bi-gift-fill"></i>
-                                <span>Aniversariantes do Mês</span>
+                            <h3 class="card-title-custom text-primary">
+                                <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                <span>Radar de Horários Ociosos</span>
                             </h3>
-                            <span class="badge bg-warning text-dark" th:text="${aniversariantes != null ? aniversariantes.size() : 0} + ' aniversariantes'">0</span>
+                            <span class="badge bg-primary">Próximos 7 dias</span>
                         </div>
                         <div class="p-3">
+                            <p class="text-muted small mb-3">
+                                Identificação automática de dias com baixa ocupação (&lt;40%) para disparar ofertas:
+                            </p>
                             <div class="list-group list-group-flush">
-                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3" th:each="aniv : ${aniversariantes}">
-                                    <div>
-                                        <strong th:text="${aniv.nome}">Nome</strong>
-                                        <div class="small text-muted" th:text="'Data: ' + ${#temporals.format(aniv.dataNascimento, 'dd/MM')}">05/09</div>
+                                <div class="list-group-item px-0 py-2 border-bottom" th:each="oc : ${ociosidadeSemana}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong th:text="${oc.diaSemana} + ' (' + ${#temporals.format(oc.data, 'dd/MM')} + ')'">TERÇA (29/09)</strong>
+                                            <div class="small text-muted" th:text="${oc.totalAgendamentosMarcados} + ' agendamentos marcados (' + ${oc.taxaOcupacaoPercentual} + '% ocupado)'">
+                                                2 agendamentos (20% ocupado)
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span th:if="${oc.oportunidadePromocao}" class="badge bg-warning text-dark">
+                                                <i class="bi bi-fire"></i> Dia Ocioso
+                                            </span>
+                                            <span th:if="${!oc.oportunidadePromocao}" class="badge bg-success">
+                                                <i class="bi bi-check2"></i> Grade Boa
+                                            </span>
+                                        </div>
                                     </div>
-                                    <a th:if="${aniv.telefone != null}"
-                                       th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(aniv.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Parab%C3%A9ns%20' + ${aniv.nome} + '%21%20O%20Studio%20te%20deseja%20um%20feliz%20anivers%C3%A1rio%21%20Temos%20um%20presente%20especial%20para%20voc%C3%AA%20no%20seu%20pr%C3%B3ximo%20atendimento%21'"
-                                       target="_blank" class="btn btn-sm btn-gold" title="Enviar Parabéns WhatsApp">
-                                        <i class="bi bi-whatsapp"></i> Presente
-                                    </a>
                                 </div>
-                                <div th:if="${aniversariantes == null or #lists.isEmpty(aniversariantes)}" class="text-center py-4 text-muted">
-                                    Nenhum aniversariante cadastrado neste mês.
+                            </div>
+
+                            <!-- ANIVERSARIANTES DO MÊS RESUMO -->
+                            <div class="mt-4 pt-3 border-top">
+                                <h6 class="fw-bold text-dark d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-gift text-warning me-1"></i> Aniversariantes do Mês</span>
+                                    <span class="badge bg-secondary" th:text="${aniversariantes != null ? aniversariantes.size() : 0}">0</span>
+                                </h6>
+                                <div th:if="${aniversariantes != null and !#lists.isEmpty(aniversariantes)}" class="d-flex flex-wrap gap-1 mt-2">
+                                    <span th:each="an : ${aniversariantes}" class="badge bg-light text-dark border p-2">
+                                        <span th:text="${an.nome}">Nome</span> (<span th:text="${#temporals.format(an.dataNascimento, 'dd/MM')}">05/09</span>)
+                                    </span>
                                 </div>
                             </div>
                         </div>

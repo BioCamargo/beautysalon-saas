@@ -16,7 +16,7 @@ import lombok.*;
 @Builder
 @ToString(exclude = {"empresa"})
 @EqualsAndHashCode(of = "id")
-@Table(name = "\"user\"",
+@Table(name = "usuarios",
         uniqueConstraints = @UniqueConstraint(columnNames = {"username", "empresa_id"}))
 public class User {
 

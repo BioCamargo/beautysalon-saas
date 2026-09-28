@@ -25,6 +25,8 @@ public class FinanceiroService {
     private final WhatsAppService whatsAppService;
     private final AgendamentoRepository agendamentoRepository;
 
+    private final PagamentoComandaRepository pagamentoComandaRepository;
+
     public FinanceiroService(CaixaRepository caixaRepository,
                              ComandaRepository comandaRepository,
                              MovimentacaoFinanceiraRepository movimentacaoFinanceiraRepository,
@@ -34,7 +36,8 @@ public class FinanceiroService {
                              ServicoRepository servicoRepository,
                              UserRepository userRepository,
                              WhatsAppService whatsAppService,
-                             AgendamentoRepository agendamentoRepository) {
+                             AgendamentoRepository agendamentoRepository,
+                             PagamentoComandaRepository pagamentoComandaRepository) {
         this.caixaRepository = caixaRepository;
         this.comandaRepository = comandaRepository;
         this.movimentacaoFinanceiraRepository = movimentacaoFinanceiraRepository;
@@ -45,6 +48,7 @@ public class FinanceiroService {
         this.userRepository = userRepository;
         this.whatsAppService = whatsAppService;
         this.agendamentoRepository = agendamentoRepository;
+        this.pagamentoComandaRepository = pagamentoComandaRepository;
     }
 
     public Optional<Caixa> buscarCaixaAberto() {
@@ -278,6 +282,45 @@ public class FinanceiroService {
     }
 
     @Transactional
+    public PagamentoComanda adicionarPagamentoComanda(Long comandaId, String formaPagamento, BigDecimal valor, String observacao) {
+        Comanda comanda = buscarComandaPorId(comandaId);
+        if (!"ABERTA".equals(comanda.getStatus())) {
+            throw new IllegalStateException("Não é possível adicionar pagamentos em comanda finalizada.");
+        }
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor do pagamento deve ser maior que zero.");
+        }
+
+        Empresa empresa = empresaRepository.findById(TenantContext.getEmpresaId())
+                .orElseThrow(() -> new IllegalStateException("Empresa não encontrada"));
+
+        PagamentoComanda pagamento = PagamentoComanda.builder()
+                .comanda(comanda)
+                .formaPagamento(formaPagamento)
+                .valor(valor)
+                .observacao(observacao)
+                .empresa(empresa)
+                .dataHora(LocalDateTime.now())
+                .build();
+
+        comanda.getPagamentos().add(pagamento);
+        pagamentoComandaRepository.save(pagamento);
+        comandaRepository.save(comanda);
+        return pagamento;
+    }
+
+    @Transactional
+    public void removerPagamentoComanda(Long comandaId, Long pagamentoId) {
+        Comanda comanda = buscarComandaPorId(comandaId);
+        if (!"ABERTA".equals(comanda.getStatus())) {
+            throw new IllegalStateException("Não é possível remover pagamentos de comanda finalizada.");
+        }
+        comanda.getPagamentos().removeIf(p -> p.getId() != null && p.getId().equals(pagamentoId));
+        pagamentoComandaRepository.deleteById(pagamentoId);
+        comandaRepository.save(comanda);
+    }
+
+    @Transactional
     public Comanda fecharComanda(Long comandaId, String formaPagamento, BigDecimal desconto, BigDecimal acrescimo, String cupomCodigo, User operador) {
         Comanda comanda = buscarComandaPorId(comandaId);
         if (!"ABERTA".equals(comanda.getStatus())) {
@@ -291,13 +334,31 @@ public class FinanceiroService {
         Caixa caixa = caixaOpt.get();
 
         comanda.setCaixa(caixa);
-        comanda.setFormaPagamento(formaPagamento);
         if (cupomCodigo != null && !cupomCodigo.isBlank()) {
             comanda.setCupomAplicado(cupomCodigo.trim().toUpperCase());
         }
         if (desconto != null) comanda.setDesconto(desconto);
         if (acrescimo != null) comanda.setAcrescimo(acrescimo);
         comanda.recalcularTotais();
+
+        // Se houver pagamentos fracionados já lançados, valida ou gera o pagamento integral
+        if (comanda.getPagamentos().isEmpty()) {
+            // Pagamento único direto
+            comanda.setFormaPagamento(formaPagamento);
+            PagamentoComanda pagamentoUnico = PagamentoComanda.builder()
+                    .comanda(comanda)
+                    .formaPagamento(formaPagamento)
+                    .valor(comanda.getValorTotal())
+                    .empresa(comanda.getEmpresa())
+                    .dataHora(LocalDateTime.now())
+                    .build();
+            comanda.getPagamentos().add(pagamentoUnico);
+            pagamentoComandaRepository.save(pagamentoUnico);
+        } else {
+            // Split existente: define forma como MULTIPLO ou a lista concatenada
+            comanda.setFormaPagamento("MÚLTIPLO (" + comanda.getPagamentos().size() + " parcelas)");
+        }
+
         comanda.setStatus("PAGA");
         comanda.setDataFechamento(LocalDateTime.now());
 
@@ -348,5 +409,138 @@ public class FinanceiroService {
         }
 
         return salva;
+    }
+
+    // ================= DRE & RENTABILIDADE =================
+
+    @Transactional(readOnly = true)
+    public com.beautysalon.DTO.DREDTO calcularDREPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        Long empresaId = TenantContext.getEmpresaId();
+        List<Comanda> comandas = comandaRepository.findComandasPagasPorPeriodo(empresaId, inicio, fim);
+
+        BigDecimal receitaServicos = BigDecimal.ZERO;
+        BigDecimal receitaProdutos = BigDecimal.ZERO;
+        BigDecimal descontos = BigDecimal.ZERO;
+        BigDecimal comissoes = BigDecimal.ZERO;
+        BigDecimal custoInsumos = BigDecimal.ZERO;
+        BigDecimal custoProdutosVendidos = BigDecimal.ZERO;
+
+        for (Comanda c : comandas) {
+            if (c.getSubtotalServicos() != null) receitaServicos = receitaServicos.add(c.getSubtotalServicos());
+            if (c.getSubtotalProdutos() != null) receitaProdutos = receitaProdutos.add(c.getSubtotalProdutos());
+            if (c.getDesconto() != null) descontos = descontos.add(c.getDesconto());
+            if (c.getTotalComissoes() != null) comissoes = comissoes.add(c.getTotalComissoes());
+
+            for (ComandaItem item : c.getItens()) {
+                if ("SERVICO".equals(item.getTipo()) && item.getServico() != null) {
+                    List<ServicoInsumo> insumos = servicoInsumoRepository.findByServicoIdAndEmpresaId(item.getServico().getId(), empresaId);
+                    for (ServicoInsumo ins : insumos) {
+                        BigDecimal precoCusto = ins.getProduto().getPrecoCusto() != null ? ins.getProduto().getPrecoCusto() : BigDecimal.ZERO;
+                        BigDecimal custoItem = precoCusto.multiply(BigDecimal.valueOf((long) ins.getQuantidadeGasta() * item.getQuantidade()));
+                        custoInsumos = custoInsumos.add(custoItem);
+                    }
+                } else if ("PRODUTO".equals(item.getTipo()) && item.getProduto() != null) {
+                    BigDecimal precoCusto = item.getProduto().getPrecoCusto() != null ? item.getProduto().getPrecoCusto() : BigDecimal.ZERO;
+                    custoProdutosVendidos = custoProdutosVendidos.add(precoCusto.multiply(BigDecimal.valueOf(item.getQuantidade())));
+                }
+            }
+        }
+
+        BigDecimal receitaBruta = receitaServicos.add(receitaProdutos);
+        BigDecimal receitaLiquida = receitaBruta.subtract(descontos);
+        BigDecimal custosVariaveis = comissoes.add(custoInsumos).add(custoProdutosVendidos);
+        BigDecimal margemContribuicao = receitaLiquida.subtract(custosVariaveis);
+        BigDecimal margemContribuicaoPerc = receitaLiquida.compareTo(BigDecimal.ZERO) > 0
+                ? margemContribuicao.multiply(BigDecimal.valueOf(100)).divide(receitaLiquida, 2, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        // Despesas operacionais do período (sangrias/despesas avulsas do caixa)
+        List<MovimentacaoFinanceira> movs = movimentacaoFinanceiraRepository.findAllByEmpresaIdAndDataHoraBetween(empresaId, inicio, fim);
+        BigDecimal despesasOperacionais = movs.stream()
+                .filter(m -> "SANGRIA".equals(m.getTipo()) || "DESPESA_AVULSA".equals(m.getTipo()))
+                .map(MovimentacaoFinanceira::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal resultadoLiquido = margemContribuicao.subtract(despesasOperacionais);
+        BigDecimal lucratividadePerc = receitaLiquida.compareTo(BigDecimal.ZERO) > 0
+                ? resultadoLiquido.multiply(BigDecimal.valueOf(100)).divide(receitaLiquida, 2, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        return com.beautysalon.DTO.DREDTO.builder()
+                .receitaBrutaServicos(receitaServicos)
+                .receitaBrutaProdutos(receitaProdutos)
+                .receitaBrutaTotal(receitaBruta)
+                .deducoesDescontos(descontos)
+                .receitaLiquida(receitaLiquida)
+                .totalComissoesProfissionais(comissoes)
+                .custoInsumosServicos(custoInsumos)
+                .custoProdutosVendidos(custoProdutosVendidos)
+                .totalCustosVariaveis(custosVariaveis)
+                .margemContribuicao(margemContribuicao)
+                .margemContribuicaoPercentual(margemContribuicaoPerc)
+                .despesasOperacionais(despesasOperacionais)
+                .resultadoLiquido(resultadoLiquido)
+                .lucratividadePercentual(lucratividadePerc)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<com.beautysalon.DTO.RentabilidadeServicoDTO> calcularRentabilidadeServicos(LocalDateTime inicio, LocalDateTime fim) {
+        Long empresaId = TenantContext.getEmpresaId();
+        List<Comanda> comandas = comandaRepository.findComandasPagasPorPeriodo(empresaId, inicio, fim);
+
+        java.util.Map<Long, com.beautysalon.DTO.RentabilidadeServicoDTO> map = new java.util.HashMap<>();
+
+        for (Comanda c : comandas) {
+            for (ComandaItem item : c.getItens()) {
+                if ("SERVICO".equals(item.getTipo()) && item.getServico() != null) {
+                    Servico s = item.getServico();
+                    com.beautysalon.DTO.RentabilidadeServicoDTO dto = map.computeIfAbsent(s.getId(), k ->
+                            com.beautysalon.DTO.RentabilidadeServicoDTO.builder()
+                                    .servicoId(s.getId())
+                                    .nomeServico(s.getNome())
+                                    .quantidadeExecutada(0)
+                                    .faturamentoTotal(BigDecimal.ZERO)
+                                    .custoInsumosTotal(BigDecimal.ZERO)
+                                    .comissoesTotal(BigDecimal.ZERO)
+                                    .lucroLiquidoTotal(BigDecimal.ZERO)
+                                    .margemLucroPercentual(BigDecimal.ZERO)
+                                    .build()
+                    );
+
+                    dto.setQuantidadeExecutada(dto.getQuantidadeExecutada() + item.getQuantidade());
+                    dto.setFaturamentoTotal(dto.getFaturamentoTotal().add(item.getValorTotal()));
+                    if (item.getValorComissao() != null) {
+                        dto.setComissoesTotal(dto.getComissoesTotal().add(item.getValorComissao()));
+                    }
+
+                    // Calcula insumos deste serviço
+                    List<ServicoInsumo> insumos = servicoInsumoRepository.findByServicoIdAndEmpresaId(s.getId(), empresaId);
+                    for (ServicoInsumo ins : insumos) {
+                        BigDecimal precoCusto = ins.getProduto().getPrecoCusto() != null ? ins.getProduto().getPrecoCusto() : BigDecimal.ZERO;
+                        BigDecimal custo = precoCusto.multiply(BigDecimal.valueOf((long) ins.getQuantidadeGasta() * item.getQuantidade()));
+                        dto.setCustoInsumosTotal(dto.getCustoInsumosTotal().add(custo));
+                    }
+                }
+            }
+        }
+
+        // Calcula lucro e margem de cada serviço
+        for (var dto : map.values()) {
+            BigDecimal lucro = dto.getFaturamentoTotal()
+                    .subtract(dto.getComissoesTotal())
+                    .subtract(dto.getCustoInsumosTotal());
+            dto.setLucroLiquidoTotal(lucro);
+
+            if (dto.getFaturamentoTotal().compareTo(BigDecimal.ZERO) > 0) {
+                dto.setMargemLucroPercentual(
+                        lucro.multiply(BigDecimal.valueOf(100)).divide(dto.getFaturamentoTotal(), 2, java.math.RoundingMode.HALF_UP)
+                );
+            }
+        }
+
+        List<com.beautysalon.DTO.RentabilidadeServicoDTO> lista = new java.util.ArrayList<>(map.values());
+        lista.sort((a, b) -> b.getLucroLiquidoTotal().compareTo(a.getLucroLiquidoTotal()));
+        return lista;
     }
 }

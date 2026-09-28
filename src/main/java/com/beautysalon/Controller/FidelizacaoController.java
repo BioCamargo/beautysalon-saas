@@ -18,18 +18,22 @@ public class FidelizacaoController {
 
     private final FidelizacaoService fidelizacaoService;
     private final ServicoService servicoService;
+    private final com.beautysalon.service.InteligenciaNegocioService inteligenciaNegocioService;
 
     public FidelizacaoController(FidelizacaoService fidelizacaoService,
-                                 ServicoService servicoService) {
+                                 ServicoService servicoService,
+                                 com.beautysalon.service.InteligenciaNegocioService inteligenciaNegocioService) {
         this.fidelizacaoService = fidelizacaoService;
         this.servicoService = servicoService;
+        this.inteligenciaNegocioService = inteligenciaNegocioService;
     }
 
     @GetMapping
     public String index(@PathVariable String slug, Model model) {
         int mesAtual = LocalDate.now().getMonthValue();
         model.addAttribute("aniversariantes", fidelizacaoService.listarAniversariantesDoMes(mesAtual));
-        model.addAttribute("clientesAusentes", fidelizacaoService.buscarClientesEmRiscoRetorno(30)); // 30 dias sem vir
+        model.addAttribute("clientesResgate", inteligenciaNegocioService.identificarClientesParaResgate());
+        model.addAttribute("ociosidadeSemana", inteligenciaNegocioService.analisarOciosidadeProximosDias());
         model.addAttribute("cupons", fidelizacaoService.listarCupons());
         model.addAttribute("vouchers", fidelizacaoService.listarVouchers());
         model.addAttribute("combos", fidelizacaoService.listarCombos());

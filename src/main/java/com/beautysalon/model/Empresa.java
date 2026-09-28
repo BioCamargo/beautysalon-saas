@@ -44,6 +44,10 @@ public class Empresa {
 
     private String logoUrl;
 
+    private String chavePix; // CPF, CNPJ, Telefone, E-mail ou Aleatória
+
+    private String cidade; // Cidade para geração do BR Code Pix
+
     @Builder.Default
     private boolean ativo = true;
 

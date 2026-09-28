@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,6 +54,9 @@ class FinanceiroServiceTest {
 
     @Mock
     private AgendamentoRepository agendamentoRepository;
+
+    @Mock
+    private PagamentoComandaRepository pagamentoComandaRepository;
 
     @InjectMocks
     private FinanceiroService financeiroService;
@@ -212,5 +214,59 @@ class FinanceiroServiceTest {
         verify(caixaRepository, times(1)).save(caixa);
         verify(agendamentoRepository, times(1)).save(agendamento);
         verify(comandaRepository, times(1)).save(comanda);
+    }
+
+    @Test
+    @DisplayName("Deve adicionar pagamento parcial em comanda (Split de Pagamento)")
+    void deveAdicionarPagamentoParcialComanda() {
+        Comanda comanda = Comanda.builder()
+                .id(70L)
+                .status("ABERTA")
+                .valorTotal(new BigDecimal("200.00"))
+                .empresa(empresaMock)
+                .build();
+
+        when(comandaRepository.findByIdAndEmpresaId(70L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(empresaRepository.findById(EMPRESA_ID)).thenReturn(Optional.of(empresaMock));
+        when(pagamentoComandaRepository.save(any(PagamentoComanda.class))).thenAnswer(i -> i.getArgument(0));
+
+        PagamentoComanda pg = financeiroService.adicionarPagamentoComanda(70L, "PIX", new BigDecimal("100.00"), "Entrada Pix");
+
+        assertNotNull(pg);
+        assertEquals(new BigDecimal("100.00"), pg.getValor());
+        assertEquals("PIX", pg.getFormaPagamento());
+        assertEquals(1, comanda.getPagamentos().size());
+        assertEquals(new BigDecimal("100.00"), comanda.getTotalPago());
+        assertEquals(new BigDecimal("100.00"), comanda.getSaldoRestante());
+    }
+
+    @Test
+    @DisplayName("Deve calcular DRE simplificado e lucratividade com precisão")
+    void deveCalcularDREPeriodo() {
+        LocalDateTime inicio = LocalDateTime.now().minusDays(1);
+        LocalDateTime fim = LocalDateTime.now();
+
+        Comanda c1 = Comanda.builder()
+                .id(1L)
+                .status("PAGA")
+                .subtotalServicos(new BigDecimal("1000.00"))
+                .subtotalProdutos(new BigDecimal("200.00"))
+                .desconto(new BigDecimal("50.00"))
+                .totalComissoes(new BigDecimal("300.00"))
+                .valorTotal(new BigDecimal("1150.00"))
+                .empresa(empresaMock)
+                .build();
+
+        when(comandaRepository.findComandasPagasPorPeriodo(EMPRESA_ID, inicio, fim)).thenReturn(List.of(c1));
+        when(movimentacaoFinanceiraRepository.findAllByEmpresaIdAndDataHoraBetween(EMPRESA_ID, inicio, fim))
+                .thenReturn(List.of());
+
+        var dre = financeiroService.calcularDREPeriodo(inicio, fim);
+
+        assertNotNull(dre);
+        assertEquals(new BigDecimal("1200.00"), dre.getReceitaBrutaTotal());
+        assertEquals(new BigDecimal("1150.00"), dre.getReceitaLiquida());
+        assertEquals(new BigDecimal("300.00"), dre.getTotalComissoesProfissionais());
+        assertEquals(new BigDecimal("850.00"), dre.getResultadoLiquido());
     }
 }

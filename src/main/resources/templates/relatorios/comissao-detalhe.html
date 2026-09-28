@@ -33,10 +33,15 @@
                         </div>
                     </div>
                     <div class="d-flex gap-2 no-print">
+                        <a th:if="${profissional.telefone != null and !#strings.isEmpty(profissional.telefone)}"
+                           th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(profissional.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${profissional.nome} + '%21%20Segue%20o%20seu%20extrato%20de%20comiss%C3%A3o%20apurado%20no%20per%C3%ADodo%20de%20' + ${#temporals.format(dataInicio, 'dd/MM/yyyy')} + '%20a%20' + ${#temporals.format(dataFim, 'dd/MM/yyyy')} + '%3A%0A%0A📊%20*Procedimentos%3A*%20' + ${itens != null ? itens.size() : 0} + '%0A💰%20*Total%20Faturado%3A*%20R%24%20' + ${#numbers.formatDecimal(totalFaturado, 1, 2, 'POINT')} + '%0A💵%20*Comiss%C3%A3o%20L%C3%ADquida%20a%20Receber%3A*%20R%24%20' + ${#numbers.formatDecimal(totalComissao, 1, 2, 'POINT')} + '%0A%0AEm%20caso%20de%20d%C3%BAvidas%2C%20estamos%20%C3%A0%20disposi%C3%A7%C3%A3o%21%20✨'"
+                           target="_blank" class="btn btn-outline-success btn-sm" title="Enviar Extrato no WhatsApp do Profissional">
+                            <i class="bi bi-whatsapp"></i> Enviar WhatsApp
+                        </a>
                         <button onclick="window.print()" class="btn btn-secondary btn-sm">
                             <i class="bi bi-printer"></i> Imprimir Extrato
                         </button>
-                        <button onclick="exportarExtratoCSV()" class="btn btn-outline-success btn-sm">
+                        <button onclick="exportarExtratoCSV()" class="btn btn-outline-dark btn-sm">
                             <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
                         </button>
                         <a th:href="@{/{slug}/relatorios(slug=${empresaSlug}, dataInicio=${dataInicio}, dataFim=${dataFim})}" class="btn btn-gold btn-sm">

@@ -308,15 +308,78 @@
                                     <span class="text-danger">Desconto:</span>
                                     <strong class="text-danger"
                                         th:text="'- R$ ' + ${#numbers.formatDecimal(comanda.desconto, 1, 2, 'COMMA')}">-
-                                        R$ 0,00</strong>
-                                </div>
-                                <hr>
+                                                         </div>
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fs-5 fw-bold">Total a Pagar:</span>
                                     <span class="fs-4 fw-bold text-primary"
                                         th:text="'R$ ' + ${#numbers.formatDecimal(comanda.valorTotal != null ? comanda.valorTotal : 0, 1, 2, 'COMMA')}">R$
                                         0,00</span>
-                                                    <!-- FORMULÁRIO DE FECHAMENTO SE ESTIVER ABERTA -->
+                                </div>
+
+                                <!-- RESUMO DE PAGAMENTOS / SPLIT -->
+                                <div th:if="${comanda.status == 'ABERTA'}" class="mb-3 p-3 bg-light rounded border">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small fw-bold text-dark">
+                                            <i class="bi bi-credit-card-2-front text-primary me-1"></i> Pagamentos Registrados:
+                                        </span>
+                                        <span class="badge" th:classappend="${comanda.saldoRestante == 0 ? 'bg-success' : 'bg-warning text-dark'}"
+                                              th:text="'Restante: R$ ' + ${#numbers.formatDecimal(comanda.saldoRestante, 1, 2, 'COMMA')}">
+                                            Restante: R$ 0,00
+                                        </span>
+                                    </div>
+
+                                    <!-- LISTA DE FRAÇÕES JÁ PAGAS -->
+                                    <div th:if="${comanda.pagamentos != null and !#lists.isEmpty(comanda.pagamentos)}" class="mb-2">
+                                        <div th:each="pg : ${comanda.pagamentos}" class="d-flex justify-content-between align-items-center bg-white p-2 mb-1 rounded border small">
+                                            <div>
+                                                <strong th:text="${pg.formaPagamento}">PIX</strong>:
+                                                <span th:text="'R$ ' + ${#numbers.formatDecimal(pg.valor, 1, 2, 'COMMA')}">R$ 50,00</span>
+                                                <span th:if="${pg.observacao != null and !#strings.isEmpty(pg.observacao)}" class="text-muted fst-italic" th:text="' (' + ${pg.observacao} + ')'"></span>
+                                            </div>
+                                            <form th:action="@{/{slug}/financeiro/comandas/{id}/pagamentos/{pagamentoId}/remover(slug=${empresaSlug}, id=${comanda.id}, pagamentoId=${pg.id})}" method="post" style="display:inline;">
+                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                                <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Remover fração">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- FORMULÁRIO DE ADIÇÃO DE FRAÇÃO DE PAGAMENTO (SPLIT) -->
+                                    <form th:action="@{/{slug}/financeiro/comandas/{id}/pagamentos/adicionar(slug=${empresaSlug}, id=${comanda.id})}" method="post" class="mt-2">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <div class="row g-2">
+                                            <div class="col-5">
+                                                <select name="formaPagamento" class="form-select form-select-sm" required>
+                                                    <option value="PIX">PIX</option>
+                                                    <option value="CARTAO_CREDITO">Crédito</option>
+                                                    <option value="CARTAO_DEBITO">Débito</option>
+                                                    <option value="DINHEIRO">Dinheiro</option>
+                                                    <option value="VOUCHER">Voucher</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" step="0.01" name="valor" class="form-control form-control-sm"
+                                                       th:value="${#numbers.formatDecimal(comanda.saldoRestante, 1, 2, 'POINT')}"
+                                                       placeholder="Valor" required />
+                                            </div>
+                                            <div class="col-3">
+                                                <button type="submit" class="btn btn-outline-primary btn-sm w-100" title="Adicionar Pagamento Parcial">
+                                                    <i class="bi bi-plus"></i> Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- BOTÃO PIX QR CODE DINÂMICO -->
+                                    <div class="mt-2 text-center" th:if="${pixPayload != null}">
+                                        <button type="button" class="btn btn-sm btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#modalPix">
+                                            <i class="bi bi-qr-code"></i> Pagar com Pix QR Code
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- FORMULÁRIO DE FECHAMENTO SE ESTIVER ABERTA -->
                                 <form th:if="${comanda.status == 'ABERTA'}"
                                     th:action="@{/{slug}/financeiro/comandas/{id}/fechar(slug=${empresaSlug}, id=${comanda.id})}"
                                     method="post" id="formFecharComanda">
@@ -334,45 +397,32 @@
                                         </select>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Forma de Pagamento:</label>
-                                        <select name="formaPagamento" id="selectFormaPagamento" class="form-select" required onchange="toggleMultiploPagamento()">
+                                    <div class="mb-3" th:if="${comanda.pagamentos == null or #lists.isEmpty(comanda.pagamentos)}">
+                                        <label class="form-label small fw-bold">Forma de Pagamento (Integral):</label>
+                                        <select name="formaPagamento" id="selectFormaPagamento" class="form-select" required>
                                             <option value="PIX">PIX</option>
                                             <option value="CARTAO_CREDITO">Cartão de Crédito</option>
                                             <option value="CARTAO_DEBITO">Cartão de Débito</option>
                                             <option value="DINHEIRO">Dinheiro / Espécie</option>
                                             <option value="VOUCHER">Voucher / Vale Presente</option>
-                                            <option value="MULTIPLO">✨ Pagamento Misto / Múltiplo</option>
                                         </select>
-                                    </div>
-
-                                    <!-- CAMPO ADICIONAL PARA PAGAMENTO MISTO -->
-                                    <div class="mb-3 p-2 border rounded bg-light" id="boxMultiploPagamento" style="display: none;">
-                                        <label class="form-label small fw-bold text-primary">
-                                            <i class="bi bi-pie-chart-fill me-1"></i> Detalhe do Pagamento Misto:
-                                        </label>
-                                        <input type="text" name="detalheMultiplo" id="detalheMultiplo" class="form-control form-control-sm" 
-                                               placeholder="Ex: R$ 50 no PIX + R$ 30 no Cartão" />
-                                        <span class="text-muted small" style="font-size: 0.75rem;">
-                                            Descreva as formas e os valores divididos pelo cliente.
-                                        </span>
                                     </div>
 
                                     <div class="row g-2 mb-3">
                                         <div class="col-6">
                                              <label class="form-label small">Desconto (R$):</label>
-                                            <input type="number" step="0.01" name="desconto" id="inputDesconto" class="form-control"
-                                                th:value="${comanda.desconto != null ? comanda.desconto : '0.00'}" />
+                                             <input type="number" step="0.01" name="desconto" id="inputDesconto" class="form-control"
+                                                 th:value="${comanda.desconto != null ? comanda.desconto : '0.00'}" />
                                         </div>
                                         <div class="col-6">
                                              <label class="form-label small">Acréscimo (R$):</label>
-                                            <input type="number" step="0.01" name="acrescimo" id="inputAcrescimo" class="form-control"
-                                                th:value="${comanda.acrescimo != null ? comanda.acrescimo : '0.00'}" />
+                                             <input type="number" step="0.01" name="acrescimo" id="inputAcrescimo" class="form-control"
+                                                 th:value="${comanda.acrescimo != null ? comanda.acrescimo : '0.00'}" />
                                         </div>
                                     </div>
 
                                     <button type="submit" class="btn btn-gold w-100 py-2 fs-6">
-                                        <i class="bi bi-check2-circle"></i> Receber & Fechar Comanda
+                                        <i class="bi bi-check2-circle"></i> Finalizar & Fechar Comanda
                                     </button>
                                 </form>
 
@@ -440,6 +490,13 @@
             <div style="display: flex; justify-content: space-between; margin-top: 3px;" th:if="${comanda.formaPagamento != null}">
                 <span>Pagamento:</span>
                 <span th:text="${comanda.formaPagamento}">PIX</span>
+            </div>
+            <!-- SE HOUVER PARCELAS DE SPLIT -->
+            <div th:if="${comanda.pagamentos != null and !#lists.isEmpty(comanda.pagamentos)}" style="margin-top: 4px; padding-top: 4px; border-top: 1px dotted #000;">
+                <div th:each="pg : ${comanda.pagamentos}" style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span th:text="'- ' + ${pg.formaPagamento}">- PIX</span>
+                    <span th:text="'R$ ' + ${#numbers.formatDecimal(pg.valor, 1, 2, 'COMMA')}">R$ 50,00</span>
+                </div>
             </div>
         </div>
 
@@ -535,7 +592,67 @@
                 });
             }
         });
+
+        function copiarPixPayload() {
+            const copyText = document.getElementById("inputPixPayload");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                const btn = document.getElementById("btnCopiarPix");
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check2"></i> Copiado!';
+                btn.classList.replace('btn-outline-primary', 'btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = original;
+                    btn.classList.replace('btn-success', 'btn-outline-primary');
+                }, 2000);
+            });
+        }
     </script>
+
+    <!-- MODAL PIX QR CODE & COPIA E COLA -->
+    <div class="modal fade" id="modalPix" tabindex="-1" aria-hidden="true" th:if="${pixPayload != null}">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-success w-100">
+                        <i class="bi bi-qr-code-scan me-1"></i> Pagamento via PIX
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        Aponte a câmera do aplicativo do seu banco para o QR Code abaixo ou utilize o código Copia e Cola:
+                    </p>
+
+                    <!-- QR CODE GERADO VIA API RÁPIDA -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <img th:src="'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + ${#strings.escapeJava(pixPayload)}"
+                             alt="QR Code Pix" class="img-fluid rounded border p-2 bg-white shadow-sm" style="max-width: 220px;" />
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-dark">Código Pix Copia e Cola:</label>
+                        <div class="input-group">
+                            <input type="text" id="inputPixPayload" class="form-control form-control-sm bg-light"
+                                   th:value="${pixPayload}" readonly />
+                            <button class="btn btn-outline-primary btn-sm" type="button" id="btnCopiarPix" onclick="copiarPixPayload()">
+                                <i class="bi bi-clipboard"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded bg-light small text-muted text-start">
+                        <div><strong>Chave do Salão:</strong> <span th:text="${chavePix}"></span></div>
+                        <div><strong>Valor a Pagar:</strong> R$ <span th:text="${#numbers.formatDecimal(comanda.saldoRestante > 0 ? comanda.saldoRestante : comanda.valorTotal, 1, 2, 'COMMA')}">0,00</span></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

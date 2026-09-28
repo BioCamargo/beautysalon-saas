@@ -20,10 +20,20 @@ public class ClienteController {
 
     private final ClienteService clienteService;
     private final SmsService smsService;
+    private final com.beautysalon.repository.ClienteAnamneseRepository clienteAnamneseRepository;
+    private final com.beautysalon.repository.UserRepository userRepository;
+    private final com.beautysalon.repository.ClienteRepository clienteRepository;
 
-    public ClienteController(ClienteService clienteService, SmsService smsService) {
+    public ClienteController(ClienteService clienteService,
+                             SmsService smsService,
+                             com.beautysalon.repository.ClienteAnamneseRepository clienteAnamneseRepository,
+                             com.beautysalon.repository.UserRepository userRepository,
+                             com.beautysalon.repository.ClienteRepository clienteRepository) {
         this.clienteService = clienteService;
         this.smsService = smsService;
+        this.clienteAnamneseRepository = clienteAnamneseRepository;
+        this.userRepository = userRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     @GetMapping
@@ -106,6 +116,66 @@ public class ClienteController {
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Erro ao enviar SMS");
         }
+    }
+
+    // ================= ANAMNESE DIGITAL & FOTOS ANTES/DEPOIS =================
+
+    @GetMapping("/{id}/anamnese")
+    public String viewAnamnese(@PathVariable String slug, @PathVariable Long id, Model model) {
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        com.beautysalon.model.Cliente cliente = clienteRepository.findByIdAndEmpresaId(id, empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
+        var historico = clienteAnamneseRepository.findByClienteIdAndEmpresaIdOrderByDataRegistroDesc(id, empresaId);
+        var profissionais = userRepository.findAllByEmpresaIdAndAtivoTrue(empresaId);
+
+        model.addAttribute("cliente", cliente);
+        model.addAttribute("historicoAnamnese", historico);
+        model.addAttribute("profissionais", profissionais);
+        model.addAttribute("empresaSlug", slug);
+        model.addAttribute("pageTitle", "Ficha Química & Fotos: " + cliente.getNome());
+        return "clientes/anamnese";
+    }
+
+    @PostMapping("/{id}/anamnese/salvar")
+    public String salvarAnamnese(@PathVariable String slug,
+                                 @PathVariable Long id,
+                                 @RequestParam String procedimentoRealizado,
+                                 @RequestParam(required = false) String formulaQuimica,
+                                 @RequestParam(required = false) String historicoCapilarAlergias,
+                                 @RequestParam(required = false) String observacoesTecnicas,
+                                 @RequestParam(required = false) String fotoAntesUrl,
+                                 @RequestParam(required = false) String fotoDepoisUrl,
+                                 @RequestParam(required = false) String assinaturaDigitalBase64,
+                                 @RequestParam(required = false) Long profissionalId,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        com.beautysalon.model.Cliente cliente = clienteRepository.findByIdAndEmpresaId(id, empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
+        com.beautysalon.model.User prof = null;
+        if (profissionalId != null) {
+            prof = userRepository.findByIdAndEmpresaId(profissionalId, empresaId).orElse(null);
+        }
+
+        com.beautysalon.model.ClienteAnamnese anamnese = com.beautysalon.model.ClienteAnamnese.builder()
+                .cliente(cliente)
+                .empresa(cliente.getEmpresa())
+                .profissional(prof)
+                .procedimentoRealizado(procedimentoRealizado)
+                .formulaQuimica(formulaQuimica)
+                .historicoCapilarAlergias(historicoCapilarAlergias)
+                .observacoesTecnicas(observacoesTecnicas)
+                .fotoAntesUrl(fotoAntesUrl)
+                .fotoDepoisUrl(fotoDepoisUrl)
+                .assinaturaDigitalBase64(assinaturaDigitalBase64)
+                .termoConsentimentoAceito(true)
+                .dataRegistro(java.time.LocalDateTime.now())
+                .build();
+
+        clienteAnamneseRepository.save(anamnese);
+        redirectAttributes.addFlashAttribute("mensagemSucesso", "Ficha química e fotos registradas com sucesso!");
+        return "redirect:/" + slug + "/clientes/" + id + "/anamnese";
     }
 
     private String gerarCodigo() {

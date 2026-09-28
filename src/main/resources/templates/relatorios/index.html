@@ -3,12 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios Gerenciais | Beauty Salon</title>
+    <title>Central de Relatórios & Inteligência | Beauty Salon</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .nav-tabs-custom {
+            border-bottom: 2px solid #e9ecef;
+            gap: 8px;
+        }
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-radius: 8px 8px 0 0;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+        .nav-tabs-custom .nav-link:hover {
+            color: #d4af37;
+            background-color: #f8f9fa;
+        }
+        .nav-tabs-custom .nav-link.active {
+            color: #0f172a;
+            background-color: #fff;
+            border-bottom: 3px solid #d4af37;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+        .table-progress {
+            height: 6px;
+            border-radius: 4px;
+        }
+        .stat-badge-soft {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .urgencia-CRITICO { background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .urgencia-ALTO { background-color: #ffedd5; color: #ea580c; border: 1px solid #fdba74; }
+        .urgencia-MODERADO { background-color: #fef9c3; color: #ca8a04; border: 1px solid #fde047; }
+        
+        @media print {
+            .no-print, .sidebar, .app-sidebar, .app-topbar, .btn, .nav-tabs-custom {
+                display: none !important;
+            }
+            .tab-pane {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            .app-layout {
+                display: block !important;
+            }
+            .app-main, .page-content {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .content-card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+            @page {
+                margin: 15mm;
+                size: landscape;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -16,13 +86,14 @@
     <div th:replace="~{fragments/sidebar :: sidebar('relatorios')}"></div>
 
     <div class="app-main">
-        <div th:replace="~{fragments/topbar :: topbar('Relatórios & Métricas', 'Faturamento, comissões de profissionais e rentabilidade')}"></div>
+        <div th:replace="~{fragments/topbar :: topbar('Relatórios & Inteligência Gerencial', 'Indicadores de desempenho financeiro, equipe, retenção e estoque')}"></div>
 
         <main class="page-content">
-            <!-- FILTRO DE PERÍODO & AÇÕES DE EXPORTAÇÃO -->
+            <!-- FILTRO DE PERÍODO & AÇÕES GERAIS -->
             <div class="content-card mb-4 no-print">
                 <div class="p-3 bg-light d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <form class="row g-2 align-items-end flex-grow-1" method="get" th:action="@{/{slug}/relatorios(slug=${empresaSlug})}">
+                    <form id="filtroForm" class="row g-2 align-items-end flex-grow-1" method="get" th:action="@{/{slug}/relatorios(slug=${empresaSlug})}">
+                        <input type="hidden" name="tab" id="tabInput" th:value="${activeTab != null ? activeTab : 'financeiro'}" />
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">Data Início:</label>
                             <input type="date" name="dataInicio" class="form-control form-control-sm" th:value="${dataInicio}" required />
@@ -33,54 +104,54 @@
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-gold btn-sm w-100">
-                                <i class="bi bi-filter"></i> Filtrar Período
+                                <i class="bi bi-filter"></i> Atualizar Período
                             </button>
                         </div>
                     </form>
 
                     <div class="d-flex gap-2">
                         <button onclick="window.print()" class="btn btn-outline-dark btn-sm">
-                            <i class="bi bi-printer"></i> Imprimir Relatório
+                            <i class="bi bi-printer"></i> Imprimir Tudo
                         </button>
-                        <button onclick="exportarTabelaCSV()" class="btn btn-outline-success btn-sm">
+                        <button onclick="exportarRelatorioAtualCSV()" class="btn btn-outline-success btn-sm">
                             <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- CARDS DE RESULTADOS FINANCEIROS -->
+            <!-- CARDS DE VISÃO GERAL (KPIs) -->
             <div class="stat-grid mb-4">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <span class="stat-label">Faturamento Bruto</span>
+                        <span class="stat-label">Faturamento Total</span>
                         <span class="stat-value text-success" th:text="'R$ ' + ${#numbers.formatDecimal(faturamentoTotal, 1, 2, 'COMMA')}">R$ 0,00</span>
-                        <span class="stat-desc" th:text="${totalAtendimentos} + ' atendimentos pagos'">0 atendimentos</span>
+                        <span class="stat-desc" th:text="${totalAtendimentos} + ' comandas fechadas'">0 comandas</span>
                     </div>
                     <div class="stat-icon-box stat-icon-emerald">
-                        <i class="bi bi-graph-up-arrow"></i>
+                        <i class="bi bi-cash-coin"></i>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-info">
-                        <span class="stat-label">Comissões a Pagar</span>
+                        <span class="stat-label">Comissões Equipe</span>
                         <span class="stat-value text-warning" th:text="'R$ ' + ${#numbers.formatDecimal(totalComissoes, 1, 2, 'COMMA')}">R$ 0,00</span>
-                        <span class="stat-desc"><i class="bi bi-person-badge"></i> Total equipe no período</span>
+                        <span class="stat-desc"><i class="bi bi-people"></i> Repasses no período</span>
                     </div>
                     <div class="stat-icon-box stat-icon-gold">
-                        <i class="bi bi-cash-stack"></i>
+                        <i class="bi bi-person-check-fill"></i>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <div class="stat-info">
-                        <span class="stat-label">Lucro Operacional Bruto</span>
+                        <span class="stat-label">Lucro Operacional</span>
                         <span class="stat-value text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(lucroBruto, 1, 2, 'COMMA')}">R$ 0,00</span>
-                        <span class="stat-desc"><i class="bi bi-shield-check"></i> Faturamento (-) Comissões</span>
+                        <span class="stat-desc"><i class="bi bi-shield-check"></i> Margem Bruta Salão</span>
                     </div>
                     <div class="stat-icon-box stat-icon-blue">
-                        <i class="bi bi-pie-chart-fill"></i>
+                        <i class="bi bi-graph-up-arrow"></i>
                     </div>
                 </div>
 
@@ -88,7 +159,7 @@
                     <div class="stat-info">
                         <span class="stat-label">Ticket Médio</span>
                         <span class="stat-value" th:text="'R$ ' + ${#numbers.formatDecimal(ticketMedio, 1, 2, 'COMMA')}">R$ 0,00</span>
-                        <span class="stat-desc"><i class="bi bi-receipt"></i> Média por comanda</span>
+                        <span class="stat-desc"><i class="bi bi-receipt"></i> Média por atendimento</span>
                     </div>
                     <div class="stat-icon-box stat-icon-purple">
                         <i class="bi bi-wallet2"></i>
@@ -96,150 +167,542 @@
                 </div>
             </div>
 
-            <!-- RELATÓRIO DE COMISSÕES POR PROFISSIONAL -->
-            <div class="content-card mb-4">
-                <div class="card-header-custom">
-                    <h3 class="card-title-custom">
-                        <i class="bi bi-people-fill text-primary"></i>
-                        <span>Extrato de Comissões por Profissional</span>
-                    </h3>
-                </div>
-                <div class="table-responsive">
-                    <table class="table-modern">
-                        <thead>
-                        <tr>
-                            <th>Profissional</th>
-                            <th>Especialidade</th>
-                            <th>Comissão Padrão</th>
-                            <th>Total a Receber no Período</th>
-                            <th style="text-align: right;">Ação</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="rc : ${relatorioComissoes}">
-                            <td>
-                                <strong th:text="${rc.profissional.nome}">Nome</strong>
-                            </td>
-                            <td th:text="${rc.profissional.especialidade} ?: 'Geral'">Cabeleireira</td>
-                            <td th:text="${rc.profissional.percentualComissao} + '%'">30%</td>
-                            <td>
-                                <strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(rc.comissao, 1, 2, 'COMMA')}">R$ 0,00</strong>
-                            </td>
-                            <td style="text-align: right;">
-                                <a th:href="@{/{slug}/relatorios/comissoes/{id}(slug=${empresaSlug}, id=${rc.profissional.id}, dataInicio=${dataInicio}, dataFim=${dataFim})}" class="btn btn-sm btn-gold">
-                                    <i class="bi bi-file-earmark-spreadsheet"></i> Ver Extrato
-                                </a>
-                            </td>
-                        </tr>
-                        <tr th:if="${relatorioComissoes == null or #lists.isEmpty(relatorioComissoes)}">
-                            <td colspan="5" class="text-center py-4 text-muted">Nenhuma comissão registrada para o período selecionado.</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- NAVEGAÇÃO EM ABAS DE RELATÓRIOS -->
+            <ul class="nav nav-tabs nav-tabs-custom mb-4 no-print" id="relatoriosTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'financeiro' or activeTab == null ? 'active' : ''}" id="tab-financeiro" data-bs-toggle="tab" data-bs-target="#pane-financeiro" type="button" role="tab" onclick="mudarTab('financeiro')">
+                        <i class="bi bi-cash-stack"></i> Financeiro & DRE
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'profissionais' ? 'active' : ''}" id="tab-profissionais" data-bs-toggle="tab" data-bs-target="#pane-profissionais" type="button" role="tab" onclick="mudarTab('profissionais')">
+                        <i class="bi bi-people-fill"></i> Desempenho & Comissões
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'clientes' ? 'active' : ''}" id="tab-clientes" data-bs-toggle="tab" data-bs-target="#pane-clientes" type="button" role="tab" onclick="mudarTab('clientes')">
+                        <i class="bi bi-person-heart"></i> Clientes & Anti-Churn
+                        <span class="badge bg-danger ms-1" th:if="${clientesResgate != null and !clientesResgate.isEmpty()}" th:text="${clientesResgate.size()}">0</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'produtos' ? 'active' : ''}" id="tab-produtos" data-bs-toggle="tab" data-bs-target="#pane-produtos" type="button" role="tab" onclick="mudarTab('produtos')">
+                        <i class="bi bi-box-seam"></i> Produtos & Estoque
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'agendamentos' ? 'active' : ''}" id="tab-agendamentos" data-bs-toggle="tab" data-bs-target="#pane-agendamentos" type="button" role="tab" onclick="mudarTab('agendamentos')">
+                        <i class="bi bi-calendar2-check"></i> Agendamentos & Conversão
+                    </button>
+                </li>
+            </ul>
 
-            <!-- DETALHAMENTO DE COMANDAS PAGAS -->
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <h3 class="card-title-custom">
-                        <i class="bi bi-list-check text-secondary"></i>
-                        <span>Comandas Faturadas no Período</span>
-                    </h3>
+            <div class="tab-content" id="relatoriosTabContent">
+
+                <!-- ================= ABA 1: FINANCEIRO & DRE ================= -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'financeiro' or activeTab == null ? 'show active' : ''}" id="pane-financeiro" role="tabpanel">
+                    
+                    <!-- Formas de Pagamento & Faturamento -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-6">
+                            <div class="content-card h-100">
+                                <div class="card-header-custom">
+                                    <h3 class="card-title-custom">
+                                        <i class="bi bi-credit-card-2-front text-primary"></i>
+                                        <span>Faturamento por Meio de Pagamento</span>
+                                    </h3>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table-modern">
+                                        <thead>
+                                        <tr>
+                                            <th>Método</th>
+                                            <th style="text-align: center;">Transações</th>
+                                            <th>Total (R$)</th>
+                                            <th style="text-align: right;">Participação</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="fp : ${formasPagamento}">
+                                            <td>
+                                                <i class="bi me-2 text-muted" th:classappend="${fp.icone}"></i>
+                                                <strong th:text="${fp.nomeFormatado}">PIX</strong>
+                                            </td>
+                                            <td style="text-align: center;" th:text="${fp.quantidade}">0</td>
+                                            <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(fp.total, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                            <td style="text-align: right;">
+                                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                                    <span class="small fw-bold" th:text="${fp.percentual} + '%'">0%</span>
+                                                    <div class="progress table-progress flex-grow-1" style="max-width: 60px;">
+                                                        <div class="progress-bar bg-gold" role="progressbar" th:style="'width: ' + ${fp.percentual} + '%'"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${formasPagamento == null or #lists.isEmpty(formasPagamento)}">
+                                            <td colspan="4" class="text-center py-4 text-muted">Nenhum pagamento registrado no período.</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rentabilidade & Margem por Serviço -->
+                        <div class="col-lg-6">
+                            <div class="content-card h-100" th:if="${rentabilidadeServicos != null}">
+                                <div class="card-header-custom">
+                                    <h3 class="card-title-custom">
+                                        <i class="bi bi-star-fill text-gold"></i>
+                                        <span>Rentabilidade & Margem Real por Serviço</span>
+                                    </h3>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table-modern">
+                                        <thead>
+                                        <tr>
+                                            <th>Serviço</th>
+                                            <th style="text-align: center;">Qtd</th>
+                                            <th>Faturamento</th>
+                                            <th>Lucro Real</th>
+                                            <th style="text-align: right;">Margem</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="r : ${rentabilidadeServicos}">
+                                            <td><strong class="text-dark" th:text="${r.nomeServico}">Corte</strong></td>
+                                            <td style="text-align: center;" th:text="${r.quantidadeExecutada}">0</td>
+                                            <td th:text="'R$ ' + ${#numbers.formatDecimal(r.faturamentoTotal, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                            <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(r.lucroLiquidoTotal, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                            <td style="text-align: right;">
+                                                <span class="badge" th:classappend="${r.margemLucroPercentual >= 50 ? 'bg-success' : 'bg-primary'}"
+                                                      th:text="${r.margemLucroPercentual} + '%'">0%</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${rentabilidadeServicos == null or #lists.isEmpty(rentabilidadeServicos)}">
+                                            <td colspan="5" class="text-center py-4 text-muted">Nenhum serviço realizado no período.</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DRE GERENCIAL -->
+                    <div class="content-card mb-4" th:if="${dre != null}">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-file-earmark-bar-graph text-primary"></i>
+                                <span>DRE Simplificado (Demonstrativo de Resultado do Exercício)</span>
+                            </h3>
+                            <span class="badge" th:classappend="${dre.resultadoLiquido >= 0 ? 'bg-success' : 'bg-danger'}"
+                                  th:text="'Lucratividade Líquida: ' + ${dre.lucratividadePercentual} + '%'">Lucratividade: 0%</span>
+                        </div>
+                        <div class="p-3">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover mb-0" style="font-size: 0.92rem;">
+                                    <tbody>
+                                    <tr class="table-light">
+                                        <td><strong>(+) Receita Bruta Total</strong> (Serviços: R$ <span th:text="${#numbers.formatDecimal(dre.receitaBrutaServicos, 1, 2, 'COMMA')}"></span> | Produtos: R$ <span th:text="${#numbers.formatDecimal(dre.receitaBrutaProdutos, 1, 2, 'COMMA')}"></span>)</td>
+                                        <td style="text-align: right;"><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(dre.receitaBrutaTotal, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">(-) Deduções e Descontos Concedidos</td>
+                                        <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.deducoesDescontos, 1, 2, 'COMMA')}">- R$ 0,00</td>
+                                    </tr>
+                                    <tr class="table-light">
+                                        <td><strong>(=) Receita Líquida Operacional</strong></td>
+                                        <td style="text-align: right;"><strong th:text="'R$ ' + ${#numbers.formatDecimal(dre.receitaLiquida, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">(-) Custos de Insumos / Ficha Técnica dos Serviços</td>
+                                        <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.custoInsumosServicos, 1, 2, 'COMMA')}">- R$ 0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">(-) Custo dos Produtos de Revenda Vendidos</td>
+                                        <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.custoProdutosVendidos, 1, 2, 'COMMA')}">- R$ 0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">(-) Comissões Repassadas aos Profissionais</td>
+                                        <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.totalComissoesProfissionais, 1, 2, 'COMMA')}">- R$ 0,00</td>
+                                    </tr>
+                                    <tr class="table-primary text-primary">
+                                        <td><strong>(=) Margem de Contribuição Bruta (Lucro Operacional)</strong></td>
+                                        <td style="text-align: right;"><strong th:text="'R$ ' + ${#numbers.formatDecimal(dre.margemContribuicao, 1, 2, 'COMMA')} + ' (' + ${dre.margemContribuicaoPercentual} + '%)'">R$ 0,00</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">(-) Despesas Operacionais / Sangrias do Caixa no Período</td>
+                                        <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.despesasOperacionais, 1, 2, 'COMMA')}">- R$ 0,00</td>
+                                    </tr>
+                                    <tr class="table-dark" style="font-size: 1.05rem;">
+                                        <td><strong>(=) RESULTADO LÍQUIDO DO STUDIO</strong></td>
+                                        <td style="text-align: right;">
+                                            <strong th:classappend="${dre.resultadoLiquido >= 0 ? 'text-success' : 'text-danger'}"
+                                                    th:text="'R$ ' + ${#numbers.formatDecimal(dre.resultadoLiquido, 1, 2, 'COMMA')}">R$ 0,00</strong>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DETALHAMENTO DE COMANDAS PAGAS -->
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-list-check text-secondary"></i>
+                                <span>Comandas Faturadas no Período</span>
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                <tr>
+                                    <th>Nº Comanda</th>
+                                    <th>Cliente</th>
+                                    <th>Data Fechamento</th>
+                                    <th>Forma Pagamento</th>
+                                    <th>Total Comanda</th>
+                                    <th>Comissões</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="cp : ${comandasPagas}">
+                                    <td><strong th:text="${cp.numeroComanda}">CMD-001</strong></td>
+                                    <td th:text="${cp.cliente != null ? cp.cliente.nome : (cp.clienteNomeAvulso != null ? cp.clienteNomeAvulso : 'Consumidor')}">Cliente</td>
+                                    <td th:text="${#temporals.format(cp.dataFechamento, 'dd/MM/yyyy HH:mm')}">23/09/2026 14:00</td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${cp.formaPagamento}">PIX</span></td>
+                                    <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(cp.valorTotal, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(cp.totalComissoes, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                </tr>
+                                <tr th:if="${comandasPagas == null or #lists.isEmpty(comandasPagas)}">
+                                    <td colspan="6" class="text-center py-4 text-muted">Nenhum fechamento encontrado no período.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="table-responsive">
-                    <table class="table-modern">
-                        <thead>
-                        <tr>
-                            <th>Nº Comanda</th>
-                            <th>Cliente</th>
-                            <th>Data Fechamento</th>
-                            <th>Forma Pagamento</th>
-                            <th>Total da Comanda</th>
-                            <th>Comissões</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="cp : ${comandasPagas}">
-                            <td><strong th:text="${cp.numeroComanda}">CMD-001</strong></td>
-                            <td th:text="${cp.cliente != null ? cp.cliente.nome : cp.clienteNomeAvulso}">Cliente</td>
-                            <td th:text="${#temporals.format(cp.dataFechamento, 'dd/MM/yyyy HH:mm')}">23/09/2026 14:00</td>
-                            <td><span class="badge bg-light text-dark border" th:text="${cp.formaPagamento}">PIX</span></td>
-                            <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(cp.valorTotal, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
-                            <td th:text="'R$ ' + ${#numbers.formatDecimal(cp.totalComissoes, 1, 2, 'COMMA')}">R$ 0,00</td>
-                        </tr>
-                        <tr th:if="${comandasPagas == null or #lists.isEmpty(comandasPagas)}">
-                            <td colspan="6" class="text-center py-4 text-muted">Nenhum fechamento encontrado no período.</td>
-                        </tr>
-                        </tbody>
-                    </table>
+
+                <!-- ================= ABA 2: PROFISSIONAIS & COMISSÕES ================= -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'profissionais' ? 'show active' : ''}" id="pane-profissionais" role="tabpanel">
+                    <div class="content-card mb-4">
+                        <div class="card-header-custom">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-award-fill text-gold"></i>
+                                <span>Ranking de Produtividade & Comissões por Profissional</span>
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                <tr>
+                                    <th>Profissional</th>
+                                    <th>Especialidade</th>
+                                    <th style="text-align: center;">Atendimentos</th>
+                                    <th>Fat. Serviços</th>
+                                    <th>Fat. Produtos</th>
+                                    <th>Total Faturado</th>
+                                    <th>Comissão (%)</th>
+                                    <th>Total a Receber</th>
+                                    <th>Ticket Médio</th>
+                                    <th style="text-align: right;">Ação</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="p : ${desempenhoProfissionais}">
+                                    <td>
+                                        <strong th:text="${p.nome}">Nome Profissional</strong>
+                                    </td>
+                                    <td th:text="${p.especialidade}">Cabeleireiro</td>
+                                    <td style="text-align: center;" th:text="${p.totalAtendimentos}">0</td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(p.faturamentoServicos, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(p.faturamentoProdutos, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td><strong class="text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(p.faturamentoTotal, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    <td th:text="${p.percentualComissao} + '%'">30%</td>
+                                    <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(p.totalComissoes, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(p.ticketMedio, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td style="text-align: right;">
+                                        <a th:href="@{/{slug}/relatorios/comissoes/{id}(slug=${empresaSlug}, id=${p.profissionalId}, dataInicio=${dataInicio}, dataFim=${dataFim})}" class="btn btn-sm btn-gold">
+                                            <i class="bi bi-receipt"></i> Extrato
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${desempenhoProfissionais == null or #lists.isEmpty(desempenhoProfissionais)}">
+                                    <td colspan="10" class="text-center py-4 text-muted">Nenhum profissional encontrado.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- ================= ABA 3: CLIENTES & ANTI-CHURN ================= -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'clientes' ? 'show active' : ''}" id="pane-clientes" role="tabpanel">
+                    
+                    <!-- Radar Anti-Churn / Clientes para Resgate -->
+                    <div class="content-card mb-4 border-danger">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center bg-light">
+                            <h3 class="card-title-custom text-danger">
+                                <i class="bi bi-heartbreak-fill"></i>
+                                <span>Radar Anti-Churn: Clientes Sumidos para Resgatar</span>
+                            </h3>
+                            <span class="badge bg-danger" th:text="${clientesResgate != null ? clientesResgate.size() : 0} + ' clientes em risco'">0</span>
+                        </div>
+                        <div class="p-3 bg-light-subtle small border-bottom">
+                            <i class="bi bi-info-circle text-primary me-1"></i>
+                            Estes clientes realizaram procedimentos no salão, ultrapassaram o tempo médio ideal de retorno (ciclo do serviço) e ainda <strong>não possuem agendamento futuro marcado</strong>.
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Último Procedimento</th>
+                                    <th>Profissional</th>
+                                    <th>Última Visita</th>
+                                    <th>Tempo Ausente</th>
+                                    <th>Urgência</th>
+                                    <th style="text-align: right;">Ação de Resgate</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="cr : ${clientesResgate}">
+                                    <td>
+                                        <strong th:text="${cr.nomeCliente}">Nome Cliente</strong>
+                                        <div class="text-muted small" th:text="${cr.telefone}">11 99999-9999</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${cr.ultimoServicoNome}">Corte</span></td>
+                                    <td th:text="${cr.ultimoProfissionalNome}">Profissional</td>
+                                    <td th:text="${#temporals.format(cr.dataUltimoAtendimento, 'dd/MM/yyyy')}">01/01/2026</td>
+                                    <td>
+                                        <strong th:text="${cr.diasDesdeUltimoAtendimento} + ' dias'">45 dias</strong>
+                                        <span class="text-muted small" th:text="'(' + ${cr.diasAtraso} + ' dias além do ciclo)'">(15 além)</span>
+                                    </td>
+                                    <td>
+                                        <span class="stat-badge-soft" th:classappend="'urgencia-' + ${cr.nivelUrgencia}" th:text="${cr.nivelUrgencia}">ALTO</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <a th:if="${cr.telefone != null and !cr.telefone.isEmpty()}" 
+                                           th:href="'https://wa.me/55' + ${cr.telefone.replaceAll('[^0-9]', '')} + '?text=' + ${#strings.replace(cr.mensagemSugeridaWhatsapp, ' ', '%20')}" 
+                                           target="_blank" class="btn btn-sm btn-success">
+                                            <i class="bi bi-whatsapp"></i> Chamar WhatsApp
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${clientesResgate == null or #lists.isEmpty(clientesResgate)}">
+                                    <td colspan="7" class="text-center py-4 text-muted">🎉 Parabéns! Nenhum cliente com ciclo de retorno vencido no momento.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Top 15 Clientes VIP (LTV) -->
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-trophy-fill text-gold"></i>
+                                <span>Curva ABC: Top 15 Clientes VIP no Período (Maior Faturamento)</span>
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Cliente</th>
+                                    <th>Telefone</th>
+                                    <th style="text-align: center;">Total Visitas</th>
+                                    <th>Total Investido</th>
+                                    <th>Ticket Médio</th>
+                                    <th>Última Comanda</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="tc, iter : ${topClientes}">
+                                    <td><strong class="text-muted" th:text="${iter.count} + 'º'">1º</strong></td>
+                                    <td><strong th:text="${tc.nomeCliente}">Nome Cliente</strong></td>
+                                    <td th:text="${tc.telefone} ?: '-'">11 99999-9999</td>
+                                    <td style="text-align: center;"><span class="badge bg-light text-dark border" th:text="${tc.totalVisitas}">3</span></td>
+                                    <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(tc.totalGasto, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(tc.ticketMedio, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td th:text="${#temporals.format(tc.ultimaVisita, 'dd/MM/yyyy HH:mm')}">23/09/2026</td>
+                                </tr>
+                                <tr th:if="${topClientes == null or #lists.isEmpty(topClientes)}">
+                                    <td colspan="7" class="text-center py-4 text-muted">Nenhum cliente com compras no período.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ================= ABA 4: PRODUTOS & ESTOQUE ================= -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'produtos' ? 'show active' : ''}" id="pane-produtos" role="tabpanel">
+                    <div class="stat-grid mb-4">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Capital Parado em Estoque</span>
+                                <span class="stat-value text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(valorParadoEstoque, 1, 2, 'COMMA')}">R$ 0,00</span>
+                                <span class="stat-desc">Valor a preço de custo</span>
+                            </div>
+                            <div class="stat-icon-box stat-icon-blue">
+                                <i class="bi bi-box-seam-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <h3 class="card-title-custom">
+                                <i class="bi bi-boxes text-primary"></i>
+                                <span>Giro de Estoque, Vendas e Margem de Produtos</span>
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-modern">
+                                <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Marca</th>
+                                    <th>Tipo</th>
+                                    <th style="text-align: center;">Qtd Vendida</th>
+                                    <th>Fat. no Período</th>
+                                    <th>Lucro Vendas</th>
+                                    <th style="text-align: center;">Estoque Atual</th>
+                                    <th>Estoque Mínimo</th>
+                                    <th>Valor em Estoque</th>
+                                    <th>Status Reposição</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="prod : ${metricasProdutos}">
+                                    <td><strong th:text="${prod.nome}">Shampoo Especial</strong></td>
+                                    <td th:text="${prod.marca}">L'Oréal</td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${prod.tipo}">REVENDA</span></td>
+                                    <td style="text-align: center;"><strong th:text="${prod.quantidadeVendidaPeriodo}">0</strong></td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(prod.faturamentoPeriodo, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td><strong class="text-success" th:text="'R$ ' + ${#numbers.formatDecimal(prod.lucroPeriodo, 1, 2, 'COMMA')}">R$ 0,00</strong></td>
+                                    <td style="text-align: center;">
+                                        <strong th:classappend="${prod.alertaEstoqueBaixo ? 'text-danger' : 'text-dark'}" th:text="${prod.quantidadeEstoque}">10</strong>
+                                    </td>
+                                    <td style="text-align: center;" th:text="${prod.estoqueMinimo}">5</td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(prod.valorTotalEstoque, 1, 2, 'COMMA')}">R$ 0,00</td>
+                                    <td>
+                                        <span th:if="${prod.alertaEstoqueBaixo}" class="badge bg-danger">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Repor Urgente
+                                        </span>
+                                        <span th:unless="${prod.alertaEstoqueBaixo}" class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Regular
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${metricasProdutos == null or #lists.isEmpty(metricasProdutos)}">
+                                    <td colspan="10" class="text-center py-4 text-muted">Nenhum produto cadastrado no catálogo.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= ABA 5: AGENDAMENTOS & CONVERSÃO ================= -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'agendamentos' ? 'show active' : ''}" id="pane-agendamentos" role="tabpanel">
+                    <div class="stat-grid mb-4" th:if="${metricasAgendamentos != null}">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Total Agendamentos</span>
+                                <span class="stat-value" th:text="${metricasAgendamentos.totalAgendados}">0</span>
+                                <span class="stat-desc">Marcados para o período</span>
+                            </div>
+                            <div class="stat-icon-box stat-icon-blue">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Taxa de Conversão</span>
+                                <span class="stat-value text-success" th:text="${metricasAgendamentos.taxaConversao} + '%'">0%</span>
+                                <span class="stat-desc" th:text="${metricasAgendamentos.concluidos} + ' atendimentos concluídos'">0</span>
+                            </div>
+                            <div class="stat-icon-box stat-icon-emerald">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Taxa de Cancelamento</span>
+                                <span class="stat-value text-danger" th:text="${metricasAgendamentos.taxaCancelamento} + '%'">0%</span>
+                                <span class="stat-desc" th:text="${metricasAgendamentos.cancelados} + ' cancelamentos/faltas'">0</span>
+                            </div>
+                            <div class="stat-icon-box stat-icon-gold">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Perda Estimada</span>
+                                <span class="stat-value text-danger" th:text="'R$ ' + ${#numbers.formatDecimal(metricasAgendamentos.perdaFinanceiraEstimada, 1, 2, 'COMMA')}">R$ 0,00</span>
+                                <span class="stat-desc">Impacto de cancelamentos</span>
+                            </div>
+                            <div class="stat-icon-box stat-icon-purple">
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 </div>
 
-<style>
-@media print {
-    .no-print, .sidebar, .app-sidebar, .app-topbar, .btn {
-        display: none !important;
-    }
-    .app-layout {
-        display: block !important;
-    }
-    .app-main, .page-content {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    .content-card {
-        border: 1px solid #ddd !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    @page {
-        margin: 15mm;
-        size: auto;
-    }
-}
-</style>
-
 <script>
-function exportarTabelaCSV() {
+function mudarTab(tabName) {
+    document.getElementById('tabInput').value = tabName;
+}
+
+function exportarRelatorioAtualCSV() {
+    let activeTabEl = document.querySelector('.tab-pane.active');
+    if (!activeTabEl) return;
+    
     let csv = [];
-    csv.push(["RELATÓRIO FINANCEIRO GERENCIAL"]);
+    csv.push(["RELATÓRIO GERENCIAL - BEAUTY SALON"]);
     csv.push(["Data de Emissão", new Date().toLocaleDateString('pt-BR')]);
     csv.push([]);
-    
-    // Extrato de comissões
-    csv.push(["COMISSÕES POR PROFISSIONAL"]);
-    csv.push(["Profissional", "Especialidade", "Comissão %", "Total a Receber (R$)"]);
-    document.querySelectorAll("table:first-of-type tbody tr").forEach(row => {
-        let cols = Array.from(row.querySelectorAll("td")).map(td => td.innerText.trim().replace(/,/g, '.'));
-        if (cols.length >= 4) {
-            csv.push([cols[0], cols[1], cols[2], cols[3]]);
-        }
-    });
 
-    csv.push([]);
-    csv.push(["COMANDAS FATURADAS"]);
-    csv.push(["Nº Comanda", "Cliente", "Data Fechamento", "Forma Pagamento", "Total (R$)", "Comissões (R$)"]);
-    document.querySelectorAll("table:last-of-type tbody tr").forEach(row => {
-        let cols = Array.from(row.querySelectorAll("td")).map(td => td.innerText.trim().replace(/,/g, '.'));
-        if (cols.length >= 6) {
-            csv.push(cols);
-        }
+    let tables = activeTabEl.querySelectorAll('table');
+    tables.forEach((table, idx) => {
+        csv.push([`TABELA ${idx + 1}`]);
+        let headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim().replace(/,/g, '.'));
+        if (headers.length > 0) csv.push(headers);
+
+        table.querySelectorAll('tbody tr').forEach(row => {
+            let cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim().replace(/[\n\r]+/g, ' ').replace(/,/g, '.'));
+            if (cols.length > 0) csv.push(cols);
+        });
+        csv.push([]);
     });
 
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csv.map(e => e.join(";")).join("\n");
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `relatorio_gerencial_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `relatorio_${document.getElementById('tabInput').value}_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

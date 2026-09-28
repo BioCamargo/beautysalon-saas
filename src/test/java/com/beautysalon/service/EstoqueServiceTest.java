@@ -3,7 +3,6 @@ package com.beautysalon.service;
 import com.beautysalon.model.Empresa;
 import com.beautysalon.model.MovimentacaoEstoque;
 import com.beautysalon.model.Produto;
-import com.beautysalon.model.TipoProduto;
 import com.beautysalon.model.User;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.MovimentacaoEstoqueRepository;

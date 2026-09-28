@@ -19,8 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"empresa", "cliente", "servicos"})
-@EqualsAndHashCode(of = "id")
-public class Agendamento {
+@EqualsAndHashCode(callSuper = false, of = "id")
+public class Agendamento extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

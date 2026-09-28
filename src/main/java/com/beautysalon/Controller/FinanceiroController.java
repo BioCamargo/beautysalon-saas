@@ -7,6 +7,7 @@ import com.beautysalon.repository.UserRepository;
 import com.beautysalon.service.EstoqueService;
 import com.beautysalon.service.FidelizacaoService;
 import com.beautysalon.service.FinanceiroService;
+import com.beautysalon.service.PixService;
 import com.beautysalon.service.ProfissionalService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,19 +28,22 @@ public class FinanceiroController {
     private final FidelizacaoService fidelizacaoService;
     private final UserRepository userRepository;
     private final com.beautysalon.Inteface.ServicoService servicoService;
+    private final PixService pixService;
 
     public FinanceiroController(FinanceiroService financeiroService,
                                 EstoqueService estoqueService,
                                 ProfissionalService profissionalService,
                                 FidelizacaoService fidelizacaoService,
                                 UserRepository userRepository,
-                                com.beautysalon.Inteface.ServicoService servicoService) {
+                                com.beautysalon.Inteface.ServicoService servicoService,
+                                PixService pixService) {
         this.financeiroService = financeiroService;
         this.estoqueService = estoqueService;
         this.profissionalService = profissionalService;
         this.fidelizacaoService = fidelizacaoService;
         this.userRepository = userRepository;
         this.servicoService = servicoService;
+        this.pixService = pixService;
     }
 
     @GetMapping
@@ -140,7 +144,21 @@ public class FinanceiroController {
     @GetMapping("/comandas/{id}")
     public String detalheComanda(@PathVariable String slug, @PathVariable Long id, Model model) {
         Comanda comanda = financeiroService.buscarComandaPorId(id);
+        
+        String chavePix = (comanda.getEmpresa() != null && comanda.getEmpresa().getChavePix() != null)
+                ? comanda.getEmpresa().getChavePix()
+                : "pix@salao.com"; // Fallback de exemplo
+        String cidade = (comanda.getEmpresa() != null && comanda.getEmpresa().getCidade() != null)
+                ? comanda.getEmpresa().getCidade()
+                : "SAO PAULO";
+        String nomeRecebedor = (comanda.getEmpresa() != null) ? comanda.getEmpresa().getNome() : "STUDIO";
+        
+        BigDecimal valorCobranca = comanda.getSaldoRestante().compareTo(BigDecimal.ZERO) > 0 ? comanda.getSaldoRestante() : comanda.getValorTotal();
+        String pixPayload = pixService.gerarPayloadPix(chavePix, nomeRecebedor, cidade, valorCobranca, comanda.getNumeroComanda());
+
         model.addAttribute("comanda", comanda);
+        model.addAttribute("pixPayload", pixPayload);
+        model.addAttribute("chavePix", chavePix);
         model.addAttribute("servicos", servicoService.listarTodos());
         model.addAttribute("produtosRevenda", estoqueService.listarPorTipo(com.beautysalon.model.TipoProduto.REVENDA));
         model.addAttribute("profissionais", profissionalService.listarProfissionaisAtivos());
@@ -172,6 +190,36 @@ public class FinanceiroController {
                                        Authentication auth) {
         User usuario = auth != null ? userRepository.findByUsername(auth.getName()).orElse(null) : null;
         financeiroService.adicionarItemComanda(id, tipo, servicoId, produtoId, profissionalId, quantidade, precoUnitario, percentualComissao, usuario);
+        return "redirect:/" + slug + "/financeiro/comandas/" + id;
+    }
+
+    @PostMapping("/comandas/{id}/pagamentos/adicionar")
+    public String adicionarPagamentoComanda(@PathVariable String slug,
+                                           @PathVariable Long id,
+                                           @RequestParam String formaPagamento,
+                                           @RequestParam BigDecimal valor,
+                                           @RequestParam(required = false) String observacao,
+                                           RedirectAttributes redirectAttributes) {
+        try {
+            financeiroService.adicionarPagamentoComanda(id, formaPagamento, valor, observacao);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Pagamento de R$ " + valor + " (" + formaPagamento + ") registrado!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+        }
+        return "redirect:/" + slug + "/financeiro/comandas/" + id;
+    }
+
+    @PostMapping("/comandas/{id}/pagamentos/{pagamentoId}/remover")
+    public String removerPagamentoComanda(@PathVariable String slug,
+                                         @PathVariable Long id,
+                                         @PathVariable Long pagamentoId,
+                                         RedirectAttributes redirectAttributes) {
+        try {
+            financeiroService.removerPagamentoComanda(id, pagamentoId);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Fração de pagamento removida.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+        }
         return "redirect:/" + slug + "/financeiro/comandas/" + id;
     }
 

@@ -12,4 +12,6 @@ public interface MovimentacaoFinanceiraRepository extends JpaRepository<Moviment
     List<MovimentacaoFinanceira> findByCaixaIdOrderByDataHoraDesc(Long caixaId);
 
     List<MovimentacaoFinanceira> findByEmpresaIdOrderByDataHoraDesc(Long empresaId);
+
+    List<MovimentacaoFinanceira> findAllByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
 }

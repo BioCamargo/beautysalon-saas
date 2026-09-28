@@ -1,17 +1,16 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/_-p6TcGH)
-
 # ✂️ BeautySalon / LUMORA - Sistema Completo de Gestão para Salão de Beleza, Estética & Barbearias (Multi-Tenant SaaS)
 
-![Java](https://img.shields.io/badge/Java-17%20%2F%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![Spring Security](https://img.shields.io/badge/Spring_Security-6-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Thymeleaf](https://img.shields.io/badge/Thymeleaf-SSR-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Swagger](https://img.shields.io/badge/OpenAPI_3-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17%20%2F%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/Spring_Security-6-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" alt="Spring Security" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16%20%2F%2018-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Flyway-Migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white" alt="Flyway" />
+  <img src="https://img.shields.io/badge/OpenAPI_3-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger" />
+  <img src="https://img.shields.io/badge/Thymeleaf-SSR-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white" alt="Thymeleaf" />
+  <img src="https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Architecture-Clean%20%26%20Multi--Tenant-blueviolet?style=for-the-badge" alt="Architecture" />
+</p>
 
 O **BeautySalon** (LUMORA / Proj_Studio) é uma plataforma web empresarial completa desenvolvida com **Spring Boot 3.5**, projetada para otimizar os processos operacionais, financeiros e de fidelização de salões de beleza, clínicas de estética e barbearias com arquitetura **Multi-Tenant SaaS** (isolamento de dados por empresa via rota `/{slug}/`).
 
@@ -304,10 +303,12 @@ O servidor iniciará na porta **`8081`**. Acesse no navegador:
 
 Para aprofundar na arquitetura técnica, guias e alinhamento de portfólio, consulte a pasta [`/docs`](file:///c:/Dev/Projetos/Proj_Studio/docs):
 
-* 📋 [**Plano de 15 Dias — Java Backend Moderno & Aderência**](file:///c:/Dev/Projetos/Proj_Studio/docs/PLANO_15_DIAS_JAVA_BACKEND.md)
-* 🏛️ [**Arquitetura do Sistema**](file:///c:/Dev/Projetos/Proj_Studio/docs/ARQUITETURA.md)
-* 🗄️ [**Estrutura do Banco de Dados & Dicionário**](file:///c:/Dev/Projetos/Proj_Studio/docs/BANCO_DE_DADOS.md)
-* 🔒 [**Segurança e Autenticação**](file:///c:/Dev/Projetos/Proj_Studio/docs/SEGURANCA_E_AUTENTICACAO.md)
-* 🌐 [**Catálogo de Endpoints e Rotas**](file:///c:/Dev/Projetos/Proj_Studio/docs/API_ENDPOINTS.md)
-* 🚀 [**Guia de Instalação e Execução**](file:///c:/Dev/Projetos/Proj_Studio/docs/GUIA_DE_INSTALACAO_E_EXECUCAO.md)
-* 📈 [**Análise Técnica e Melhorias**](file:///c:/Dev/Projetos/Proj_Studio/docs/ANALISE_TECNICA_E_MELHORIAS.md)
+* 📖 [**Manual Completo do Usuário & Telas**](docs/MANUAL_DO_USUARIO.md)
+* 🚀 [**Guia de Expansão e Maturidade Técnica Java**](docs/EXPANSAO_MERCADO_JAVA_AVANCADO.md)
+* 📋 [**Plano de 15 Dias — Java Backend Moderno & Aderência**](docs/PLANO_15_DIAS_JAVA_BACKEND.md)
+* 🏛️ [**Arquitetura do Sistema**](docs/ARQUITETURA.md)
+* 🗄️ [**Estrutura do Banco de Dados & Dicionário**](docs/BANCO_DE_DADOS.md)
+* 🔒 [**Segurança e Autenticação**](docs/SEGURANCA_E_AUTENTICACAO.md)
+* 🌐 [**Catálogo de Endpoints e Rotas**](docs/API_ENDPOINTS.md)
+* 🚀 [**Guia de Instalação e Execução**](docs/GUIA_DE_INSTALACAO_E_EXECUCAO.md)
+* 📈 [**Análise Técnica e Melhorias**](docs/ANALISE_TECNICA_E_MELHORIAS.md)

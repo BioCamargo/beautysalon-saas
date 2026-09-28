@@ -20,8 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"empresa", "caixa", "cliente", "itens"})
-@EqualsAndHashCode(of = "id")
-public class Comanda {
+@EqualsAndHashCode(callSuper = false, of = "id")
+public class Comanda extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,6 +85,26 @@ public class Comanda {
     @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ComandaItem> itens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PagamentoComanda> pagamentos = new ArrayList<>();
+
+    public BigDecimal getTotalPago() {
+        if (pagamentos == null || pagamentos.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return pagamentos.stream()
+                .map(PagamentoComanda::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getSaldoRestante() {
+        BigDecimal total = this.valorTotal != null ? this.valorTotal : BigDecimal.ZERO;
+        BigDecimal pago = getTotalPago();
+        BigDecimal restante = total.subtract(pago);
+        return restante.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restante;
+    }
 
     public void recalcularTotais() {
         BigDecimal servicos = BigDecimal.ZERO;

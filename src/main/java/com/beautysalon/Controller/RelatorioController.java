@@ -15,10 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 @Controller
 @RequestMapping("/{slug}/relatorios")
@@ -28,21 +25,28 @@ public class RelatorioController {
     private final ComandaItemRepository comandaItemRepository;
     private final UserRepository userRepository;
     private final EstoqueService estoqueService;
+    private final com.beautysalon.service.FinanceiroService financeiroService;
+    private final com.beautysalon.service.RelatorioService relatorioService;
 
     public RelatorioController(ComandaRepository comandaRepository,
                                ComandaItemRepository comandaItemRepository,
                                UserRepository userRepository,
-                               EstoqueService estoqueService) {
+                               EstoqueService estoqueService,
+                               com.beautysalon.service.FinanceiroService financeiroService,
+                               com.beautysalon.service.RelatorioService relatorioService) {
         this.comandaRepository = comandaRepository;
         this.comandaItemRepository = comandaItemRepository;
         this.userRepository = userRepository;
         this.estoqueService = estoqueService;
+        this.financeiroService = financeiroService;
+        this.relatorioService = relatorioService;
     }
 
     @GetMapping
     public String index(@PathVariable String slug,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+                        @RequestParam(required = false, defaultValue = "financeiro") String tab,
                         Model model) {
         Long empresaId = TenantContext.getEmpresaId();
 
@@ -64,20 +68,16 @@ public class RelatorioController {
                 : BigDecimal.ZERO;
         BigDecimal valorParadoEstoque = estoqueService.calcularValorParadoEmEstoque();
 
-        // Relatório de Comissões por Profissional
-        List<User> profissionais = userRepository.findAllByEmpresaIdAndAtivoTrue(empresaId);
-        List<Map<String, Object>> relatorioComissoes = new ArrayList<>();
+        var dre = financeiroService.calcularDREPeriodo(inicio, fim);
+        var rentabilidadeServicos = financeiroService.calcularRentabilidadeServicos(inicio, fim);
+        var formasPagamento = relatorioService.obterMetricasFormasPagamento(inicio, fim);
+        var desempenhoProfissionais = relatorioService.obterDesempenhoProfissionais(inicio, fim);
+        var topClientes = relatorioService.obterTopClientes(inicio, fim);
+        var clientesResgate = relatorioService.obterClientesResgate();
+        var metricasProdutos = relatorioService.obterMetricasProdutos(inicio, fim);
+        var metricasAgendamentos = relatorioService.obterMetricasAgendamento(inicio, fim);
 
-        for (User prof : profissionais) {
-            BigDecimal comissao = comandaItemRepository.sumComissaoProfissional(empresaId, prof.getId(), inicio, fim);
-            if (comissao.compareTo(BigDecimal.ZERO) > 0 || totalAtendimentos > 0) {
-                Map<String, Object> linha = new HashMap<>();
-                linha.put("profissional", prof);
-                linha.put("comissao", comissao);
-                relatorioComissoes.add(linha);
-            }
-        }
-
+        model.addAttribute("activeTab", tab);
         model.addAttribute("dataInicio", dataInicio);
         model.addAttribute("dataFim", dataFim);
         model.addAttribute("faturamentoTotal", faturamentoTotal);
@@ -86,8 +86,17 @@ public class RelatorioController {
         model.addAttribute("totalAtendimentos", totalAtendimentos);
         model.addAttribute("ticketMedio", ticketMedio);
         model.addAttribute("valorParadoEstoque", valorParadoEstoque);
-        model.addAttribute("relatorioComissoes", relatorioComissoes);
         model.addAttribute("comandasPagas", comandaRepository.findComandasPagasPorPeriodo(empresaId, inicio, fim));
+        model.addAttribute("dre", dre);
+        model.addAttribute("rentabilidadeServicos", rentabilidadeServicos);
+
+        // Novas Métricas
+        model.addAttribute("formasPagamento", formasPagamento);
+        model.addAttribute("desempenhoProfissionais", desempenhoProfissionais);
+        model.addAttribute("topClientes", topClientes);
+        model.addAttribute("clientesResgate", clientesResgate);
+        model.addAttribute("metricasProdutos", metricasProdutos);
+        model.addAttribute("metricasAgendamentos", metricasAgendamentos);
 
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Relatórios Financeiros & Gerenciais");

@@ -19,8 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"empresa", "agendamentos"})
-@EqualsAndHashCode(of = "id")
-public class Servico {
+@EqualsAndHashCode(callSuper = false, of = "id")
+public class Servico extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,9 @@ public class Servico {
 
     @Builder.Default
     private Integer duracaoMinutos = 30; // Duração estimada do serviço
+
+    @Builder.Default
+    private Integer diasCicloRetorno = 30; // Intervalo ideal estimado para retorno/manutenção (ex: 15 manicure, 30 corte, 45 coloração)
 
     private BigDecimal percentualComissao; // Se nulo, usa o percentual padrão do profissional
 
