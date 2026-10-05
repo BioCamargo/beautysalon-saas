@@ -88,3 +88,5 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: beautysalon-saas:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
