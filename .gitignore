@@ -44,3 +44,6 @@ application-*.properties
 !application-test.properties
 .env
 uploads/
+
+### Guias e Notas Locais ###
+docs/GUIA_GIT_FLUXO_BRANCHES.md
