@@ -6,14 +6,14 @@ Este documento complementa o [Plano de 15 Dias](file:///c:/Dev/Projetos/Proj_Stu
 
 ## 📌 Sumário das Tecnologias de Mercado
 
-| Pilar | Tecnologia / Padrão | Objetivo Principal | Impacto em Entrevistas |
+| Pilar | Tecnologia / Padrão | Objetivo Principal | Nível de Maturidade |
 | :--- | :--- | :--- | :---: |
-| **1. Banco de Dados** | **Flyway / Liquibase** | Versionamento e migração de schema SQL em produção. | 🔴 Essencial (100% dos projetos) |
+| **1. Banco de Dados** | **Flyway / Liquibase** | Versionamento e migração de schema SQL em produção. | 🔴 Essencial (Produção) |
 | **2. Performance** | **Spring Data Pageable & Specs** | Paginação, ordenação e filtros dinâmicos em APIs REST. | 🔴 Essencial (Boas práticas REST) |
 | **3. Observabilidade** | **Actuator, Micrometer & MDC** | Métricas de saúde da JVM e rastreabilidade com `Correlation-ID`. | 🟡 Alto (Prontidão para Produção) |
 | **4. Caching** | **Spring Cache + Redis** | Cache distribuído para consultas pesadas e redução de I/O. | 🟡 Alto (Escalabilidade) |
-| **5. Resiliência** | **Resilience4j** | Circuit Breaker, Retry, Fallback e Rate Limiting. | 🟢 Diferencial (Sistemas Distribuídos) |
-| **6. Qualidade** | **Testcontainers** | Testes de integração reais com containers PostgreSQL/RabbitMQ efêmeros. | 🟢 Diferencial (Engenharia de Qualidade) |
+| **5. Resiliência** | **Resilience4j** | Circuit Breaker, Retry, Fallback e Rate Limiting. | 🟢 Avançado (Sistemas Distribuídos) |
+| **6. Qualidade** | **Testcontainers** | Testes de integração reais com containers PostgreSQL/RabbitMQ efêmeros. | 🟢 Avançado (Engenharia de Qualidade) |
 
 ---
 

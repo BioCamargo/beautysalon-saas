@@ -5,7 +5,7 @@ Este documento detalha o mapeamento completo do roteiro prático de estudos e po
 ---
 
 ## 🎯 1. Objetivo do Plano
-Consolidar a experiência prática no ecossistema Java moderno e construir um projeto SaaS demonstrável, robusto e arquiteturalmente preparado para entrevistas técnicas de alto nível para vagas de Desenvolvedor Backend Java.
+Consolidar a experiência prática no ecossistema Java moderno e construir um projeto SaaS demonstrável, robusto e arquiteturalmente alinhado às melhores práticas de Engenharia de Software Backend Java.
 
 ---
 
@@ -27,7 +27,7 @@ Consolidar a experiência prática no ecossistema Java moderno e construir um pr
 | **Dia 12 — Mensageria Assíncrona** | RabbitMQ (Filas, Eventos, Producer & Consumer), Kafka conceitual | ✅ **Concluído** | Arquitetura orientada a eventos com RabbitMQ: `RabbitMQConfig` (Exchanges, Queues, Bindings, Jackson Converter), `EventMessageProducer` e `NotificationEventConsumer` para eventos `AgendamentoCriadoEvent` e `EstoqueBaixoEvent`. |
 | **Dia 13 — CI/CD Pipeline** | GitHub Actions / Jenkins, Build automático, Testes | ✅ **Concluído** | Pipeline do GitHub Actions (`.github/workflows/ci.yml`) automatizado para triggers de `push` e `pull_request`, executando suíte de testes JUnit 5 com service container PostgreSQL 16, geração do artefato JAR e validação do build da imagem Docker. |
 | **Dia 14 — Cloud (AWS)** | Conceitos de nuvem: IAM, EC2, RDS, S3, CloudWatch, SQS | ✅ **Concluído** | Arquitetura Cloud detalhada e documentada em [`docs/DEPLOY_AWS_CLOUD_ARCHITECTURE.md`](file:///c:/Dev/Projetos/Proj_Studio/docs/DEPLOY_AWS_CLOUD_ARCHITECTURE.md): ECS Fargate Serverless, RDS PostgreSQL Multi-AZ, Amazon MQ (RabbitMQ), S3 Storage, ALB com SSL e CloudWatch. |
-| **Dia 15 — Portfólio, GitHub & Entrevistas** | README profissional, Documentação técnica e Roteiro de entrevistas | ✅ **Concluído** | `README.md` completo, documentações na pasta `/docs`, guias de arquitetura, segurança e roteiro de respostas para entrevistas técnicas. |
+| **Dia 15 — Portfólio & GitHub** | README profissional, Documentação técnica e Guias de Arquitetura | ✅ **Concluído** | `README.md` completo, documentações na pasta `/docs`, guias de arquitetura, segurança e implantação. |
 
 ---
 
