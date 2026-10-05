@@ -269,4 +269,179 @@ class FinanceiroServiceTest {
         assertEquals(new BigDecimal("300.00"), dre.getTotalComissoesProfissionais());
         assertEquals(new BigDecimal("850.00"), dre.getResultadoLiquido());
     }
+
+    @Test
+    @DisplayName("Deve simular venda de produto na comanda e realizar baixa automática no estoque")
+    void deveDarBaixaEstoqueNaVendaProdutoComanda() {
+        Caixa caixa = Caixa.builder()
+                .id(1L)
+                .status("ABERTO")
+                .saldoInicial(new BigDecimal("100.00"))
+                .totalEntradas(BigDecimal.ZERO)
+                .totalSaidas(BigDecimal.ZERO)
+                .saldoFinalEsperado(new BigDecimal("100.00"))
+                .empresa(empresaMock)
+                .build();
+
+        Produto shampoo = Produto.builder()
+                .id(55L)
+                .nome("Shampoo Hidratante 500ml")
+                .tipo(TipoProduto.REVENDA)
+                .precoVenda(new BigDecimal("60.00"))
+                .quantidadeEstoque(10)
+                .build();
+
+        Comanda comanda = Comanda.builder()
+                .id(80L)
+                .numeroComanda("CMD-80")
+                .status("ABERTA")
+                .itens(new ArrayList<>())
+                .empresa(empresaMock)
+                .build();
+
+        ComandaItem itemProduto = ComandaItem.builder()
+                .comanda(comanda)
+                .tipo("PRODUTO")
+                .produto(shampoo)
+                .descricaoItem(shampoo.getNome())
+                .precoUnitario(shampoo.getPrecoVenda())
+                .quantidade(2)
+                .valorTotal(new BigDecimal("120.00"))
+                .build();
+        comanda.getItens().add(itemProduto);
+        comanda.recalcularTotais();
+
+        when(comandaRepository.findByIdAndEmpresaId(80L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(caixaRepository.findFirstByEmpresaIdAndStatusOrderByDataAberturaDesc(EMPRESA_ID, "ABERTO"))
+                .thenReturn(Optional.of(caixa));
+        when(comandaRepository.save(any(Comanda.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Comanda finalizada = financeiroService.fecharComanda(80L, "CARTAO_CREDITO", BigDecimal.ZERO, BigDecimal.ZERO, null, operadorMock);
+
+        assertEquals("PAGA", finalizada.getStatus());
+        assertEquals(new BigDecimal("120.00"), caixa.getTotalEntradas());
+        assertEquals(new BigDecimal("220.00"), caixa.getSaldoFinalEsperado());
+
+        // Valida que o estoque foi chamado com a baixa da venda (2 unidades)
+        verify(estoqueService, times(1)).registrarMovimentacao(
+                eq(55L),
+                eq("SAIDA_VENDA"),
+                eq(2),
+                contains("Venda na Comanda"),
+                eq(operadorMock)
+        );
+    }
+
+    @Test
+    @DisplayName("Deve simular serviço com insumos da ficha técnica e dar baixa automática de consumo")
+    void deveDarBaixaInsumosFichaTecnicaFechamentoComanda() {
+        Caixa caixa = Caixa.builder()
+                .id(1L)
+                .status("ABERTO")
+                .saldoInicial(new BigDecimal("50.00"))
+                .totalEntradas(BigDecimal.ZERO)
+                .totalSaidas(BigDecimal.ZERO)
+                .saldoFinalEsperado(new BigDecimal("50.00"))
+                .empresa(empresaMock)
+                .build();
+
+        Servico coloracao = Servico.builder()
+                .id(12L)
+                .nome("Coloração Completa")
+                .preco(new BigDecimal("200.00"))
+                .build();
+
+        Produto bisnagaTinta = Produto.builder().id(301L).nome("Tinta 6.0 Louro Escuro").build();
+        Produto oxigenada = Produto.builder().id(302L).nome("Água Oxigenada 20 Vol").build();
+
+        ServicoInsumo insumo1 = ServicoInsumo.builder().id(1L).servico(coloracao).produto(bisnagaTinta).quantidadeGasta(1).empresa(empresaMock).build();
+        ServicoInsumo insumo2 = ServicoInsumo.builder().id(2L).servico(coloracao).produto(oxigenada).quantidadeGasta(2).empresa(empresaMock).build();
+
+        Comanda comanda = Comanda.builder()
+                .id(90L)
+                .numeroComanda("CMD-90")
+                .status("ABERTA")
+                .itens(new ArrayList<>())
+                .empresa(empresaMock)
+                .build();
+
+        ComandaItem itemServico = ComandaItem.builder()
+                .comanda(comanda)
+                .tipo("SERVICO")
+                .servico(coloracao)
+                .descricaoItem(coloracao.getNome())
+                .precoUnitario(coloracao.getPreco())
+                .quantidade(1)
+                .valorTotal(new BigDecimal("200.00"))
+                .build();
+        comanda.getItens().add(itemServico);
+        comanda.recalcularTotais();
+
+        when(comandaRepository.findByIdAndEmpresaId(90L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(caixaRepository.findFirstByEmpresaIdAndStatusOrderByDataAberturaDesc(EMPRESA_ID, "ABERTO"))
+                .thenReturn(Optional.of(caixa));
+        when(servicoInsumoRepository.findByServicoIdAndEmpresaId(12L, EMPRESA_ID)).thenReturn(List.of(insumo1, insumo2));
+        when(comandaRepository.save(any(Comanda.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        financeiroService.fecharComanda(90L, "DINHEIRO", BigDecimal.ZERO, BigDecimal.ZERO, null, operadorMock);
+
+        // Verifica que foram dadas baixas nos insumos
+        verify(estoqueService, times(1)).registrarMovimentacao(
+                eq(301L),
+                eq("CONSUMO_SERVICO"),
+                eq(1),
+                contains("Consumo no Serviço"),
+                eq(operadorMock)
+        );
+        verify(estoqueService, times(1)).registrarMovimentacao(
+                eq(302L),
+                eq("CONSUMO_SERVICO"),
+                eq(2),
+                contains("Consumo no Serviço"),
+                eq(operadorMock)
+        );
+    }
+
+    @Test
+    @DisplayName("Não deve permitir fechar comanda se o caixa estiver fechado")
+    void naoDevePermitirFecharComandaSemCaixaAberto() {
+        Comanda comanda = Comanda.builder().id(99L).status("ABERTA").empresa(empresaMock).build();
+        when(comandaRepository.findByIdAndEmpresaId(99L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(caixaRepository.findFirstByEmpresaIdAndStatusOrderByDataAberturaDesc(EMPRESA_ID, "ABERTO"))
+                .thenReturn(Optional.empty());
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                financeiroService.fecharComanda(99L, "PIX", BigDecimal.ZERO, BigDecimal.ZERO, null, operadorMock)
+        );
+
+        assertTrue(ex.getMessage().contains("abrir um caixa antes de receber"));
+    }
+
+    @Test
+    @DisplayName("Deve registrar sangria e reforço de caixa atualizando saldo final esperado")
+    void deveRegistrarSangriaEReforco() {
+        Caixa caixa = Caixa.builder()
+                .id(1L)
+                .status("ABERTO")
+                .saldoInicial(new BigDecimal("100.00"))
+                .totalEntradas(BigDecimal.ZERO)
+                .totalSaidas(BigDecimal.ZERO)
+                .saldoFinalEsperado(new BigDecimal("100.00"))
+                .empresa(empresaMock)
+                .build();
+
+        when(caixaRepository.findByIdAndEmpresaId(1L, EMPRESA_ID)).thenReturn(Optional.of(caixa));
+
+        // Sangria de 30.00
+        financeiroService.registrarMovimentacaoCaixa(1L, "SANGRIA", new BigDecimal("30.00"), "Retirada", "Sangria para cofre", operadorMock);
+        assertEquals(new BigDecimal("30.00"), caixa.getTotalSaidas());
+        assertEquals(new BigDecimal("70.00"), caixa.getSaldoFinalEsperado());
+
+        // Reforço de 50.00
+        financeiroService.registrarMovimentacaoCaixa(1L, "REFORCO", new BigDecimal("50.00"), "Entrada", "Reforço troco moedas", operadorMock);
+        assertEquals(new BigDecimal("50.00"), caixa.getTotalEntradas());
+        assertEquals(new BigDecimal("120.00"), caixa.getSaldoFinalEsperado()); // 100 + 50 - 30 = 120
+
+        verify(movimentacaoFinanceiraRepository, times(2)).save(any(MovimentacaoFinanceira.class));
+    }
 }

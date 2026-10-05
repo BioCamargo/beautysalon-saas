@@ -17,7 +17,6 @@ public class PixService {
     private static final String ID_MERCHANT_ACCOUNT_INFORMATION = "26";
     private static final String ID_MERCHANT_ACCOUNT_INFORMATION_GUI = "00";
     private static final String ID_MERCHANT_ACCOUNT_INFORMATION_KEY = "01";
-    private static final String ID_MERCHANT_ACCOUNT_INFORMATION_DESCRIPTION = "02";
     private static final String ID_MERCHANT_CATEGORY_CODE = "52";
     private static final String ID_TRANSACTION_CURRENCY = "53";
     private static final String ID_TRANSACTION_AMOUNT = "54";

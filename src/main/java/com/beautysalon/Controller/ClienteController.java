@@ -20,18 +20,18 @@ public class ClienteController {
 
     private final ClienteService clienteService;
     private final SmsService smsService;
-    private final com.beautysalon.repository.ClienteAnamneseRepository clienteAnamneseRepository;
+    private final com.beautysalon.service.AnamneseService anamneseService;
     private final com.beautysalon.repository.UserRepository userRepository;
     private final com.beautysalon.repository.ClienteRepository clienteRepository;
 
     public ClienteController(ClienteService clienteService,
                              SmsService smsService,
-                             com.beautysalon.repository.ClienteAnamneseRepository clienteAnamneseRepository,
+                             com.beautysalon.service.AnamneseService anamneseService,
                              com.beautysalon.repository.UserRepository userRepository,
                              com.beautysalon.repository.ClienteRepository clienteRepository) {
         this.clienteService = clienteService;
         this.smsService = smsService;
-        this.clienteAnamneseRepository = clienteAnamneseRepository;
+        this.anamneseService = anamneseService;
         this.userRepository = userRepository;
         this.clienteRepository = clienteRepository;
     }
@@ -126,7 +126,7 @@ public class ClienteController {
         com.beautysalon.model.Cliente cliente = clienteRepository.findByIdAndEmpresaId(id, empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
-        var historico = clienteAnamneseRepository.findByClienteIdAndEmpresaIdOrderByDataRegistroDesc(id, empresaId);
+        var historico = anamneseService.buscarHistoricoPorCliente(id);
         var profissionais = userRepository.findAllByEmpresaIdAndAtivoTrue(empresaId);
 
         model.addAttribute("cliente", cliente);
@@ -149,31 +149,19 @@ public class ClienteController {
                                  @RequestParam(required = false) String assinaturaDigitalBase64,
                                  @RequestParam(required = false) Long profissionalId,
                                  org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
-        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
-        com.beautysalon.model.Cliente cliente = clienteRepository.findByIdAndEmpresaId(id, empresaId)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
-        com.beautysalon.model.User prof = null;
-        if (profissionalId != null) {
-            prof = userRepository.findByIdAndEmpresaId(profissionalId, empresaId).orElse(null);
-        }
+        anamneseService.salvarAnamnese(
+                id,
+                procedimentoRealizado,
+                formulaQuimica,
+                historicoCapilarAlergias,
+                observacoesTecnicas,
+                fotoAntesUrl,
+                fotoDepoisUrl,
+                assinaturaDigitalBase64,
+                profissionalId
+        );
 
-        com.beautysalon.model.ClienteAnamnese anamnese = com.beautysalon.model.ClienteAnamnese.builder()
-                .cliente(cliente)
-                .empresa(cliente.getEmpresa())
-                .profissional(prof)
-                .procedimentoRealizado(procedimentoRealizado)
-                .formulaQuimica(formulaQuimica)
-                .historicoCapilarAlergias(historicoCapilarAlergias)
-                .observacoesTecnicas(observacoesTecnicas)
-                .fotoAntesUrl(fotoAntesUrl)
-                .fotoDepoisUrl(fotoDepoisUrl)
-                .assinaturaDigitalBase64(assinaturaDigitalBase64)
-                .termoConsentimentoAceito(true)
-                .dataRegistro(java.time.LocalDateTime.now())
-                .build();
-
-        clienteAnamneseRepository.save(anamnese);
         redirectAttributes.addFlashAttribute("mensagemSucesso", "Ficha química e fotos registradas com sucesso!");
         return "redirect:/" + slug + "/clientes/" + id + "/anamnese";
     }

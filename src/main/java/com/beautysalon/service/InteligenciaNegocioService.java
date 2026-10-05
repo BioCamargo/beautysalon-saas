@@ -26,14 +26,11 @@ public class InteligenciaNegocioService {
 
     private final ClienteRepository clienteRepository;
     private final AgendamentoRepository agendamentoRepository;
-    private final ServicoRepository servicoRepository;
 
     public InteligenciaNegocioService(ClienteRepository clienteRepository,
-                                      AgendamentoRepository agendamentoRepository,
-                                      ServicoRepository servicoRepository) {
+                                      AgendamentoRepository agendamentoRepository) {
         this.clienteRepository = clienteRepository;
         this.agendamentoRepository = agendamentoRepository;
-        this.servicoRepository = servicoRepository;
     }
 
     /**

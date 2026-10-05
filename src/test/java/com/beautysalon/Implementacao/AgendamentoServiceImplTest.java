@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,5 +138,79 @@ class AgendamentoServiceImplTest {
 
         assertTrue(ex.getMessage().contains("Conflito de agenda"));
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
+    @DisplayName("Deve permitir agendamento no mesmo horário se o agendamento anterior foi CANCELADO")
+    void devePermitirAgendamentoQuandoHorarioAnteriorFoiCancelado() {
+        LocalDateTime dataHora = LocalDateTime.now().plusDays(1).withHour(15).withMinute(0);
+
+        Agendamento agCancelado = new Agendamento();
+        agCancelado.setId(98L);
+        agCancelado.setDataHora(dataHora);
+        agCancelado.setStatus("CANCELADO");
+        agCancelado.setServicos(List.of(servicoMock));
+
+        AgendamentoDTO dto = new AgendamentoDTO();
+        dto.setClienteId(10L);
+        dto.setServicoId(20L);
+        dto.setProfissionalId(30L);
+        dto.setDataHora(dataHora);
+
+        when(empresaRepository.findById(EMPRESA_ID)).thenReturn(Optional.of(empresaMock));
+        when(clienteRepository.findByIdAndEmpresaId(10L, EMPRESA_ID)).thenReturn(Optional.of(clienteMock));
+        when(servicoRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(servicoMock));
+        when(userRepository.findByIdAndEmpresaId(30L, EMPRESA_ID)).thenReturn(Optional.of(profissionalMock));
+        when(agendamentoRepository.findByEmpresaIdAndProfissionalIdOrderByDataHoraAsc(EMPRESA_ID, 30L)).thenReturn(List.of(agCancelado));
+        when(agendamentoRepository.save(any(Agendamento.class))).thenAnswer(i -> {
+            Agendamento a = i.getArgument(0);
+            a.setId(2L);
+            return a;
+        });
+
+        AgendamentoDTO salvo = agendamentoService.salvar(dto);
+
+        assertNotNull(salvo);
+        assertEquals(2L, salvo.getId());
+        assertEquals("AGENDADO", salvo.getStatus());
+        verify(agendamentoRepository, times(1)).save(any(Agendamento.class));
+    }
+
+    @Test
+    @DisplayName("Deve permitir atualização (reagendamento) mantendo o próprio id sem auto-conflito")
+    void devePermitirReagendamentoProprioAgendamento() {
+        LocalDateTime dataHoraOriginal = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+
+        Agendamento agOriginal = new Agendamento();
+        agOriginal.setId(101L);
+        agOriginal.setDataHora(dataHoraOriginal);
+        agOriginal.setStatus("AGENDADO");
+        agOriginal.setProfissional(profissionalMock);
+        agOriginal.setServicos(new ArrayList<>(List.of(servicoMock)));
+        agOriginal.setCliente(clienteMock);
+        agOriginal.setEmpresa(empresaMock);
+
+        LocalDateTime novaDataHora = LocalDateTime.now().plusDays(1).withHour(11).withMinute(0);
+
+        AgendamentoDTO dtoAtualizacao = new AgendamentoDTO();
+        dtoAtualizacao.setClienteId(10L);
+        dtoAtualizacao.setServicoId(20L);
+        dtoAtualizacao.setProfissionalId(30L);
+        dtoAtualizacao.setDataHora(novaDataHora);
+        dtoAtualizacao.setStatus("CONFIRMADO");
+
+        when(agendamentoRepository.findByIdAndEmpresaId(101L, EMPRESA_ID)).thenReturn(Optional.of(agOriginal));
+        when(clienteRepository.findByIdAndEmpresaId(10L, EMPRESA_ID)).thenReturn(Optional.of(clienteMock));
+        when(servicoRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(servicoMock));
+        when(userRepository.findByIdAndEmpresaId(30L, EMPRESA_ID)).thenReturn(Optional.of(profissionalMock));
+        when(agendamentoRepository.findByEmpresaIdAndProfissionalIdOrderByDataHoraAsc(EMPRESA_ID, 30L)).thenReturn(List.of(agOriginal));
+        when(agendamentoRepository.save(any(Agendamento.class))).thenAnswer(i -> i.getArgument(0));
+
+        AgendamentoDTO atualizado = agendamentoService.atualizar(101L, dtoAtualizacao);
+
+        assertNotNull(atualizado);
+        assertEquals("CONFIRMADO", atualizado.getStatus());
+        assertEquals(novaDataHora, atualizado.getDataHora());
+        verify(agendamentoRepository, times(1)).save(agOriginal);
     }
 }
