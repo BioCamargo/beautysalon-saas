@@ -89,8 +89,9 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setEmpresaId(empresa.getId());
         TenantContext.setSlug(slug);
         TenantContext.setNome(empresa.getNome());
+        TenantContext.setSegmento(empresa.getSegmento() != null ? empresa.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA);
 
-        log.debug("Tenant definido: {} (id={}, nome={})", slug, empresa.getId(), empresa.getNome());
+        log.debug("Tenant definido: {} (id={}, nome={}, segmento={})", slug, empresa.getId(), empresa.getNome(), empresa.getSegmento());
         return true;
     }
 
@@ -99,10 +100,11 @@ public class TenantInterceptor implements HandlerInterceptor {
                            @NonNull HttpServletResponse response,
                            @NonNull Object handler,
                            @Nullable ModelAndView modelAndView) {
-        // Injeta o slug e nome da empresa nos templates automaticamente
+        // Injeta o slug, nome e segmento da empresa nos templates automaticamente
         if (modelAndView != null && TenantContext.getSlug() != null) {
             modelAndView.addObject("empresaSlug", TenantContext.getSlug());
             modelAndView.addObject("empresaNome", TenantContext.getNome());
+            modelAndView.addObject("empresaSegmento", TenantContext.getSegmento());
         }
     }
 

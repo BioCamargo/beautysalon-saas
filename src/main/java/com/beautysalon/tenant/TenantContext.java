@@ -14,6 +14,7 @@ public final class TenantContext {
     private static final ThreadLocal<Long> CURRENT_EMPRESA_ID = new ThreadLocal<>();
     private static final ThreadLocal<String> CURRENT_EMPRESA_SLUG = new ThreadLocal<>();
     private static final ThreadLocal<String> CURRENT_EMPRESA_NOME = new ThreadLocal<>();
+    private static final ThreadLocal<com.beautysalon.model.SegmentoEmpresa> CURRENT_EMPRESA_SEGMENTO = new ThreadLocal<>();
 
     private TenantContext() {}
 
@@ -37,6 +38,19 @@ public final class TenantContext {
         CURRENT_EMPRESA_NOME.set(nome);
     }
 
+    public static String getNome() {
+        return CURRENT_EMPRESA_NOME.get();
+    }
+
+    public static void setSegmento(com.beautysalon.model.SegmentoEmpresa segmento) {
+        CURRENT_EMPRESA_SEGMENTO.set(segmento);
+    }
+
+    public static com.beautysalon.model.SegmentoEmpresa getSegmento() {
+        com.beautysalon.model.SegmentoEmpresa seg = CURRENT_EMPRESA_SEGMENTO.get();
+        return seg != null ? seg : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA;
+    }
+
     public static void setTenant(String slug, Long id) {
         CURRENT_EMPRESA_SLUG.set(slug);
         CURRENT_EMPRESA_ID.set(id);
@@ -48,8 +62,11 @@ public final class TenantContext {
         CURRENT_EMPRESA_NOME.set(nome);
     }
 
-    public static String getNome() {
-        return CURRENT_EMPRESA_NOME.get();
+    public static void setTenant(String slug, Long id, String nome, com.beautysalon.model.SegmentoEmpresa segmento) {
+        CURRENT_EMPRESA_SLUG.set(slug);
+        CURRENT_EMPRESA_ID.set(id);
+        CURRENT_EMPRESA_NOME.set(nome);
+        CURRENT_EMPRESA_SEGMENTO.set(segmento);
     }
 
     /**
@@ -59,5 +76,6 @@ public final class TenantContext {
         CURRENT_EMPRESA_ID.remove();
         CURRENT_EMPRESA_SLUG.remove();
         CURRENT_EMPRESA_NOME.remove();
+        CURRENT_EMPRESA_SEGMENTO.remove();
     }
 }

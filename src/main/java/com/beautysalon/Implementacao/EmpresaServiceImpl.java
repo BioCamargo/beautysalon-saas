@@ -59,6 +59,7 @@ public class EmpresaServiceImpl implements EmpresaService {
                 .email(dto.getEmailEmpresa())
                 .telefone(dto.getTelefoneEmpresa())
                 .cnpj(dto.getCnpj())
+                .segmento(dto.getSegmento() != null ? dto.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA)
                 .ativo(true)
                 .build();
 
@@ -112,6 +113,9 @@ public class EmpresaServiceImpl implements EmpresaService {
         empresa.setEmail(dto.getEmail());
         empresa.setTelefone(dto.getTelefone());
         empresa.setCnpj(dto.getCnpj());
+        if (dto.getSegmento() != null) {
+            empresa.setSegmento(dto.getSegmento());
+        }
         return toDTO(empresaRepository.save(empresa));
     }
 
@@ -139,6 +143,7 @@ public class EmpresaServiceImpl implements EmpresaService {
         dto.setTelefone(e.getTelefone());
         dto.setEmail(e.getEmail());
         dto.setLogoUrl(e.getLogoUrl());
+        dto.setSegmento(e.getSegmento() != null ? e.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA);
         dto.setAtivo(e.isAtivo());
         return dto;
     }

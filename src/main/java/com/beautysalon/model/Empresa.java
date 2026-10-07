@@ -39,7 +39,6 @@ public class Empresa {
 
     private String telefone;
 
-    @Column(unique = true)
     private String email;
 
     private String logoUrl;
@@ -47,6 +46,11 @@ public class Empresa {
     private String chavePix; // CPF, CNPJ, Telefone, E-mail ou Aleatória
 
     private String cidade; // Cidade para geração do BR Code Pix
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "segmento", length = 50)
+    @Builder.Default
+    private SegmentoEmpresa segmento = SegmentoEmpresa.SALAO_BELEZA;
 
     @Builder.Default
     private boolean ativo = true;

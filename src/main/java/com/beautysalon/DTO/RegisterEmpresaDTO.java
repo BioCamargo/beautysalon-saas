@@ -26,6 +26,8 @@ public class RegisterEmpresaDTO {
     private String telefoneEmpresa;
 
     private String cnpj;
+    
+    private com.beautysalon.model.SegmentoEmpresa segmento = com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA;
 
     // --- Dados do Primeiro Usuário (Owner) ---
 

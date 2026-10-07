@@ -16,5 +16,6 @@ public class EmpresaDTO {
     private String telefone;
     private String email;
     private String logoUrl;
+    private com.beautysalon.model.SegmentoEmpresa segmento;
     private boolean ativo;
 }
