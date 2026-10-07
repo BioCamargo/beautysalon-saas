@@ -37,6 +37,9 @@
                         <span>Caixa Aberto (Operador: <span th:text="${caixaAberto.operadorAbertura != null ? caixaAberto.operadorAbertura.nome : 'Sistema'}"></span>)</span>
                     </h3>
                     <div class="d-flex gap-2">
+                        <a th:href="@{/{slug}/relatorios(slug=${empresaSlug}, tab='financeiro')}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark-bar-graph"></i> Relatório DRE
+                        </a>
                         <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalMovCaixa">
                             <i class="bi bi-cash"></i> Sangria / Despesa
                         </button>

@@ -47,5 +47,7 @@ uploads/
 
 ### Guias e Notas Locais ###
 docs/GUIA_GIT_FLUXO_BRANCHES.md
+docs/LOCAL_*.md
+docs/ROADMAP_PRODUTO_SAAS_VENDAVEL.md
 .cursorrules
 .agents/

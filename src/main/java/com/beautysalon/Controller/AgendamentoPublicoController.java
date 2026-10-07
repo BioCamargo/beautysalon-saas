@@ -106,6 +106,18 @@ public class AgendamentoPublicoController {
             redirectAttributes.addFlashAttribute("dataAgendamento",
                     dataHora.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")));
             redirectAttributes.addFlashAttribute("clienteNome", cliente.getNome());
+            redirectAttributes.addFlashAttribute("clienteTelefone", cliente.getTelefone());
+
+            // Dados adicionais para resumo e WhatsApp
+            try {
+                com.beautysalon.DTO.ServicoDTO s = servicoService.buscarPorId(servicoId);
+                if (s != null) {
+                    redirectAttributes.addFlashAttribute("servicoNome", s.getNome());
+                    redirectAttributes.addFlashAttribute("servicoPreco", s.getPreco());
+                }
+            } catch (Exception ignored) {
+            }
+
             return "redirect:/" + slug + "/agendar/sucesso";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erro", "Erro ao agendar: " + e.getMessage());
@@ -116,12 +128,14 @@ public class AgendamentoPublicoController {
     @GetMapping("/horarios-ocupados")
     @ResponseBody
     public List<String> obterHorariosOcupados(@PathVariable String slug,
-                                              @RequestParam(required = false) Long profissionalId,
-                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+            @RequestParam(required = false) Long profissionalId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         List<com.beautysalon.model.Agendamento> agendamentos = agendamentoService.listarTodos().stream()
                 .filter(a -> a.getDataHora() != null && a.getDataHora().toLocalDate().isEqual(data))
-                .filter(a -> !"CANCELADO".equalsIgnoreCase(a.getStatus()) && !"NAO_COMPARECEU".equalsIgnoreCase(a.getStatus()))
-                .filter(a -> profissionalId == null || (a.getProfissionalId() != null && a.getProfissionalId().equals(profissionalId)))
+                .filter(a -> !"CANCELADO".equalsIgnoreCase(a.getStatus())
+                        && !"NAO_COMPARECEU".equalsIgnoreCase(a.getStatus()))
+                .filter(a -> profissionalId == null
+                        || (a.getProfissionalId() != null && a.getProfissionalId().equals(profissionalId)))
                 .map(dto -> {
                     com.beautysalon.model.Agendamento ag = new com.beautysalon.model.Agendamento();
                     ag.setDataHora(dto.getDataHora());

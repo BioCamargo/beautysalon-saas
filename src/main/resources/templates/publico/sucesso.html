@@ -61,14 +61,33 @@
                 <span class="text-muted small">Cliente:</span>
                 <strong class="d-block text-light" th:text="${clienteNome} ?: 'Cliente'">Nome do Cliente</strong>
             </div>
+            <div th:if="${servicoNome}" class="mb-2">
+                <span class="text-muted small">Serviço / Procedimento:</span>
+                <strong class="d-block text-light">
+                    <span th:text="${servicoNome}">Corte e Escova</span>
+                    <span th:if="${servicoPreco}" class="text-gold ms-1">
+                        (R$ <span th:text="${#numbers.formatDecimal(servicoPreco, 1, 2, 'POINT')}">120.00</span>)
+                    </span>
+                </strong>
+            </div>
             <div class="mb-2">
                 <span class="text-muted small">Data & Horário:</span>
                 <strong class="d-block text-warning" th:text="${dataAgendamento} ?: 'Horário confirmado'">23/09/2026 às 14:00</strong>
             </div>
             <div>
-                <span class="text-muted small">Local:</span>
+                <span class="text-muted small">Local / Estabelecimento:</span>
                 <strong class="d-block text-light" th:text="${empresa != null ? empresa.getNome() : 'Studio & Estética'}">Beauty Salon</strong>
             </div>
+        </div>
+
+        <!-- BOTÃO PARA CONTATO / WHATSAPP DO SALÃO -->
+        <div th:if="${empresa != null and empresa.telefone != null and !empresa.telefone.isBlank()}" class="mb-3">
+            <a th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(empresa.telefone, '(', ''), ')', ''), '-', ''), ' ', '')} + '?text=' + ${#strings.escapeJava('Olá! Acabei de fazer um agendamento online no ' + empresa.nome + ' para o dia ' + dataAgendamento + '. Poderia me confirmar?')}" 
+               target="_blank" 
+               class="btn btn-success w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                <i class="bi bi-whatsapp fs-5"></i>
+                <span>Confirmar via WhatsApp com o Salão</span>
+            </a>
         </div>
 
         <p class="small text-muted mb-4">
