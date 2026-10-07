@@ -62,8 +62,10 @@ class AnamneseServiceTest {
     @Test
     @DisplayName("Deve buscar histórico de anamnese por cliente filtrando pelo tenant atual")
     void deveBuscarHistoricoPorCliente() {
-        ClienteAnamnese a1 = ClienteAnamnese.builder().id(1L).cliente(clienteMock).procedimentoRealizado("Microblading").build();
-        ClienteAnamnese a2 = ClienteAnamnese.builder().id(2L).cliente(clienteMock).procedimentoRealizado("Peeling Químico").build();
+        ClienteAnamnese a1 = ClienteAnamnese.builder().id(1L).cliente(clienteMock).procedimentoRealizado("Microblading")
+                .build();
+        ClienteAnamnese a2 = ClienteAnamnese.builder().id(2L).cliente(clienteMock)
+                .procedimentoRealizado("Peeling Químico").build();
 
         when(anamneseRepository.findByClienteIdAndEmpresaIdOrderByDataRegistroDesc(10L, EMPRESA_ID))
                 .thenReturn(List.of(a2, a1));
@@ -95,8 +97,7 @@ class AnamneseServiceTest {
                 "https://cdn.studio.com/antes.jpg",
                 "https://cdn.studio.com/depois.jpg",
                 "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-                20L
-        );
+                20L);
 
         assertNotNull(salva);
         assertEquals(100L, salva.getId());
@@ -115,13 +116,10 @@ class AnamneseServiceTest {
     void deveLancarExcecaoClienteInexistente() {
         when(clienteRepository.findByIdAndEmpresaId(999L, EMPRESA_ID)).thenReturn(Optional.empty());
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                anamneseService.salvarAnamnese(
-                        999L,
-                        "Procedimento Teste",
-                        null, null, null, null, null, null, null
-                )
-        );
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> anamneseService.salvarAnamnese(
+                999L,
+                "Procedimento Teste",
+                null, null, null, null, null, null, null));
 
         assertTrue(ex.getMessage().contains("Cliente não encontrado para esta empresa"));
         verify(anamneseRepository, never()).save(any());

@@ -46,7 +46,7 @@
     <div th:replace="~{fragments/sidebar :: sidebar('clientes')}"></div>
 
     <div class="app-main">
-        <div th:replace="~{fragments/topbar :: topbar('Ficha Química & Anamnese Digital', 'Histórico de fórmulas, fotos de antes/depois e termo de consentimento')}"></div>
+        <div th:replace="~{fragments/topbar :: topbar(${empresaSegmento != null ? empresaSegmento.tituloAnamnese : 'Ficha de Anamnese & Prontuário Técnico'}, 'Histórico de evolução, fórmulas/protocolos, fotos antes/depois e consentimento')}"></div>
 
         <main class="page-content">
             <!-- MENSAGEM -->
@@ -70,7 +70,7 @@
                     </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-gold btn-sm" data-bs-toggle="modal" data-bs-target="#modalNovaAnamnese">
-                            <i class="bi bi-plus-lg"></i> Novo Procedimento Químico / Fotos
+                            <i class="bi bi-plus-lg"></i> Novo Registro / Evolução & Fotos
                         </button>
                         <a th:href="@{/{slug}/clientes(slug=${empresaSlug})}" class="btn btn-secondary btn-sm">
                             <i class="bi bi-arrow-left"></i> Voltar
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <!-- TIMELINE DE PROCEDIMENTOS QUÍMICOS E FOTOS -->
+            <!-- TIMELINE DE EVOLUÇÃO, PROTOCOLOS E FOTOS -->
             <div class="content-card" th:if="${historicoAnamnese != null and !#lists.isEmpty(historicoAnamnese)}">
                 <div class="card-header-custom">
                     <h3 class="card-title-custom">
@@ -93,8 +93,8 @@
                             <div class="card border h-100 shadow-sm">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <strong>
-                                        <i class="bi bi-scissors text-gold me-1"></i>
-                                        <span th:text="${an.procedimentoRealizado}">Mechas Loiras</span>
+                                        <i class="bi" th:classappend="${empresaSegmento != null ? empresaSegmento.icone : 'bi-stars'} + ' text-gold me-1'"></i>
+                                        <span th:text="${an.procedimentoRealizado}">Procedimento Realizado</span>
                                     </strong>
                                     <span class="badge bg-secondary" th:text="${#temporals.format(an.dataRegistro, 'dd/MM/yyyy HH:mm')}">23/09/2026</span>
                                 </div>
@@ -104,10 +104,10 @@
                                         <div class="fw-bold" th:text="${an.profissional.nome}">Nome do Profissional</div>
                                     </div>
 
-                                    <!-- FÓRMULA QUÍMICA -->
+                                    <!-- FÓRMULA / PROTOCOLO / ATIVOS -->
                                     <div class="mb-3 p-3 bg-light rounded border" th:if="${an.formulaQuimica != null and !#strings.isEmpty(an.formulaQuimica)}">
                                         <label class="fw-bold text-primary small d-block mb-1">
-                                            <i class="bi bi-eyedropper"></i> Fórmula & Proporções Utilizadas:
+                                            <i class="bi bi-card-checklist"></i> <span th:text="${empresaSegmento != null ? empresaSegmento.labelFormulaProtocolo : 'Produtos, Fórmulas & Protocolos Utilizados'}">Produtos & Fórmulas:</span>:
                                         </label>
                                         <div class="small font-monospace" th:text="${an.formulaQuimica}">Fórmula aqui</div>
                                     </div>
@@ -128,18 +128,18 @@
                                         </div>
                                     </div>
 
-                                    <!-- OBSERVAÇÕES TÉCNICAS & HISTÓRICO -->
+                                    <!-- OBSERVAÇÕES TÉCNICAS, SENSIBILIDADE & HISTÓRICO -->
                                     <div class="small text-muted mb-2" th:if="${an.historicoCapilarAlergias != null and !#strings.isEmpty(an.historicoCapilarAlergias)}">
-                                        <strong>Teste de Mecha / Alergias:</strong> <span th:text="${an.historicoCapilarAlergias}"></span>
+                                        <strong>Sensibilidade / Testes Prévios:</strong> <span th:text="${an.historicoCapilarAlergias}"></span>
                                     </div>
                                     <div class="small text-muted" th:if="${an.observacoesTecnicas != null and !#strings.isEmpty(an.observacoesTecnicas)}">
-                                        <strong>Observações:</strong> <span th:text="${an.observacoesTecnicas}"></span>
+                                        <strong>Observações & Recomendações:</strong> <span th:text="${an.observacoesTecnicas}"></span>
                                     </div>
 
                                     <!-- ASSINATURA DIGITAL DO CLIENTE -->
                                     <div class="mt-3 pt-2 border-top" th:if="${an.assinaturaDigitalBase64 != null and !#strings.isEmpty(an.assinaturaDigitalBase64)}">
                                         <small class="text-success fw-bold d-block mb-1">
-                                            <i class="bi bi-shield-check"></i> Termo Assinado Digitalmente pela Cliente:
+                                            <i class="bi bi-shield-check"></i> Termo Assinado Digitalmente:
                                         </small>
                                         <img th:src="${an.assinaturaDigitalBase64}" alt="Assinatura" style="max-height: 50px; border-bottom: 1px solid #ccc;" />
                                     </div>
@@ -153,16 +153,16 @@
             <div class="content-card p-5 text-center text-muted" th:if="${historicoAnamnese == null or #lists.isEmpty(historicoAnamnese)}">
                 <i class="bi bi-clipboard2-plus text-secondary" style="font-size: 3rem;"></i>
                 <h5 class="mt-3">Nenhum histórico técnico registrado</h5>
-                <p class="small">Cadastre fórmulas químicas, teste de mechas e fotos de antes/depois para proteger o salão e fidelizar a cliente.</p>
+                <p class="small">Cadastre protocolos, parâmetros de aplicação, testes prévios e fotos de antes/depois para segurança e fidelização.</p>
                 <button class="btn btn-gold btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalNovaAnamnese">
-                    <i class="bi bi-plus-lg"></i> Cadastrar Primeira Ficha
+                    <i class="bi bi-plus-lg"></i> Cadastrar Primeiro Registro
                 </button>
             </div>
         </main>
     </div>
 </div>
 
-<!-- MODAL NOVO PROCEDIMENTO QUÍMICO COM CANVAS TOUCH DE ASSINATURA -->
+<!-- MODAL NOVO REGISTRO / EVOLUÇÃO COM CANVAS TOUCH DE ASSINATURA -->
 <div class="modal fade" id="modalNovaAnamnese" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -172,7 +172,8 @@
 
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold">
-                        <i class="bi bi-clipboard-pulse text-primary me-1"></i> Ficha Química & Registro de Procedimento
+                        <i class="bi" th:classappend="${empresaSegmento != null ? empresaSegmento.icone : 'bi-clipboard-pulse'} + ' text-primary me-1'"></i>
+                        <span th:text="${empresaSegmento != null ? empresaSegmento.tituloAnamnese : 'Ficha de Anamnese & Evolução'}">Ficha de Anamnese & Registro</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -180,7 +181,7 @@
                     <div class="row g-3">
                         <div class="col-md-7">
                             <label class="form-label small fw-bold">Procedimento Realizado:</label>
-                            <input type="text" name="procedimentoRealizado" class="form-control" placeholder="Ex: Mechas Loiras, Morena Iluminada, Botox" required />
+                            <input type="text" name="procedimentoRealizado" class="form-control" placeholder="Ex: Mechas, Limpeza de Pele, Design de Sobrancelha, Barboterapia" required />
                         </div>
                         <div class="col-md-5">
                             <label class="form-label small fw-bold">Profissional:</label>
@@ -192,9 +193,9 @@
 
                         <div class="col-12">
                             <label class="form-label small fw-bold text-primary">
-                                <i class="bi bi-eyedropper"></i> Fórmula Química Exata (Proporções, Volumagem e Tempo):
+                                <i class="bi bi-card-checklist"></i> <span th:text="${empresaSegmento != null ? empresaSegmento.labelFormulaProtocolo : 'Produtos, Fórmulas & Protocolos Utilizados'}">Produtos, Fórmulas & Parâmetros</span>:
                             </label>
-                            <textarea name="formulaQuimica" class="form-control" rows="2" placeholder="Ex: 50g Pó Blondor + 100ml OX 30vol (1:2). Tonalização com 9.89 + 10vol por 20 minutos."></textarea>
+                            <textarea name="formulaQuimica" class="form-control" rows="2" th:placeholder="${empresaSegmento != null ? empresaSegmento.placeholderFormula : 'Ex: Produtos, misturas, numerações, marcas, tempos de ação ou parâmetros aplicados.'}" placeholder="Ex: Produtos, misturas, numerações, marcas, tempos de ação ou parâmetros aplicados."></textarea>
                         </div>
 
                         <div class="col-md-6">
@@ -207,12 +208,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Teste de Mecha / Alergias:</label>
-                            <input type="text" name="historicoCapilarAlergias" class="form-control form-control-sm" placeholder="Ex: Teste de mecha aprovado, sem ardência" />
+                            <label class="form-label small fw-bold">Sensibilidade / Testes Prévios / Alergias:</label>
+                            <input type="text" name="historicoCapilarAlergias" class="form-control form-control-sm" placeholder="Ex: Teste de sensibilidade aprovado, sem ardência" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Observações Técnicas:</label>
-                            <input type="text" name="observacoesTecnicas" class="form-control form-control-sm" placeholder="Ex: Recomendar cronograma de hidratação semanal" />
+                            <label class="form-label small fw-bold">Observações Técnicas & Orientações:</label>
+                            <input type="text" name="observacoesTecnicas" class="form-control form-control-sm" placeholder="Ex: Recomendar cuidados e produtos pós-procedimento" />
                         </div>
 
                         <!-- ASSINATURA DIGITAL TOUCH / MOUSE -->
@@ -225,7 +226,7 @@
                                 <canvas id="signatureCanvas" class="signature-canvas"></canvas>
                             </div>
                             <small class="text-muted" style="font-size: 0.75rem;">
-                                A cliente pode assinar usando o dedo na tela do celular/tablet ou o mouse.
+                                O cliente pode assinar usando o dedo na tela do celular/tablet ou o mouse.
                             </small>
                         </div>
                     </div>
@@ -233,7 +234,7 @@
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-gold btn-sm">
-                        <i class="bi bi-check2-circle"></i> Salvar Ficha Técnica
+                        <i class="bi bi-check2-circle"></i> Salvar Registro Técnico
                     </button>
                 </div>
             </form>

@@ -133,7 +133,7 @@ public class ClienteController {
         model.addAttribute("historicoAnamnese", historico);
         model.addAttribute("profissionais", profissionais);
         model.addAttribute("empresaSlug", slug);
-        model.addAttribute("pageTitle", "Ficha Química & Fotos: " + cliente.getNome());
+        model.addAttribute("pageTitle", "Ficha de Anamnese & Evolução: " + cliente.getNome());
         return "clientes/anamnese";
     }
 
