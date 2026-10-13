@@ -78,6 +78,8 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/register-empresa",
+                                "/termos",
+                                "/privacidade",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",

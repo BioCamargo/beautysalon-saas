@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Termos de Uso | Lumora Studio SaaS'">Termos de Uso | Lumora Studio SaaS</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- CSS da Landing Page -->
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+</head>
+<body class="landing-page">
+
+    <!-- NAVBAR SIMPLIFICADA -->
+    <header class="lp-navbar">
+        <div class="lp-navbar-container">
+            <a th:href="@{/}" class="lp-brand">
+                <img th:src="@{/images/logo.jpg}" alt="Lumora Studio" class="lp-brand-logo"
+                     onerror="this.style.display='none'; document.getElementById('navBrandFallback').style.display='inline-flex';" />
+                <div id="navBrandFallback" style="display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--lp-gold); color: var(--lp-gold);">
+                    <i class="bi bi-gem"></i>
+                </div>
+                <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
+            </a>
+
+            <div class="lp-nav-actions">
+                <a th:href="@{/}" class="lp-btn-login"><i class="bi bi-arrow-left me-1"></i> Voltar ao Início</a>
+                <a th:href="@{/register}" class="lp-btn-primary">
+                    <span>Criar Conta</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL DOS TERMOS DE USO -->
+    <main style="max-width: 900px; margin: 3rem auto 6rem; padding: 0 1.5rem; position: relative; z-index: 1;">
+        
+        <div style="text-align: center; margin-bottom: 3.5rem;">
+            <span class="lp-section-tag">CONTRATO DE LICENÇA DE SOFTWARE</span>
+            <h1 class="lp-hero-title" style="font-size: clamp(2rem, 3.5vw, 2.8rem); margin-bottom: 0.75rem;">Termos de Uso do Serviço</h1>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Última atualização: 13 de Outubro de 2026 • Versão 2.0</p>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--lp-border); border-radius: 24px; padding: 3rem; color: #cbd5e1; line-height: 1.8;">
+            
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">1. Objeto e Aceitação dos Termos</h3>
+            <p style="margin-bottom: 1.5rem;">
+                Estes Termos de Uso regem a contratação e utilização da plataforma <strong>LUMORA STUDIO</strong>, um software como serviço (SaaS) multi-tenant voltado para a gestão operacional, financeira, agendamento online e controle técnico de salões de beleza, barbearias, clínicas de estética e estúdios correlatos. Ao se cadastrar ou utilizar a plataforma, você (doravante denominado "Assinante" ou "Estúdio") concorda integralmente com as disposições deste instrumento.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">2. Período de Avaliação Gratuita (Trial)</h3>
+            <p style="margin-bottom: 1.5rem;">
+                Novos estúdios cadastrados recebem automaticamente uma licença de teste de <strong>7 (sete) dias corridos</strong> para avaliação dos recursos da plataforma. Durante o período de trial, nenhuma cobrança é realizada e não há exigência de cadastro de cartão de crédito. Ao término do período de trial, para manter o acesso às rotinas operacionais (abertura de comandas, agendamentos e emissão de relatórios), o Assinante deverá selecionar e ativar um dos planos comerciais disponíveis.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">3. Planos Comerciais e Assinatura</h3>
+            <p style="margin-bottom: 1.5rem;">
+                A plataforma disponibiliza diferentes modalidades de planos (Solo, Studio e Premium VIP), com limites de profissionais cadastrados e recursos específicos. Os valores e ciclos de faturamento (mensal ou anual) são transparentes e encontram-se descritos na tabela de preços oficial. A renovação ocorre de forma periódica e o Assinante pode solicitar o cancelamento a qualquer momento sem incidência de multas de fidelidade para planos mensais.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">4. Fichas de Anamnese e Respaldo Jurídico</h3>
+            <p style="margin-bottom: 1.5rem;">
+                O LUMORA disponibiliza ferramentas de registro clínico e consentimento informado (anamnese digital, termos de teste de mecha, fotos de antes/depois e assinatura na tela touch). O Assinante reconhece que é o único responsável pela veracidade dos procedimentos descritos, pela conduta técnica dos seus profissionais e pela coleta das assinaturas de seus clientes finais. Os termos emitidos em PDF possuem valor probatório documental entre as partes contratantes do serviço estético.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">5. Disponibilidade e Manutenção</h3>
+            <p style="margin-bottom: 1.5rem;">
+                Empregamos arquitetura em nuvem com alta disponibilidade e rotinas de backup diário automatizado do banco de dados. Eventuais manutenções preventivas ou atualizações de melhoria serão preferencialmente executadas fora do horário comercial habitual dos estabelecimentos de beleza.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">6. Propriedade Intelectual</h3>
+            <p style="margin-bottom: 1.5rem;">
+                O código-fonte, arquitetura, design visual, algoritmos e marcas da plataforma LUMORA STUDIO são de titularidade exclusiva de seus desenvolvedores e protegidos pela legislação de direitos autorais e propriedade de software. É vedada qualquer engenharia reversa ou reprodução não autorizada.
+            </p>
+
+            <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">7. Foro de Eleição</h3>
+            <p style="margin-bottom: 0;">
+                Para dirimir quaisquer controvérsias oriundas do presente instrumento, as partes elegem o foro da Comarca da sede da contratada, com renúncia expressa a qualquer outro, por mais privilegiado que seja.
+            </p>
+
+        </div>
+    </main>
+
+    <!-- RODAPÉ COMPACTO -->
+    <footer class="lp-footer" style="padding: 2.5rem 1.5rem;">
+        <div class="lp-footer-bottom" style="border: none; padding: 0;">
+            <div>© 2026 Lumora Studio SaaS. Todos os direitos reservados.</div>
+            <div style="display: flex; gap: 1.5rem;">
+                <a th:href="@{/privacidade}" style="color: var(--lp-gold-light); text-decoration: none;">Política de Privacidade & LGPD</a>
+                <a th:href="@{/}" style="color: #64748b; text-decoration: none;">Página Inicial</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

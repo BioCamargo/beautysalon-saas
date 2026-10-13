@@ -59,6 +59,18 @@ public class HomeController {
         return "landing/index";
     }
 
+    @GetMapping("/termos")
+    public String termosDeUso(Model model) {
+        model.addAttribute("pageTitle", "Termos de Uso do Serviço | Lumora Studio SaaS");
+        return "landing/termos";
+    }
+
+    @GetMapping("/privacidade")
+    public String politicaDePrivacidade(Model model) {
+        model.addAttribute("pageTitle", "Política de Privacidade & LGPD | Lumora Studio SaaS");
+        return "landing/privacidade";
+    }
+
     @GetMapping({"/{slug}", "/{slug}/home"})
     public String dashboard(@PathVariable String slug, Model model) {
         Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();

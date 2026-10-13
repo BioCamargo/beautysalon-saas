@@ -88,6 +88,26 @@ class HomeControllerTest {
     }
 
     @Test
+    @DisplayName("Deve renderizar a página de Termos de Uso com pageTitle")
+    void deveRenderizarPaginaDeTermosDeUso() {
+        Model model = new ConcurrentModel();
+        String view = controller.termosDeUso(model);
+
+        assertEquals("landing/termos", view);
+        assertTrue(model.containsAttribute("pageTitle"));
+    }
+
+    @Test
+    @DisplayName("Deve renderizar a página de Política de Privacidade & LGPD com pageTitle")
+    void deveRenderizarPaginaDePoliticaDePrivacidade() {
+        Model model = new ConcurrentModel();
+        String view = controller.politicaDePrivacidade(model);
+
+        assertEquals("landing/privacidade", view);
+        assertTrue(model.containsAttribute("pageTitle"));
+    }
+
+    @Test
     @DisplayName("Deve redirecionar para o dashboard do salão quando o usuário já estiver logado")
     void deveRedirecionarParaDashboardQuandoAutenticado() {
         Empresa empresa = Empresa.builder().id(EMPRESA_ID).slug(SLUG).nome("Studio Lumora").build();
