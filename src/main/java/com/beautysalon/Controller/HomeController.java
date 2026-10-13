@@ -25,6 +25,7 @@ public class HomeController {
     private final com.beautysalon.service.FidelizacaoService fidelizacaoService;
     private final com.beautysalon.repository.ComandaRepository comandaRepository;
     private final com.beautysalon.repository.ComandaItemRepository comandaItemRepository;
+    private final com.beautysalon.repository.ServicoRepository servicoRepository;
 
     public HomeController(UserRepository userRepository,
                           com.beautysalon.repository.ClienteRepository clienteRepository,
@@ -33,7 +34,8 @@ public class HomeController {
                           com.beautysalon.service.FinanceiroService financeiroService,
                           com.beautysalon.service.FidelizacaoService fidelizacaoService,
                           com.beautysalon.repository.ComandaRepository comandaRepository,
-                          com.beautysalon.repository.ComandaItemRepository comandaItemRepository) {
+                          com.beautysalon.repository.ComandaItemRepository comandaItemRepository,
+                          com.beautysalon.repository.ServicoRepository servicoRepository) {
         this.userRepository = userRepository;
         this.clienteRepository = clienteRepository;
         this.agendamentoRepository = agendamentoRepository;
@@ -42,6 +44,7 @@ public class HomeController {
         this.fidelizacaoService = fidelizacaoService;
         this.comandaRepository = comandaRepository;
         this.comandaItemRepository = comandaItemRepository;
+        this.servicoRepository = servicoRepository;
     }
 
     @GetMapping("/")
@@ -65,6 +68,8 @@ public class HomeController {
         java.time.LocalDateTime hojeFim = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
 
         model.addAttribute("totalClientes", clienteRepository.countByEmpresaId(empresaId));
+        model.addAttribute("totalServicos", servicoRepository.countByEmpresaId(empresaId));
+        model.addAttribute("totalProfissionais", userRepository.countByEmpresaId(empresaId));
         model.addAttribute("agendamentosHoje", agendamentoRepository.countByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));
         model.addAttribute("listaAgendamentosHoje", agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));
         model.addAttribute("valorParadoEstoque", estoqueService.calcularValorParadoEmEstoque());

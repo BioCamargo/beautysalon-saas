@@ -11,4 +11,6 @@ public interface ServicoRepository extends JpaRepository<Servico, Long> {
     List<Servico> findAllByEmpresaId(Long empresaId);
 
     Optional<Servico> findByIdAndEmpresaId(Long id, Long empresaId);
+
+    long countByEmpresaId(Long empresaId);
 }

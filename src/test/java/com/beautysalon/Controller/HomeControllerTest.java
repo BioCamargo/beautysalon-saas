@@ -55,6 +55,9 @@ class HomeControllerTest {
     private ComandaItemRepository comandaItemRepository;
 
     @Mock
+    private ServicoRepository servicoRepository;
+
+    @Mock
     private Authentication authentication;
 
     @InjectMocks
@@ -104,6 +107,8 @@ class HomeControllerTest {
     @DisplayName("Deve carregar métricas operacionais e gráficos no Dashboard do salão")
     void deveCarregarMetricasNoDashboard() {
         when(clienteRepository.countByEmpresaId(EMPRESA_ID)).thenReturn(25L);
+        when(servicoRepository.countByEmpresaId(EMPRESA_ID)).thenReturn(8L);
+        when(userRepository.countByEmpresaId(EMPRESA_ID)).thenReturn(4L);
         when(estoqueService.calcularValorParadoEmEstoque()).thenReturn(new BigDecimal("1500.00"));
         when(estoqueService.contarEstoqueBaixo()).thenReturn(2L);
         when(fidelizacaoService.listarAniversariantesDoMes(anyInt())).thenReturn(Collections.emptyList());
@@ -117,6 +122,8 @@ class HomeControllerTest {
         assertEquals("home/index", view);
         assertEquals(SLUG, model.getAttribute("empresaSlug"));
         assertEquals(25L, model.getAttribute("totalClientes"));
+        assertEquals(8L, model.getAttribute("totalServicos"));
+        assertEquals(4L, model.getAttribute("totalProfissionais"));
         assertEquals(new BigDecimal("1500.00"), model.getAttribute("valorParadoEstoque"));
         assertEquals(2L, model.getAttribute("qtdEstoqueBaixo"));
         assertTrue(model.containsAttribute("diasLabels"));
