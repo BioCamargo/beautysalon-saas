@@ -23,7 +23,9 @@ public class ServicoController {
     private final com.beautysalon.repository.ServicoInsumoRepository servicoInsumoRepository;
     private final com.beautysalon.repository.ServicoRepository servicoRepository;
     private final com.beautysalon.repository.EmpresaRepository empresaRepository;
-    private final String uploadDir = "C:/beautysalon/uploads/";
+    
+    @org.springframework.beans.factory.annotation.Value("${upload.dir:uploads}")
+    private String uploadDir;
 
     public ServicoController(ServicoService servicoService,
                              com.beautysalon.service.EstoqueService estoqueService,
@@ -68,10 +70,10 @@ public class ServicoController {
         }
 
         if (dto.getImagemFile() != null && !dto.getImagemFile().isEmpty()) {
-            Files.createDirectories(Paths.get(uploadDir));
+            Path dirPath = Paths.get(uploadDir);
+            Files.createDirectories(dirPath);
             String nomeArquivo = System.currentTimeMillis() + "_" + dto.getImagemFile().getOriginalFilename();
-            Path caminhoCompleto = Paths.get(uploadDir + nomeArquivo);
-            Files.createDirectories(caminhoCompleto.getParent());
+            Path caminhoCompleto = dirPath.resolve(nomeArquivo);
             dto.getImagemFile().transferTo(caminhoCompleto.toFile());
             dto.setImagem(nomeArquivo);
         }
@@ -112,9 +114,10 @@ public class ServicoController {
         }
 
         if (dto.getImagemFile() != null && !dto.getImagemFile().isEmpty()) {
-            Files.createDirectories(Paths.get(uploadDir));
+            Path dirPath = Paths.get(uploadDir);
+            Files.createDirectories(dirPath);
             String nomeArquivo = System.currentTimeMillis() + "_" + dto.getImagemFile().getOriginalFilename();
-            Path caminhoCompleto = Paths.get(uploadDir + nomeArquivo);
+            Path caminhoCompleto = dirPath.resolve(nomeArquivo);
             dto.getImagemFile().transferTo(caminhoCompleto.toFile());
             dto.setImagem(nomeArquivo);
         }

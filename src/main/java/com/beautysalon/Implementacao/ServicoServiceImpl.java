@@ -36,6 +36,9 @@ public class ServicoServiceImpl implements ServicoService {
         servico.setDescricao(dto.getDescricao());
         servico.setPreco(dto.getPreco());
         servico.setImagem(dto.getImagem());
+        servico.setDuracaoMinutos(dto.getDuracaoMinutos() != null ? dto.getDuracaoMinutos() : 30);
+        servico.setDiasCicloRetorno(dto.getDiasCicloRetorno() != null ? dto.getDiasCicloRetorno() : 30);
+        servico.setPercentualComissao(dto.getPercentualComissao());
         servico.setEmpresa(empresa);
 
         Servico salvo = servicoRepository.save(servico);
@@ -81,6 +84,13 @@ public class ServicoServiceImpl implements ServicoService {
         if (dto.getImagem() != null && !dto.getImagem().isBlank()) {
             servico.setImagem(dto.getImagem());
         }
+        if (dto.getDuracaoMinutos() != null) {
+            servico.setDuracaoMinutos(dto.getDuracaoMinutos());
+        }
+        if (dto.getDiasCicloRetorno() != null) {
+            servico.setDiasCicloRetorno(dto.getDiasCicloRetorno());
+        }
+        servico.setPercentualComissao(dto.getPercentualComissao());
 
         Servico atualizado = servicoRepository.save(servico);
         return toDTO(atualizado);
@@ -93,6 +103,9 @@ public class ServicoServiceImpl implements ServicoService {
         dto.setDescricao(s.getDescricao());
         dto.setPreco(s.getPreco());
         dto.setImagem(s.getImagem());
+        dto.setDuracaoMinutos(s.getDuracaoMinutos());
+        dto.setDiasCicloRetorno(s.getDiasCicloRetorno());
+        dto.setPercentualComissao(s.getPercentualComissao());
         return dto;
     }
 }
