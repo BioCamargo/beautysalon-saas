@@ -44,6 +44,21 @@ public class AnamneseService {
                                           String fotoDepoisUrl,
                                           String assinaturaDigitalBase64,
                                           Long profissionalId) {
+        return salvarAnamnese(clienteId, procedimentoRealizado, formulaQuimica, historicoCapilarAlergias,
+                observacoesTecnicas, null, fotoAntesUrl, fotoDepoisUrl, assinaturaDigitalBase64, profissionalId);
+    }
+
+    @Transactional
+    public ClienteAnamnese salvarAnamnese(Long clienteId,
+                                          String procedimentoRealizado,
+                                          String formulaQuimica,
+                                          String historicoCapilarAlergias,
+                                          String observacoesTecnicas,
+                                          String dadosClinicosJson,
+                                          String fotoAntesUrl,
+                                          String fotoDepoisUrl,
+                                          String assinaturaDigitalBase64,
+                                          Long profissionalId) {
         Long empresaId = TenantContext.getEmpresaId();
         Cliente cliente = clienteRepository.findByIdAndEmpresaId(clienteId, empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado para esta empresa"));
@@ -53,6 +68,8 @@ public class AnamneseService {
             profissional = userRepository.findByIdAndEmpresaId(profissionalId, empresaId).orElse(null);
         }
 
+        com.beautysalon.model.SegmentoEmpresa segmentoAtual = TenantContext.getSegmento();
+
         ClienteAnamnese anamnese = ClienteAnamnese.builder()
                 .cliente(cliente)
                 .empresa(cliente.getEmpresa())
@@ -61,6 +78,8 @@ public class AnamneseService {
                 .formulaQuimica(formulaQuimica)
                 .historicoCapilarAlergias(historicoCapilarAlergias)
                 .observacoesTecnicas(observacoesTecnicas)
+                .dadosClinicosJson(dadosClinicosJson)
+                .segmento(segmentoAtual)
                 .fotoAntesUrl(fotoAntesUrl)
                 .fotoDepoisUrl(fotoDepoisUrl)
                 .assinaturaDigitalBase64(assinaturaDigitalBase64)

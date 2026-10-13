@@ -48,6 +48,12 @@ public class ClienteAnamnese extends AuditableEntity {
     @Column(columnDefinition = "TEXT")
     private String observacoesTecnicas;
 
+    @Column(columnDefinition = "TEXT")
+    private String dadosClinicosJson; // JSON com respostas estruturadas da ficha por segmento
+
+    @Enumerated(EnumType.STRING)
+    private SegmentoEmpresa segmento; // Segmento no momento do preenchimento da ficha
+
     private String fotoAntesUrl; // Caminho/URL da foto antes
 
     private String fotoDepoisUrl; // Caminho/URL da foto depois
