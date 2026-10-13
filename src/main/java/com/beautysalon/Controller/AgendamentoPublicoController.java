@@ -43,6 +43,11 @@ public class AgendamentoPublicoController {
         this.empresaRepository = empresaRepository;
     }
 
+    @org.springframework.web.bind.annotation.InitBinder
+    public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new org.springframework.beans.propertyeditors.StringTrimmerEditor(true));
+    }
+
     @GetMapping
     public String paginaAgendamento(@PathVariable String slug, Model model) {
         Long empresaId = TenantContext.getEmpresaId();
@@ -105,17 +110,31 @@ public class AgendamentoPublicoController {
             redirectAttributes.addFlashAttribute("sucesso", true);
             redirectAttributes.addFlashAttribute("dataAgendamento",
                     dataHora.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")));
+            redirectAttributes.addFlashAttribute("dataIso", dataHora.toString());
+            redirectAttributes.addFlashAttribute("dataApenas", data.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            redirectAttributes.addFlashAttribute("horaApenas", horario);
             redirectAttributes.addFlashAttribute("clienteNome", cliente.getNome());
             redirectAttributes.addFlashAttribute("clienteTelefone", cliente.getTelefone());
 
-            // Dados adicionais para resumo e WhatsApp
+            // Dados adicionais para resumo, Google Agenda e WhatsApp
             try {
                 com.beautysalon.DTO.ServicoDTO s = servicoService.buscarPorId(servicoId);
                 if (s != null) {
                     redirectAttributes.addFlashAttribute("servicoNome", s.getNome());
                     redirectAttributes.addFlashAttribute("servicoPreco", s.getPreco());
+                    redirectAttributes.addFlashAttribute("servicoDuracao", s.getDuracaoMinutos());
                 }
             } catch (Exception ignored) {
+            }
+
+            if (profissionalId != null) {
+                try {
+                    var p = profissionalService.buscarPorId(profissionalId);
+                    if (p != null) {
+                        redirectAttributes.addFlashAttribute("profissionalNome", p.getNome());
+                    }
+                } catch (Exception ignored) {
+                }
             }
 
             return "redirect:/" + slug + "/agendar/sucesso";

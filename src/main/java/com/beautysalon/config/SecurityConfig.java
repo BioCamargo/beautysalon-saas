@@ -87,6 +87,7 @@ public class SecurityConfig {
                                 "/favicon.ico",
                                 "/error",
                                 "/api/**",
+                                "/*/agendar",
                                 "/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -125,7 +126,7 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/**", "/h2-console/**")
+                        .ignoringRequestMatchers("/api/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers

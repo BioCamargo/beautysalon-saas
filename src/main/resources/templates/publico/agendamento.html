@@ -2,208 +2,840 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Agendamento Online | Beauty Salon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${pageTitle}">Agendamento Online | Lumora Studio</title>
 
     <!-- Bootstrap 5 & Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
 
     <style>
+        :root {
+            --bg-obsidian: #0a0d14;
+            --bg-card: #121722;
+            --bg-card-hover: #192030;
+            --border-card: rgba(197, 160, 89, 0.22);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --gold-primary: #d4af37;
+            --gold-gradient: linear-gradient(135deg, #f7df99 0%, #d4af37 50%, #aa8214 100%);
+            --gold-glow: rgba(212, 175, 55, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            background-color: #0f1115;
-            color: #e2e8f0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-obsidian);
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
+            margin: 0;
+            padding-bottom: 90px; /* Espaço para a barra flutuante mobile */
+        }
+
+        .booking-app-wrapper {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 1rem 1rem 2rem;
+        }
+
+        /* HEADER / HERO DO ESTABELECIMENTO */
+        .salon-hero-card {
+            background: linear-gradient(180deg, rgba(25, 32, 48, 0.8) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border-card);
+            border-radius: 24px;
+            padding: 1.75rem 1.25rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .salon-hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+        }
+
+        .salon-avatar-wrapper {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 0.85rem;
+            border-radius: 50%;
+            padding: 3px;
+            background: var(--gold-gradient);
+            box-shadow: 0 8px 20px var(--gold-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .salon-avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #0f1115;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .salon-avatar-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .salon-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .badge-verified {
+            background: rgba(212, 175, 55, 0.15);
+            color: #fce7b0;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .salon-chips-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.45rem;
+            margin-top: 0.5rem;
+        }
+
+        .salon-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .salon-chip:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .salon-chip.highlight {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* STEPPER / SECTIONS */
+        .step-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 1.35rem 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            transition: border-color 0.25s ease;
+        }
+
+        .step-block:focus-within {
+            border-color: var(--border-card);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.15rem;
+        }
+
+        .step-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gold-gradient);
+            color: #0b0e14;
+            font-weight: 800;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px var(--gold-glow);
+        }
+
+        .step-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        /* CARDS DE SERVIÇOS */
+        .service-search-box {
+            position: relative;
+            margin-bottom: 0.85rem;
+        }
+
+        .service-search-box input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            border-radius: 12px;
+            padding: 0.55rem 0.85rem 0.55rem 2.2rem;
+            font-size: 0.88rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .service-search-box input:focus {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .service-search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .services-list {
             display: flex;
             flex-direction: column;
+            gap: 0.65rem;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 2px;
         }
-        .public-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            width: 100%;
+
+        .services-list::-webkit-scrollbar {
+            width: 4px;
         }
-        .public-card {
-            background: #181c24;
-            border: 1px solid rgba(197, 160, 89, 0.2);
+        .services-list::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+        }
+
+        .service-item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px solid var(--border-subtle);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            padding: 2.5rem;
-        }
-        .service-select-card {
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
+            padding: 0.95rem 1rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            position: relative;
         }
-        .service-select-card:hover {
-            border-color: #c5a059;
-            background: rgba(197, 160, 89, 0.05);
+
+        .service-item-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-1px);
         }
-        .service-select-card input[type="radio"]:checked + .service-info {
-            color: #c5a059;
+
+        .service-item-card.selected {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: var(--gold-primary);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
         }
-        .time-slot-btn {
-            border: 1px solid rgba(255,255,255,0.15);
-            background: #202632;
-            color: #f8fafc;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
+
+        .service-item-card input[type="radio"] {
+            display: none;
+        }
+
+        .service-card-left {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            flex: 1;
+        }
+
+        .service-check-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .service-item-card.selected .service-check-circle {
+            background: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: #0b0e14;
+        }
+
+        .service-name-text {
             font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.2s;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.2rem;
+            display: block;
         }
-        .time-slot-btn:hover, .time-slot-btn.active {
-            background: #c5a059;
-            color: #000;
+
+        .service-meta-text {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-price-badge {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #f7df99;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+
+        /* SELETOR DE PROFISSIONAIS */
+        .prof-scroll-container {
+            display: flex;
+            gap: 0.65rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .prof-scroll-container::-webkit-scrollbar {
+            height: 3px;
+        }
+        .prof-scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.25);
+            border-radius: 3px;
+        }
+
+        .prof-pill-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 0.65rem 0.85rem;
+            min-width: 140px;
+            cursor: pointer;
+            text-align: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .prof-pill-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .prof-pill-card.selected {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: var(--gold-primary);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.12);
+        }
+
+        .prof-avatar-mini {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.2);
+            color: #f7df99;
             font-weight: 700;
-            border-color: #c5a059;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.4rem;
+        }
+
+        .prof-pill-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .prof-pill-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        /* DATA E HORÁRIOS */
+        .date-picker-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: #ffffff;
+            padding: 0.65rem 0.95rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .date-picker-custom:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .time-slot-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            color: #f1f5f9;
+            border-radius: 10px;
+            padding: 0.55rem 0.2rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            position: relative;
+        }
+
+        .time-slot-chip:hover:not(:disabled) {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.08);
+            transform: scale(1.03);
+        }
+
+        .time-slot-chip.selected {
+            background: var(--gold-gradient);
+            color: #0a0d14;
+            font-weight: 800;
+            border-color: transparent;
+            box-shadow: 0 4px 12px var(--gold-glow);
+        }
+
+        .time-slot-chip:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            border-color: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.01);
+        }
+
+        /* FORMULÁRIO DE CONTATO */
+        .form-floating-custom {
+            margin-bottom: 0.75rem;
+        }
+
+        .form-floating-custom label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+            display: block;
+            font-weight: 500;
+        }
+
+        .form-input-luxury {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: #ffffff;
+            padding: 0.65rem 0.95rem;
+            font-size: 0.92rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input-luxury:focus {
+            border-color: var(--gold-primary);
+            background: rgba(212, 175, 55, 0.04);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+        }
+
+        /* STICKY BOTTOM BAR NO MOBILE */
+        .mobile-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(18, 23, 34, 0.92);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-card);
+            padding: 0.85rem 1.25rem;
+            z-index: 1000;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .bottom-bar-content {
+            max-width: 640px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .bottom-bar-info {
+            line-height: 1.25;
+        }
+
+        .bottom-bar-service {
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 170px;
+        }
+
+        .bottom-bar-price {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #f7df99;
+        }
+
+        .btn-confirm-action {
+            background: var(--gold-gradient);
+            color: #0b0e14;
+            border: none;
+            border-radius: 14px;
+            padding: 0.75rem 1.4rem;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 18px var(--gold-glow);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-confirm-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+            color: #000;
+        }
+
+        .btn-confirm-action:disabled {
+            opacity: 0.4;
+            transform: none;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        @media (min-width: 768px) {
+            .booking-app-wrapper {
+                padding-top: 2rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="public-container">
-    <!-- CABEÇALHO DO SALÃO -->
-    <div class="text-center mb-4">
-        <h1 class="display-6 fw-bold text-gradient-gold" th:text="${empresa != null ? empresa.getNome() : 'Studio & Estética'}">Beauty Salon</h1>
-        <p class="text-muted">Escolha o serviço desejado, o profissional e o melhor horário para seu atendimento.</p>
+<div class="booking-app-wrapper">
+
+    <!-- CABEÇALHO DO ESTABELECIMENTO (HERO CARD) -->
+    <header class="salon-hero-card">
+        <div class="salon-avatar-wrapper">
+            <div class="salon-avatar-inner">
+                <img th:if="${empresa != null and empresa.logoUrl != null and !empresa.logoUrl.isBlank()}" 
+                     th:src="${empresa.logoUrl}" alt="Logo" onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';" />
+                <div id="avatarFallback" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #181d28; color: #f7df99; font-weight: 800; font-size: 1.7rem;">
+                    <span th:text="${empresa != null and empresa.nome != null ? #strings.substring(empresa.nome, 0, 1) : 'S'}">S</span>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="salon-title" th:text="${empresa != null ? empresa.nome : 'Studio & Estética VIP'}">Lumora Studio</h1>
+        <div>
+            <span class="badge-verified">
+                <i class="bi bi-patch-check-fill text-warning"></i> Agendamento Oficial Verificado
+            </span>
+        </div>
+
+        <div class="salon-chips-row">
+            <span class="salon-chip highlight">
+                <i class="bi bi-clock-fill"></i> Horários 24/7
+            </span>
+            <span th:if="${empresa != null and empresa.cidade != null}" class="salon-chip">
+                <i class="bi bi-geo-alt-fill text-danger"></i> <span th:text="${empresa.cidade}">São Paulo, SP</span>
+            </span>
+            <a th:if="${empresa != null and empresa.telefone != null and !empresa.telefone.isBlank()}" 
+               th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(empresa.telefone, '(', ''), ')', ''), '-', ''), ' ', '')}" 
+               target="_blank" class="salon-chip">
+                <i class="bi bi-whatsapp text-success"></i> WhatsApp
+            </a>
+        </div>
+    </header>
+
+    <!-- MENSAGEM DE ERRO (FLASH) -->
+    <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show rounded-4 mb-3 border-0 shadow-sm" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+            <span th:text="${erro}">Erro ao agendar horário.</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- MENSAGEM DE ERRO -->
-    <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${erro}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <!-- FORMULÁRIO PRINCIPAL -->
+    <form id="formAgendamentoPublico" th:action="@{/{slug}/agendar/confirmar(slug=${empresaSlug})}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" id="selectedProfissionalId" name="profissionalId" value="" />
+        <input type="hidden" id="selectedHorario" name="horario" value="09:00" />
 
-    <div class="public-card">
-        <form th:action="@{/{slug}/agendar/confirmar(slug=${empresaSlug})}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <!-- ETAPA 1: ESCOLHA DO PROCEDIMENTO -->
+        <section class="step-block">
+            <div class="step-header">
+                <div class="step-title-wrap">
+                    <span class="step-number">1</span>
+                    <h2 class="step-title">Escolha o Procedimento</h2>
+                </div>
+                <span class="text-muted small" th:text="${servicos != null ? #lists.size(servicos) + ' disponíveis' : ''}"></span>
+            </div>
 
-            <!-- PASSO 1: DADOS DO CLIENTE -->
-            <div class="mb-4">
-                <h4 class="text-gold mb-3"><i class="bi bi-person-fill me-2"></i>1. Seus Dados de Contato</h4>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small">Nome Completo:</label>
-                        <input type="text" name="clienteNome" class="form-control-modern" placeholder="Ex: Juliana Mendes" required />
+            <div class="service-search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="filtroServicos" placeholder="Buscar por nome do serviço..." onkeyup="filtrarProcedimentos(this.value)" />
+            </div>
+
+            <div class="services-list" id="listaDeServicos">
+                <div th:each="s, stat : ${servicos}" 
+                     class="service-item-card" 
+                     th:classappend="${stat.first} ? 'selected' : ''"
+                     th:data-id="${s.id}"
+                     th:data-nome="${s.nome}"
+                     th:data-preco="${s.preco}"
+                     onclick="selecionarServico(this)">
+                    
+                    <input type="radio" name="servicoId" th:value="${s.id}" th:checked="${stat.first}" required />
+
+                    <div class="service-card-left">
+                        <div class="service-check-circle">
+                            <i class="bi bi-check" style="font-size: 1.1rem; line-height: 1;"></i>
+                        </div>
+                        <div>
+                            <span class="service-name-text" th:text="${s.nome}">Corte e Finalização</span>
+                            <div class="service-meta-text">
+                                <span th:if="${s.duracaoMinutos != null and s.duracaoMinutos > 0}">
+                                    <i class="bi bi-clock me-1"></i><span th:text="${s.duracaoMinutos} + ' min'">45 min</span>
+                                </span>
+                                <span th:if="${s.descricao != null and !s.descricao.isBlank()}" 
+                                      th:text="'&bull; ' + ${s.descricao}" 
+                                      class="text-truncate d-inline-block" style="max-width: 180px;"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small">WhatsApp / Celular:</label>
-                        <input type="tel" name="clienteTelefone" class="form-control-modern" placeholder="(11) 99999-8888" required />
+
+                    <div class="service-price-badge">
+                        R$ <span th:text="${#numbers.formatDecimal(s.preco, 1, 2, 'POINT')}">120.00</span>
                     </div>
-                    <div class="col-md-12">
-                        <label class="form-label text-muted small">E-mail (opcional):</label>
-                        <input type="email" name="clienteEmail" class="form-control-modern" placeholder="juliana@exemplo.com" />
+                </div>
+
+                <div th:if="${servicos == null or #lists.isEmpty(servicos)}" class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
+                    Nenhum procedimento disponível para agendamento online no momento.
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAPA 2: ESPECIALISTA & DATA/HORÁRIO -->
+        <section class="step-block">
+            <div class="step-header">
+                <div class="step-title-wrap">
+                    <span class="step-number">2</span>
+                    <h2 class="step-title">Especialista & Horário</h2>
+                </div>
+                <span class="badge bg-dark border text-muted px-2 py-1" style="font-size: 0.72rem;">Vagas em Aberto</span>
+            </div>
+
+            <!-- CARROSSEL DE PROFISSIONAIS -->
+            <label class="form-label text-muted small fw-semibold mb-2">Com quem deseja ser atendida(o)?</label>
+            <div class="prof-scroll-container">
+                <!-- Opção Qualquer Profissional -->
+                <div class="prof-pill-card selected" data-id="" onclick="selecionarProfissional(this)">
+                    <div class="prof-avatar-mini" style="background: var(--gold-gradient); color: #0b0e14;">
+                        <i class="bi bi-stars"></i>
                     </div>
+                    <span class="prof-pill-name">Qualquer um</span>
+                    <span class="prof-pill-sub">Mais rápido</span>
+                </div>
+
+                <!-- Lista de Profissionais Ativos -->
+                <div th:each="p : ${profissionais}" 
+                     class="prof-pill-card" 
+                     th:data-id="${p.id}" 
+                     onclick="selecionarProfissional(this)">
+                    <div class="prof-avatar-mini" th:text="${#strings.substring(p.nome, 0, 1)}">M</div>
+                    <span class="prof-pill-name" th:text="${p.nome}">Mariana</span>
+                    <span class="prof-pill-sub" th:text="${p.especialidade} ?: 'Especialista'">Hair Stylist</span>
                 </div>
             </div>
 
-            <hr class="border-secondary my-4" />
-
-            <!-- PASSO 2: SELEÇÃO DE PROCEDIMENTO / SERVIÇO -->
-            <div class="mb-4">
-                <h4 class="text-gold mb-3"><i class="bi bi-scissors me-2"></i>2. Escolha o Serviço</h4>
-                <div class="services-list">
-                    <div th:each="s, stat : ${servicos}" class="service-select-card">
-                        <div class="form-check d-flex align-items-center gap-2">
-                            <input class="form-check-input" type="radio" name="servicoId" th:id="'servico_' + ${s.id}" th:value="${s.id}" th:checked="${stat.first}" required />
-                            <label class="form-check-label service-info ms-2" th:for="'servico_' + ${s.id}">
-                                <strong class="d-block text-light" th:text="${s.nome}">Corte e Escova</strong>
-                                <span class="text-muted small" th:text="${s.descricao} ?: 'Procedimento completo'">Descrição</span>
-                            </label>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge" style="background-color: rgba(197, 160, 89, 0.2); color: #e2c07e; font-size: 1rem; font-weight: 700;">
-                                R$ <span th:text="${#numbers.formatDecimal(s.preco, 1, 2, 'POINT')}">120.00</span>
-                            </span>
-                        </div>
-                    </div>
+            <!-- SELEÇÃO DA DATA -->
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-semibold mb-2">Qual o melhor dia?</label>
+                <div class="position-relative">
+                    <input type="date" id="dataAgendamento" name="data" class="date-picker-custom" required 
+                           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" />
                 </div>
             </div>
 
-            <hr class="border-secondary my-4" />
-
-            <!-- PASSO 3: PROFISSIONAL E DATA/HORA -->
-            <div class="mb-4">
-                <h4 class="text-gold mb-3"><i class="bi bi-calendar-event me-2"></i>3. Escolha o Profissional e a Data</h4>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small">Profissional (opcional):</label>
-                        <select name="profissionalId" class="form-control-modern">
-                            <option value="">Qualquer profissional disponível</option>
-                            <option th:each="p : ${profissionais}" th:value="${p.id}" th:text="${p.nome} + ' (' + (${p.especialidade} ?: 'Especialista') + ')'"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small">Data do Atendimento:</label>
-                        <input type="date" id="dataAgendamento" name="data" class="form-control-modern" required th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" />
-                    </div>
+            <!-- GRADE INTELIGENTE DE HORÁRIOS -->
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <label class="form-label text-muted small fw-semibold mb-0">Horários disponíveis:</label>
+                    <span class="small text-muted" id="statusCarregamentoHorarios" style="font-size: 0.75rem;">
+                        <i class="bi bi-check-circle text-success me-1"></i>Atualizado
+                    </span>
                 </div>
 
-                <div class="mt-3">
-                    <label class="form-label text-muted small">Horário de Atendimento (24/7 Flexível):</label>
-                    <div class="row g-2 align-items-center mb-2">
-                        <div class="col-md-5">
-                            <input type="time" id="horarioInput" name="horario" class="form-control-modern" value="09:00" required />
-                        </div>
-                        <div class="col-md-7 text-muted small">
-                            <i class="bi bi-clock me-1"></i> Digite ou escolha qualquer horário disponível 24h.
-                        </div>
-                    </div>
-                    <label class="form-label text-muted small d-block mb-1">Ou selecione um horário rápido:</label>
-                    <div class="d-flex flex-wrap gap-2" id="horariosContainer">
-                        <button type="button" class="time-slot-btn" data-time="07:00">07:00</button>
-                        <button type="button" class="time-slot-btn" data-time="08:00">08:00</button>
-                        <button type="button" class="time-slot-btn active" data-time="09:00">09:00</button>
-                        <button type="button" class="time-slot-btn" data-time="10:00">10:00</button>
-                        <button type="button" class="time-slot-btn" data-time="11:00">11:00</button>
-                        <button type="button" class="time-slot-btn" data-time="12:00">12:00</button>
-                        <button type="button" class="time-slot-btn" data-time="13:00">13:00</button>
-                        <button type="button" class="time-slot-btn" data-time="14:00">14:00</button>
-                        <button type="button" class="time-slot-btn" data-time="15:00">15:00</button>
-                        <button type="button" class="time-slot-btn" data-time="16:00">16:00</button>
-                        <button type="button" class="time-slot-btn" data-time="17:00">17:00</button>
-                        <button type="button" class="time-slot-btn" data-time="18:00">18:00</button>
-                        <button type="button" class="time-slot-btn" data-time="19:00">19:00</button>
-                        <button type="button" class="time-slot-btn" data-time="20:00">20:00</button>
-                        <button type="button" class="time-slot-btn" data-time="21:00">21:00</button>
-                        <button type="button" class="time-slot-btn" data-time="22:00">22:00</button>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <label class="form-label text-muted small">Observações ou Preferências:</label>
-                    <textarea name="observacoes" class="form-control-modern" placeholder="Ex: Preferência por tintura sem amônia..."></textarea>
+                <div class="time-slots-grid" id="horariosContainer">
+                    <button type="button" class="time-slot-chip" data-time="08:00">08:00</button>
+                    <button type="button" class="time-slot-chip" data-time="08:30">08:30</button>
+                    <button type="button" class="time-slot-chip selected" data-time="09:00">09:00</button>
+                    <button type="button" class="time-slot-chip" data-time="09:30">09:30</button>
+                    <button type="button" class="time-slot-chip" data-time="10:00">10:00</button>
+                    <button type="button" class="time-slot-chip" data-time="10:30">10:30</button>
+                    <button type="button" class="time-slot-chip" data-time="11:00">11:00</button>
+                    <button type="button" class="time-slot-chip" data-time="11:30">11:30</button>
+                    <button type="button" class="time-slot-chip" data-time="13:00">13:00</button>
+                    <button type="button" class="time-slot-chip" data-time="13:30">13:30</button>
+                    <button type="button" class="time-slot-chip" data-time="14:00">14:00</button>
+                    <button type="button" class="time-slot-chip" data-time="14:30">14:30</button>
+                    <button type="button" class="time-slot-chip" data-time="15:00">15:00</button>
+                    <button type="button" class="time-slot-chip" data-time="15:30">15:30</button>
+                    <button type="button" class="time-slot-chip" data-time="16:00">16:00</button>
+                    <button type="button" class="time-slot-chip" data-time="16:30">16:30</button>
+                    <button type="button" class="time-slot-chip" data-time="17:00">17:00</button>
+                    <button type="button" class="time-slot-chip" data-time="17:30">17:30</button>
+                    <button type="button" class="time-slot-chip" data-time="18:00">18:00</button>
+                    <button type="button" class="time-slot-chip" data-time="18:30">18:30</button>
+                    <button type="button" class="time-slot-chip" data-time="19:00">19:00</button>
+                    <button type="button" class="time-slot-chip" data-time="19:30">19:30</button>
+                    <button type="button" class="time-slot-chip" data-time="20:00">20:00</button>
+                    <button type="button" class="time-slot-chip" data-time="20:30">20:30</button>
                 </div>
             </div>
+        </section>
 
-            <!-- BOTÃO DE CONFIRMAR -->
-            <button type="submit" class="btn btn-gold w-100 py-3 fw-bold fs-5 shadow-lg mt-3">
-                <i class="bi bi-check-circle-fill me-2"></i> Confirmar Meu Agendamento
-            </button>
-        </form>
-    </div>
+        <!-- ETAPA 3: SEUS DADOS DE CONTATO -->
+        <section class="step-block">
+            <div class="step-header">
+                <div class="step-title-wrap">
+                    <span class="step-number">3</span>
+                    <h2 class="step-title">Seus Dados de Contato</h2>
+                </div>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1" style="font-size: 0.72rem;">
+                    <i class="bi bi-shield-lock me-1"></i>100% Seguro
+                </span>
+            </div>
 
-    <!-- RODAPÉ -->
-    <div class="text-center mt-4 text-muted small">
-        &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> <span th:text="${empresa != null ? empresa.getNome() : 'Beauty Salon'}">Beauty Salon</span> &bull; Powered by BeautySalon SaaS
-    </div>
+            <div class="form-floating-custom">
+                <label>Seu Nome Completo *</label>
+                <input type="text" name="clienteNome" class="form-input-luxury" placeholder="Ex: Fernanda Lima" required />
+            </div>
+
+            <div class="form-floating-custom">
+                <label>Seu WhatsApp / Celular *</label>
+                <input type="tel" id="inputTelefone" name="clienteTelefone" class="form-input-luxury" 
+                       placeholder="(11) 98765-4321" maxlength="15" required oninput="mascaraTelefone(this)" />
+            </div>
+
+            <div class="form-floating-custom">
+                <label>E-mail de confirmação (opcional)</label>
+                <input type="email" name="clienteEmail" class="form-input-luxury" placeholder="fernanda@email.com" />
+            </div>
+
+            <div class="form-floating-custom mb-0">
+                <label>Observações ou preferências especiais (opcional)</label>
+                <textarea name="observacoes" class="form-input-luxury" rows="2" placeholder="Ex: Prefiro atendimento sem secador muito quente..."></textarea>
+            </div>
+        </section>
+
+        <!-- BARRA FLUTUANTE INFERIOR MOBILE & DESKTOP (STICKY FOOTER) -->
+        <div class="mobile-bottom-bar">
+            <div class="bottom-bar-content">
+                <div class="bottom-bar-info">
+                    <div class="bottom-bar-service" id="resumoServicoNome">Selecione um serviço</div>
+                    <div class="bottom-bar-price" id="resumoServicoPreco">R$ 0,00</div>
+                </div>
+                <button type="submit" id="btnConfirmarAgendamento" class="btn-confirm-action">
+                    <span>Confirmar Horário</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <footer class="text-center mt-4 text-muted small" style="font-size: 0.75rem;">
+        &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> 
+        <span th:text="${empresa != null ? empresa.nome : 'Studio'}">Beauty Salon</span> &bull; 
+        Tecnologia <strong class="text-warning">Lumora Studio</strong>
+    </footer>
 </div>
 
 <script>
-    // Define a data de hoje por padrão se não preenchido
+    // Inicialização da Data Padrão (Hoje)
     const dataInput = document.getElementById('dataAgendamento');
-    const profissionalSelect = document.querySelector('select[name="profissionalId"]');
     const todayStr = new Date().toISOString().split('T')[0];
     if (dataInput) {
         dataInput.min = todayStr;
@@ -212,101 +844,173 @@
         }
     }
 
-    const horarioInput = document.getElementById('horarioInput');
-    const timeBtns = document.querySelectorAll('.time-slot-btn');
+    // Seleção de Procedimento
+    function selecionarServico(card) {
+        document.querySelectorAll('.service-item-card').forEach(c => {
+            c.classList.remove('selected');
+            const radio = c.querySelector('input[type="radio"]');
+            if (radio) radio.checked = false;
+        });
+        card.classList.add('selected');
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
 
+        atualizarBarraResumo();
+    }
+
+    function atualizarBarraResumo() {
+        const selectedCard = document.querySelector('.service-item-card.selected');
+        const resumoNome = document.getElementById('resumoServicoNome');
+        const resumoPreco = document.getElementById('resumoServicoPreco');
+
+        if (selectedCard) {
+            const nome = selectedCard.getAttribute('data-nome');
+            const preco = parseFloat(selectedCard.getAttribute('data-preco') || 0);
+            if (resumoNome) resumoNome.textContent = nome;
+            if (resumoPreco) resumoPreco.textContent = 'R$ ' + preco.toFixed(2).replace('.', ',');
+        }
+    }
+
+    // Filtro rápido de Procedimentos
+    function filtrarProcedimentos(termo) {
+        const termoBusca = termo.toLowerCase().trim();
+        const cards = document.querySelectorAll('.service-item-card');
+        cards.forEach(card => {
+            const nome = (card.getAttribute('data-nome') || '').toLowerCase();
+            if (nome.includes(termoBusca)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Seleção de Profissional
+    function selecionarProfissional(pill) {
+        document.querySelectorAll('.prof-pill-card').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        const profId = pill.getAttribute('data-id') || '';
+        document.getElementById('selectedProfissionalId').value = profId;
+        carregarHorariosOcupados();
+    }
+
+    // Seleção de Horário
+    const timeChips = document.querySelectorAll('.time-slot-chip');
+    const inputHorarioOculto = document.getElementById('selectedHorario');
+
+    timeChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            if (this.disabled) return;
+            timeChips.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            if (inputHorarioOculto) {
+                inputHorarioOculto.value = this.getAttribute('data-time');
+            }
+        });
+    });
+
+    // Consulta AJAX de Horários Ocupados em tempo real
     function carregarHorariosOcupados() {
         if (!dataInput || !dataInput.value) return;
         const data = dataInput.value;
-        const profId = profissionalSelect ? profissionalSelect.value : '';
+        const profId = document.getElementById('selectedProfissionalId').value;
         const currentPath = window.location.pathname.replace(/\/$/, "");
+        const statusEl = document.getElementById('statusCarregamentoHorarios');
+
+        if (statusEl) {
+            statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-warning me-1"></span>Verificando...';
+        }
 
         fetch(`${currentPath}/horarios-ocupados?data=${data}&profissionalId=${profId}`)
             .then(res => res.json())
             .then(ocupados => {
-                timeBtns.forEach(btn => {
+                timeChips.forEach(btn => {
                     const time = btn.getAttribute('data-time');
                     if (ocupados.includes(time)) {
                         btn.disabled = true;
-                        btn.style.opacity = '0.3';
-                        btn.style.textDecoration = 'line-through';
-                        btn.style.cursor = 'not-allowed';
-                        btn.title = 'Horário indisponível/ocupado';
-                        if (btn.classList.contains('active')) {
-                            btn.classList.remove('active');
-                            if (horarioInput && horarioInput.value === time) {
-                                horarioInput.value = '';
-                            }
+                        btn.title = 'Horário já reservado';
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
                         }
                     } else {
                         btn.disabled = false;
-                        btn.style.opacity = '1';
-                        btn.style.textDecoration = 'none';
-                        btn.style.cursor = 'pointer';
-                        btn.title = 'Disponível';
+                        btn.title = 'Horário livre';
                     }
                 });
+
+                // Se o horário selecionado estiver ocupado, seleciona o primeiro disponível
+                const selectedChip = document.querySelector('.time-slot-chip.selected');
+                if (!selectedChip || selectedChip.disabled) {
+                    const primeiroLivre = document.querySelector('.time-slot-chip:not(:disabled)');
+                    if (primeiroLivre) {
+                        primeiroLivre.classList.add('selected');
+                        if (inputHorarioOculto) inputHorarioOculto.value = primeiroLivre.getAttribute('data-time');
+                    } else if (inputHorarioOculto) {
+                        inputHorarioOculto.value = '';
+                    }
+                }
+
+                if (statusEl) {
+                    statusEl.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>Atualizado';
+                }
             })
-            .catch(err => console.error('Erro ao buscar horários ocupados:', err));
+            .catch(err => {
+                console.error('Erro ao verificar horários:', err);
+                if (statusEl) statusEl.innerHTML = '<span class="text-muted">Horários livres</span>';
+            });
     }
 
     if (dataInput) {
         dataInput.addEventListener('change', carregarHorariosOcupados);
     }
-    if (profissionalSelect) {
-        profissionalSelect.addEventListener('change', carregarHorariosOcupados);
+
+    // Máscara de Telefone Automática: (11) 98765-4321
+    function mascaraTelefone(input) {
+        let v = input.value.replace(/\D/g, "");
+        if (v.length > 11) v = v.substring(0, 11);
+
+        if (v.length > 10) {
+            input.value = `(${v.substring(0, 2)}) ${v.substring(2, 7)}-${v.substring(7, 11)}`;
+        } else if (v.length > 6) {
+            input.value = `(${v.substring(0, 2)}) ${v.substring(2, 6)}-${v.substring(6, 10)}`;
+        } else if (v.length > 2) {
+            input.value = `(${v.substring(0, 2)}) ${v.substring(2)}`;
+        } else if (v.length > 0) {
+            input.value = `(${v}`;
+        } else {
+            input.value = "";
+        }
     }
-
-    timeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (btn.disabled) return;
-            timeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (horarioInput) {
-                horarioInput.value = btn.getAttribute('data-time');
-            }
-        });
-    });
-
-    if (horarioInput) {
-        horarioInput.addEventListener('input', () => {
-            timeBtns.forEach(b => {
-                if (b.getAttribute('data-time') === horarioInput.value && !b.disabled) {
-                    b.classList.add('active');
-                } else {
-                    b.classList.remove('active');
-                }
-            });
-        });
-    }
-
-    // Inicializa verificação de ocupação
-    carregarHorariosOcupados();
 
     // Validação de horário no envio
-    const formPublico = document.querySelector('form');
+    const formPublico = document.getElementById('formAgendamentoPublico');
     if (formPublico) {
         formPublico.addEventListener('submit', function(e) {
-            if (dataInput && horarioInput) {
-                if (!horarioInput.value) {
+            const horario = inputHorarioOculto ? inputHorarioOculto.value : '';
+            if (!horario) {
+                e.preventDefault();
+                alert('Por favor, selecione um horário disponível na lista.');
+                return;
+            }
+
+            const parts = horario.split(':');
+            if (parts.length >= 2 && dataInput && dataInput.value) {
+                const selected = new Date(dataInput.value + 'T' + parts[0] + ':' + parts[1] + ':00');
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - 2); // 2 minutos de tolerância
+                if (selected < now) {
                     e.preventDefault();
-                    alert('Por favor, selecione um horário válido e disponível.');
-                    return;
-                }
-                const parts = horarioInput.value.split(':');
-                if (parts.length >= 2) {
-                    const selected = new Date(dataInput.value + 'T' + parts[0] + ':' + parts[1] + ':00');
-                    const now = new Date();
-                    now.setMinutes(now.getMinutes() - 2); // 2 minutos de tolerância
-                    if (selected < now) {
-                        e.preventDefault();
-                        alert('Por favor, selecione um horário a partir do momento atual.');
-                        horarioInput.focus();
-                    }
+                    alert('Este horário já passou. Por favor, escolha um horário futuro.');
                 }
             }
         });
     }
+
+    // Inicialização ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+        atualizarBarraResumo();
+        carregarHorariosOcupados();
+    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

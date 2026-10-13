@@ -31,6 +31,11 @@ public class ProfissionalService {
         return userRepository.findAllByEmpresaIdAndAtivoTrue(TenantContext.getEmpresaId());
     }
 
+    public User buscarPorId(Long id) {
+        if (id == null) return null;
+        return userRepository.findById(id).orElse(null);
+    }
+
     public List<AusenciaProfissional> listarAusencias() {
         return ausenciaProfissionalRepository.findByEmpresaIdAndAtivoTrue(TenantContext.getEmpresaId());
     }
