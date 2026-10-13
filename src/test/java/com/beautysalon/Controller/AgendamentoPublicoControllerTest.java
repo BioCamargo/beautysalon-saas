@@ -2,7 +2,6 @@ package com.beautysalon.Controller;
 
 import com.beautysalon.DTO.AgendamentoDTO;
 import com.beautysalon.DTO.ServicoDTO;
-import com.beautysalon.DTO.UserDTO;
 import com.beautysalon.Inteface.AgendamentoService;
 import com.beautysalon.Inteface.ServicoService;
 import com.beautysalon.model.Cliente;

@@ -5,6 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 public class EmailServiceImpl implements EmailService {
+    @SuppressWarnings("unused")
     private final JavaMailSender mailSender;
     public EmailServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;

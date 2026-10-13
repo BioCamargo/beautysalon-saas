@@ -1,6 +1,5 @@
 package com.beautysalon.Controller;
 
-import com.beautysalon.DTO.ClienteDTO;
 import com.beautysalon.Inteface.ClienteService;
 import com.beautysalon.model.Cliente;
 import com.beautysalon.repository.ClienteRepository;
@@ -163,6 +162,7 @@ class ClienteControllerTest {
 
         assertEquals(200, response.getStatusCode().value());
         assertArrayEquals(mockBytes, response.getBody());
+        assertNotNull(response.getHeaders().getContentType());
         assertEquals("application/pdf", response.getHeaders().getContentType().toString());
     }
 }

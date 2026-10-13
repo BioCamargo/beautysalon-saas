@@ -7,7 +7,6 @@ import com.beautysalon.model.Cliente;
 import com.beautysalon.model.Servico;
 import com.beautysalon.repository.AgendamentoRepository;
 import com.beautysalon.repository.ClienteRepository;
-import com.beautysalon.repository.ServicoRepository;
 import com.beautysalon.tenant.TenantContext;
 import org.springframework.stereotype.Service;
 

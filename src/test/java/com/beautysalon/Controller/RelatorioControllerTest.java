@@ -2,7 +2,6 @@ package com.beautysalon.Controller;
 
 import com.beautysalon.DTO.DREDTO;
 import com.beautysalon.DTO.RentabilidadeServicoDTO;
-import com.beautysalon.model.Comanda;
 import com.beautysalon.model.User;
 import com.beautysalon.repository.ComandaItemRepository;
 import com.beautysalon.repository.ComandaRepository;
