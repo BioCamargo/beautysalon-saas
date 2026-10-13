@@ -23,6 +23,12 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     Optional<Cliente> findFirstByTelefoneAndEmpresaId(String telefone, Long empresaId);
 
+    Optional<Cliente> findFirstByEmailAndEmpresaId(String email, Long empresaId);
+
+    boolean existsByTelefoneAndEmpresaId(String telefone, Long empresaId);
+
+    boolean existsByEmailAndEmpresaId(String email, Long empresaId);
+
     List<Cliente> findByTelefoneAndEmpresaId(String telefone, Long empresaId);
 
     long countByEmpresaId(Long empresaId);

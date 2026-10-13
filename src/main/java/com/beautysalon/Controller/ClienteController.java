@@ -25,6 +25,7 @@ public class ClienteController {
     private final com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService;
     private final com.beautysalon.repository.UserRepository userRepository;
     private final com.beautysalon.repository.ClienteRepository clienteRepository;
+    private final com.beautysalon.service.ClienteImportacaoService clienteImportacaoService;
 
     public ClienteController(ClienteService clienteService,
                              SmsService smsService,
@@ -32,7 +33,8 @@ public class ClienteController {
                              com.beautysalon.service.AnamnesePdfService anamnesePdfService,
                              com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService,
                              com.beautysalon.repository.UserRepository userRepository,
-                             com.beautysalon.repository.ClienteRepository clienteRepository) {
+                             com.beautysalon.repository.ClienteRepository clienteRepository,
+                             com.beautysalon.service.ClienteImportacaoService clienteImportacaoService) {
         this.clienteService = clienteService;
         this.smsService = smsService;
         this.anamneseService = anamneseService;
@@ -40,6 +42,7 @@ public class ClienteController {
         this.anamneseFormBuilderService = anamneseFormBuilderService;
         this.userRepository = userRepository;
         this.clienteRepository = clienteRepository;
+        this.clienteImportacaoService = clienteImportacaoService;
     }
 
     @GetMapping
@@ -185,6 +188,53 @@ public class ClienteController {
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "prontuario-anamnese-" + id + "-" + anamneseId + ".pdf");
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
+    }
+
+    @GetMapping("/importar/modelo")
+    public ResponseEntity<byte[]> baixarModeloPlanilha(@PathVariable String slug,
+                                                       @RequestParam(defaultValue = "xlsx") String formato) throws IOException {
+        byte[] arquivoBytes;
+        String contentType;
+        String nomeArquivo;
+
+        if ("csv".equalsIgnoreCase(formato)) {
+            arquivoBytes = clienteImportacaoService.gerarModeloCsv();
+            contentType = "text/csv; charset=UTF-8";
+            nomeArquivo = "modelo_importacao_clientes_lumora.csv";
+        } else {
+            arquivoBytes = clienteImportacaoService.gerarModeloXlsx();
+            contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            nomeArquivo = "modelo_importacao_clientes_lumora.xlsx";
+        }
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomeArquivo + "\"")
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, contentType)
+                .body(arquivoBytes);
+    }
+
+    @PostMapping("/importar")
+    public String importarClientes(@PathVariable String slug,
+                                   @RequestParam("arquivo") org.springframework.web.multipart.MultipartFile arquivo,
+                                   org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        try {
+            com.beautysalon.DTO.ImportacaoResultadoDTO resultado = clienteImportacaoService.importarClientes(arquivo, empresaId);
+            if (resultado.isSucessoGeral()) {
+                String msg = String.format("Importação concluída: %d clientes importados com sucesso! (%d duplicados ignorados)",
+                        resultado.getTotalImportados(), resultado.getTotalDuplicadosIgnorados());
+                redirectAttributes.addFlashAttribute("mensagemSucesso", msg);
+            } else if (resultado.getTotalDuplicadosIgnorados() > 0) {
+                redirectAttributes.addFlashAttribute("mensagemAlerta",
+                        "Todos os " + resultado.getTotalDuplicadosIgnorados() + " clientes da planilha já estavam cadastrados no salão.");
+            } else {
+                redirectAttributes.addFlashAttribute("mensagemErro",
+                        "Nenhum cliente válido encontrado na planilha. Verifique as colunas e tente novamente.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao processar planilha: " + e.getMessage());
+        }
+        return "redirect:/" + slug + "/clientes";
     }
 
     private String gerarCodigo() {

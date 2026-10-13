@@ -105,15 +105,21 @@ public class TenantInterceptor implements HandlerInterceptor {
                            @NonNull HttpServletResponse response,
                            @NonNull Object handler,
                            @Nullable ModelAndView modelAndView) {
-        // Injeta os dados da empresa nos templates automaticamente
+        // Injeta os dados da empresa nos templates automaticamente (apenas para renderização de views, não em redirects)
         if (modelAndView != null && TenantContext.getSlug() != null) {
-            modelAndView.addObject("empresaSlug", TenantContext.getSlug());
-            modelAndView.addObject("empresaNome", TenantContext.getNome());
-            modelAndView.addObject("empresaSegmento", TenantContext.getSegmento());
-            modelAndView.addObject("empresaPlano", TenantContext.getPlano());
-            modelAndView.addObject("empresaStatusAssinatura", TenantContext.getStatusAssinatura());
-            modelAndView.addObject("empresaDiasRestantesTrial", TenantContext.getDiasRestantesTrial());
-            modelAndView.addObject("empresaTrialAtivo", TenantContext.isTrialAtivo());
+            String viewName = modelAndView.getViewName();
+            boolean isRedirect = (viewName != null && viewName.startsWith("redirect:"))
+                    || modelAndView.getView() instanceof org.springframework.web.servlet.view.RedirectView;
+
+            if (!isRedirect) {
+                modelAndView.addObject("empresaSlug", TenantContext.getSlug());
+                modelAndView.addObject("empresaNome", TenantContext.getNome());
+                modelAndView.addObject("empresaSegmento", TenantContext.getSegmento());
+                modelAndView.addObject("empresaPlano", TenantContext.getPlano());
+                modelAndView.addObject("empresaStatusAssinatura", TenantContext.getStatusAssinatura());
+                modelAndView.addObject("empresaDiasRestantesTrial", TenantContext.getDiasRestantesTrial());
+                modelAndView.addObject("empresaTrialAtivo", TenantContext.isTrialAtivo());
+            }
         }
     }
 
