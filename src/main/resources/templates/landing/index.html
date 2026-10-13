@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle : 'Lumora Studio | Software de Gestão e Agendamento para Salões e Clínicas'}">Lumora Studio SaaS</title>
+    <meta name="description" content="O sistema completo de gestão para salões de beleza, barbearias e clínicas de estética. Agendamento online 24/7, lembretes automáticos no WhatsApp, comanda, frente de caixa, anamnese digital e DRE contábil. Teste 7 dias grátis.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- CSS Customizado da Landing Page -->
+    <link th:href="@{/css/landing.css}" rel="stylesheet">
+</head>
+<body class="landing-page">
+
+    <!-- Efeitos de iluminação ambiente -->
+    <div class="bg-ambient-orb-1"></div>
+    <div class="bg-ambient-orb-2"></div>
+
+    <!-- 1. NAVBAR DE NAVEGAÇÃO -->
+    <header class="lp-navbar">
+        <div class="lp-navbar-container">
+            <a th:href="@{/}" class="lp-brand">
+                <img th:src="@{/images/logo.jpg}" alt="Lumora Studio" class="lp-brand-logo"
+                     onerror="this.style.display='none'; document.getElementById('navBrandFallback').style.display='inline-flex';" />
+                <div id="navBrandFallback" style="display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--lp-gold); color: var(--lp-gold);">
+                    <i class="bi bi-gem"></i>
+                </div>
+                <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
+            </a>
+
+            <ul class="lp-nav-links">
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#diferenciais">Por que o Lumora?</a></li>
+                <li><a href="#precos">Planos & Preços</a></li>
+                <li><a href="#depoimentos">Depoimentos</a></li>
+                <li><a href="#faq">Dúvidas Frequentes</a></li>
+            </ul>
+
+            <div class="lp-nav-actions">
+                <a th:href="@{/login}" class="lp-btn-login">Entrar</a>
+                <a th:href="@{/register}" class="lp-btn-primary">
+                    <span>Experimente Grátis</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. HERO SECTION COM CONVERSÃO E APRESENTAÇÃO -->
+    <section class="lp-hero-section">
+        <div class="lp-badge-announcement">
+            <i class="bi bi-stars"></i>
+            <span>A PLATAFORMA ALL-IN-ONE PARA O MERCADO DA BELEZA</span>
+        </div>
+
+        <h1 class="lp-hero-title">
+            Transforme seu salão em um negócio <span class="text-gold">lucrativo, organizado</span> e sem faltas.
+        </h1>
+
+        <p class="lp-hero-subtitle">
+            Agendamento online 24/7 na bio do Instagram, disparos automáticos de lembretes no WhatsApp, frente de caixa com split de comissões, ficha técnica com baixa de insumos e prontuário de anamnese digital com assinatura touch.
+        </p>
+
+        <div class="lp-hero-cta-group">
+            <a th:href="@{/register}" class="lp-btn-primary" style="font-size: 1.05rem; padding: 0.85rem 2rem;">
+                <i class="bi bi-rocket-takeoff-fill"></i>
+                <span>Começar 7 Dias Grátis sem Cartão</span>
+            </a>
+            <a href="#recursos" class="lp-btn-secondary" style="font-size: 1.05rem; padding: 0.85rem 1.75rem;">
+                <i class="bi bi-play-circle-fill"></i>
+                <span>Ver Recursos do Sistema</span>
+            </a>
+        </div>
+
+        <div class="lp-hero-trust">
+            <span><i class="bi bi-check-circle-fill"></i> Sem necessidade de cartão de crédito</span>
+            <span><i class="bi bi-check-circle-fill"></i> Cancele quando quiser em 1 clique</span>
+            <span><i class="bi bi-check-circle-fill"></i> Setup automático em 2 minutos</span>
+        </div>
+
+        <!-- MOCKUP VISUAL INTERATIVO DO PRODUTO -->
+        <div class="lp-mockup-wrapper">
+            <!-- Badge Flutuante 1 (WhatsApp) -->
+            <div class="lp-floating-badge lp-float-left">
+                <div class="lp-badge-icon lp-icon-wa">
+                    <i class="bi bi-whatsapp"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">WhatsApp Automático</div>
+                    <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff;">Lembrete enviado (Faltas -70%)</div>
+                </div>
+            </div>
+
+            <!-- Badge Flutuante 2 (Caixa / Faturamento) -->
+            <div class="lp-floating-badge lp-float-right">
+                <div class="lp-badge-icon lp-icon-cash">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">DRE em Tempo Real</div>
+                    <div style="font-size: 0.9rem; font-weight: 700; color: var(--lp-gold-light);">Comissões & DRE Calculados</div>
+                </div>
+            </div>
+
+            <div class="lp-mockup-frame">
+                <div class="lp-mockup-topbar">
+                    <span class="lp-mockup-dot lp-dot-red"></span>
+                    <span class="lp-mockup-dot lp-dot-yellow"></span>
+                    <span class="lp-mockup-dot lp-dot-green"></span>
+                    <span class="lp-mockup-url">
+                        <i class="bi bi-lock-fill"></i> app.lumora.com.br/studio-vip/home
+                    </span>
+                </div>
+
+                <div class="lp-mockup-content">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Faturamento do Mês</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">R$ 38.450,00</div>
+                            <div style="font-size: 0.72rem; color: #10b981; margin-top: 4px;"><i class="bi bi-arrow-up-right"></i> +24% vs mês anterior</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Atendimentos Hoje</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">22 agendados</div>
+                            <div style="font-size: 0.72rem; color: var(--lp-gold); margin-top: 4px;"><i class="bi bi-calendar-check"></i> 0 faltas registradas</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Capital em Estoque</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">R$ 14.120,00</div>
+                            <div style="font-size: 0.72rem; color: #38bdf8; margin-top: 4px;"><i class="bi bi-box-seam"></i> Baixa por ficha técnica</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Clientes Ativos / CRM</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">1.480 cadastros</div>
+                            <div style="font-size: 0.72rem; color: #a855f7; margin-top: 4px;"><i class="bi bi-heart-fill"></i> Alertas anti-churn ativos</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; height: 160px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #ffffff;">Grade de Horários & Profissionais em Tempo Real</span>
+                                <span style="font-size: 0.75rem; color: #10b981; background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 6px;">Ao vivo</span>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; overflow: hidden;">
+                                <div style="flex: 1; background: rgba(197, 160, 89, 0.12); border-left: 3px solid var(--lp-gold); padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 0.75rem; color: var(--lp-gold); font-weight: 700;">14:00 - Camila R.</div>
+                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Mechas Criativas + Nutrição</div>
+                                </div>
+                                <div style="flex: 1; background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 700;">14:30 - Lucas M.</div>
+                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Corte Degrade & Barba Terapia</div>
+                                </div>
+                                <div style="flex: 1; background: rgba(168, 85, 247, 0.1); border-left: 3px solid #a855f7; padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 0.75rem; color: #a855f7; font-weight: 700;">15:00 - Juliana T.</div>
+                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Alongamento de Cílios Volume Russo</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Link Público para Clientes:</div>
+                            <div style="font-size: 0.75rem; color: var(--lp-gold); background: rgba(197,160,89,0.1); padding: 8px; border-radius: 6px; font-family: monospace; word-break: break-all;">
+                                app.lumora.com.br/studio-vip/agendar
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Pronto para colocar na Bio do Instagram</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. FAIXA DE SEGMENTOS ATENDIDOS -->
+    <div class="lp-segments-strip">
+        <div class="lp-segments-title">Projetado sob medida para todos os segmentos de beleza e estética</div>
+        <div class="lp-segments-list">
+            <div class="lp-segment-item"><i class="bi bi-scissors"></i> Salões de Beleza & Cabelereiros</div>
+            <div class="lp-segment-item"><i class="bi bi-brush"></i> Barbearias & Visagismo</div>
+            <div class="lp-segment-item"><i class="bi bi-flower1"></i> Clínicas de Estética & Spa</div>
+            <div class="lp-segment-item"><i class="bi bi-eye"></i> Lash Designers & Micropigmentação</div>
+            <div class="lp-segment-item"><i class="bi bi-hand-index-thumb"></i> Esmalterias & Podologia</div>
+        </div>
+    </div>
+
+    <!-- 4. RECURSOS ESSENCIAIS DO LUMORA (GRID DE MÓDULOS) -->
+    <section class="lp-section" id="recursos">
+        <div class="lp-section-header">
+            <span class="lp-section-tag">FUNCIONALIDADES COMPLETAS</span>
+            <h2 class="lp-section-title">Tudo o que seu estúdio precisa, sem planilhas confusas.</h2>
+            <p class="lp-section-desc">
+                Substitua de 3 a 5 ferramentas diferentes por um único sistema integrado, rápido e moderno.
+            </p>
+        </div>
+
+        <div class="lp-features-grid">
+            <!-- RECURSO 1 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-calendar-heart-fill"></i>
+                </div>
+                <h3 class="lp-feature-title">Agendamento Online 24/7 na Bio</h3>
+                <p class="lp-feature-text">
+                    Seus clientes escolhem o serviço, o profissional favorito e o horário vago sem que você precise parar o atendimento para responder no WhatsApp.
+                </p>
+            </div>
+
+            <!-- RECURSO 2 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-whatsapp"></i>
+                </div>
+                <h3 class="lp-feature-title">Automação de WhatsApp Anti-No-Show</h3>
+                <p class="lp-feature-text">
+                    Disparos automáticos de confirmação e lembretes com 24 horas e 2 horas de antecedência. Reduza o não-comparecimento em até 70% já na primeira semana.
+                </p>
+            </div>
+
+            <!-- RECURSO 3 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+                <h3 class="lp-feature-title">Frente de Caixa & Comandas Rápidas</h3>
+                <p class="lp-feature-text">
+                    Abertura e fechamento de caixa com conferência física de notas e moedas. Suporte a split de pagamentos (parte Pix, parte Cartão) e comprovante digital.
+                </p>
+            </div>
+
+            <!-- RECURSO 4 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-droplet-half"></i>
+                </div>
+                <h3 class="lp-feature-title">Ficha Técnica & Baixa de Insumos</h3>
+                <p class="lp-feature-text">
+                    Acabe com o desperdício oculto no lavatório. O sistema desconta automaticamente as gramas de pó, oxidante ou cosméticos utilizados a cada atendimento.
+                </p>
+            </div>
+
+            <!-- RECURSO 5 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-card-checklist"></i>
+                </div>
+                <h3 class="lp-feature-title">Anamnese Digital com Assinatura Touch</h3>
+                <p class="lp-feature-text">
+                    Formulários clínicos dinâmicos por segmento, registro de fotos antes/depois, assinatura digital touch coletada na tela do celular e geração de prontuário em PDF (LGPD).
+                </p>
+            </div>
+
+            <!-- RECURSO 6 -->
+            <div class="lp-feature-card">
+                <div class="lp-feature-icon">
+                    <i class="bi bi-pie-chart-fill"></i>
+                </div>
+                <h3 class="lp-feature-title">DRE Contábil & Inteligência Anti-Churn</h3>
+                <p class="lp-feature-text">
+                    Descubra seu lucro líquido real e margem de contribuição por procedimento. O algoritmo identifica clientes que sumiram e te ajuda a resgatá-los.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. ANTES VS DEPOIS (DIFERENCIAIS) -->
+    <section class="lp-section" id="diferenciais" style="background: rgba(11, 15, 25, 0.4); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+        <div class="lp-section-header">
+            <span class="lp-section-tag">A DIFERENÇA NA PRÁTICA</span>
+            <h2 class="lp-section-title">O que muda na rotina do seu salão?</h2>
+            <p class="lp-section-desc">
+                Pare de perder tempo com tarefas repetitivas e foque em encantar suas clientes e aumentar seu lucro.
+            </p>
+        </div>
+
+        <div class="lp-comparison-grid">
+            <div class="lp-comp-card lp-comp-before">
+                <span class="lp-comp-badge">SEM O LUMORA (ROTINA CAÓTICA)</span>
+                <ul class="lp-comp-list">
+                    <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas difíceis de atualizar no celular.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a cadeira vazia e gerando prejuízo.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Cálculo de comissão feito manualmente no fim do mês gerando desconfiança e brigas na equipe.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Nenhuma noção do custo de produtos gastos no lavatório por procedimento.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Fichas de anamnese em papel que se perdem ou ficam sem respaldo jurídico em casos de alergia.</li>
+                </ul>
+            </div>
+
+            <div class="lp-comp-card lp-comp-after">
+                <span class="lp-comp-badge">COM O LUMORA STUDIO (ROTINA AUTOMATIZADA)</span>
+                <ul class="lp-comp-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio do Instagram e WhatsApp.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70% as faltas e no-shows.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Comissões calculadas em 1 clique em tempo real para cada profissional e assistente.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Ficha técnica deduz o estoque automaticamente e indica o capital parado nas prateleiras.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de anamnese 100% digital com assinatura na tela touch e PDF gerado na hora.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. PLANOS E PREÇOS (PRICING) -->
+    <section class="lp-section" id="precos">
+        <div class="lp-section-header">
+            <span class="lp-section-tag">INVESTIMENTO TRANSPARENTE</span>
+            <h2 class="lp-section-title">Planos que cabem no bolso do seu estúdio</h2>
+            <p class="lp-section-desc">
+                Comece com 7 dias grátis. Sem pegadinhas, sem fidelidade e sem necessidade de cartão agora.
+            </p>
+        </div>
+
+        <!-- SWITCH MENSAL / ANUAL -->
+        <div class="lp-pricing-toggle">
+            <span>Cobrança Mensal</span>
+            <label class="lp-switch">
+                <input type="checkbox" id="billingToggle" onchange="toggleBillingCycle()">
+                <span class="lp-slider"></span>
+            </label>
+            <span>Cobrança Anual <span class="lp-discount-badge">20% OFF</span></span>
+        </div>
+
+        <div class="lp-pricing-grid">
+            <!-- PLANO SOLO -->
+            <div class="lp-price-card">
+                <div class="lp-plan-name">Plano Solo</div>
+                <div class="lp-plan-desc">Perfeito para profissionais autônomos e estúdios individuais.</div>
+                
+                <div class="lp-plan-price">
+                    <span class="lp-currency">R$</span>
+                    <span class="lp-amount" id="priceSolo">59</span>
+                    <span class="lp-period">/mês</span>
+                </div>
+
+                <ul class="lp-plan-features">
+                    <li><i class="bi bi-check-circle-fill"></i> 1 Profissional</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Agendamentos ilimitados</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Link público para Bio do Instagram</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de Anamnese Touch & PDF</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Controle de Clientes & CRM</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Frente de Caixa Básico</li>
+                </ul>
+
+                <a th:href="@{/register}" class="lp-btn-secondary" style="width: 100%; justify-content: center;">
+                    <span>Iniciar 7 Dias Grátis</span>
+                </a>
+            </div>
+
+            <!-- PLANO STUDIO (MAIS POPULAR) -->
+            <div class="lp-price-card lp-price-featured">
+                <div class="lp-popular-badge">Mais Escolhido por Salões</div>
+                <div class="lp-plan-name">Plano Studio</div>
+                <div class="lp-plan-desc">Ideal para salões e clínicas em expansão com equipe.</div>
+                
+                <div class="lp-plan-price">
+                    <span class="lp-currency">R$</span>
+                    <span class="lp-amount" id="priceStudio">129</span>
+                    <span class="lp-period">/mês</span>
+                </div>
+
+                <ul class="lp-plan-features">
+                    <li><i class="bi bi-check-circle-fill"></i> <strong>Até 5 Profissionais</strong></li>
+                    <li><i class="bi bi-check-circle-fill"></i> <strong>Automação de WhatsApp (Lembretes)</strong></li>
+                    <li><i class="bi bi-check-circle-fill"></i> Cálculo automático de Comissões</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Ficha Técnica & Baixa de Estoque</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Form Builder de Anamnese Customizado</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Split de Pagamentos & Sangrias</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Suporte prioritário via WhatsApp</li>
+                </ul>
+
+                <a th:href="@{/register}" class="lp-btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    <span>Iniciar 7 Dias Grátis</span>
+                </a>
+            </div>
+
+            <!-- PLANO PREMIUM VIP -->
+            <div class="lp-price-card">
+                <div class="lp-plan-name">Plano Premium VIP</div>
+                <div class="lp-plan-desc">Para grandes estúdios, franquias e clínicas de alto padrão.</div>
+                
+                <div class="lp-plan-price">
+                    <span class="lp-currency">R$</span>
+                    <span class="lp-amount" id="priceVip">229</span>
+                    <span class="lp-period">/mês</span>
+                </div>
+
+                <ul class="lp-plan-features">
+                    <li><i class="bi bi-check-circle-fill"></i> <strong>Profissionais Ilimitados</strong></li>
+                    <li><i class="bi bi-check-circle-fill"></i> DRE Contábil & Relatórios Financeiros</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Inteligência Anti-Churn de Clientes</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Módulo de Fidelidade, Cupons & Vouchers</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Múltiplas instâncias de WhatsApp</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Onboarding VIP assistido</li>
+                </ul>
+
+                <a th:href="@{/register}" class="lp-btn-secondary" style="width: 100%; justify-content: center;">
+                    <span>Iniciar 7 Dias Grátis</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. DEPOIMENTOS DE CLIENTES -->
+    <section class="lp-section" id="depoimentos" style="background: rgba(11, 15, 25, 0.4); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+        <div class="lp-section-header">
+            <span class="lp-section-tag">QUEM USA RECOMENDA</span>
+            <h2 class="lp-section-title">O que dizem os donos de estúdios que usam o Lumora</h2>
+        </div>
+
+        <div class="lp-testimonials-grid">
+            <div class="lp-testimonial-card">
+                <div class="lp-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p class="lp-test-text">
+                    "O agendamento na bio do Instagram mudou a vida da minha equipe. Nossas clientes adoram escolher os horários sozinhas e o lembrete no WhatsApp reduziu as faltas pela metade!"
+                </p>
+                <div class="lp-test-author">
+                    <div class="lp-author-avatar">MS</div>
+                    <div>
+                        <div class="lp-author-name">Mariana Souza</div>
+                        <div class="lp-author-role">Dona do Studio Glow Hair • São Paulo, SP</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lp-testimonial-card">
+                <div class="lp-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p class="lp-test-text">
+                    "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o Lumora, o fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
+                </p>
+                <div class="lp-test-author">
+                    <div class="lp-author-avatar">RF</div>
+                    <div>
+                        <div class="lp-author-name">Rodrigo Ferreira</div>
+                        <div class="lp-author-role">Sócio da Barbearia Don Corleone • Belo Horizonte, MG</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lp-testimonial-card">
+                <div class="lp-stars">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                </div>
+                <p class="lp-test-text">
+                    "A ficha de anamnese com assinatura na tela touch e fotos de antes/depois me dá total segurança jurídica e transmite um profissionalismo surreal para as minhas pacientes de estética."
+                </p>
+                <div class="lp-test-author">
+                    <div class="lp-author-avatar">CP</div>
+                    <div>
+                        <div class="lp-author-name">Camila Prado</div>
+                        <div class="lp-author-role">Biomédica Esteta • Curitiba, PR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. FAQ - PERGUNTAS FREQUENTES -->
+    <section class="lp-section" id="faq">
+        <div class="lp-section-header">
+            <span class="lp-section-tag">TIRE SUAS DÚVIDAS</span>
+            <h2 class="lp-section-title">Perguntas Frequentes</h2>
+        </div>
+
+        <div class="lp-faq-container">
+            <div class="lp-faq-item active">
+                <div class="lp-faq-question" onclick="toggleFaq(this)">
+                    <span>Como funciona o período de teste grátis de 7 dias?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer">
+                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias, você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e clientes reais.
+                </div>
+            </div>
+
+            <div class="lp-faq-item">
+                <div class="lp-faq-question" onclick="toggleFaq(this)">
+                    <span>Preciso instalar algum aplicativo no computador ou celular?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer">
+                    Não! O Lumora é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória.
+                </div>
+            </div>
+
+            <div class="lp-faq-item">
+                <div class="lp-faq-question" onclick="toggleFaq(this)">
+                    <span>Como funciona o link de agendamento online para os clientes?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer">
+                    Assim que você cadastra seu salão, é gerado um link exclusivo como <code>app.lumora.com.br/seu-salao/agendar</code>. Basta colocar esse link na bio do Instagram ou fixar no WhatsApp para suas clientes agendarem sozinhas.
+                </div>
+            </div>
+
+            <div class="lp-faq-item">
+                <div class="lp-faq-question" onclick="toggleFaq(this)">
+                    <span>Os dados dos meus clientes e faturamento estão seguros?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer">
+                    Sim. O Lumora utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estúdio possui seus dados blindados com criptografia de ponta a ponta e alinhamento à Lei Geral de Proteção de Dados (LGPD).
+                </div>
+            </div>
+
+            <div class="lp-faq-item">
+                <div class="lp-faq-question" onclick="toggleFaq(this)">
+                    <span>Posso cancelar a assinatura quando eu quiser?</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="lp-faq-answer">
+                    Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a qualquer momento diretamente pelo seu painel administrativo.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. BANNER DE CONVERSÃO FINAL -->
+    <section class="lp-section" style="padding-top: 1rem;">
+        <div class="lp-cta-banner">
+            <h2>Pronto para levar a gestão do seu estúdio a outro nível?</h2>
+            <p>Junte-se a centenas de proprietários de salões e clínicas que economizam tempo e aumentam sua lucratividade todos os dias.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a th:href="@{/register}" class="lp-btn-primary" style="font-size: 1.1rem; padding: 0.95rem 2.5rem;">
+                    <i class="bi bi-rocket-takeoff-fill"></i>
+                    <span>Cadastrar Meu Estúdio Gratuitamente</span>
+                </a>
+            </div>
+            <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 1.25rem;">
+                ⚡ Leva menos de 2 minutos • Sem necessidade de cartão de crédito
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. RODAPÉ -->
+    <footer class="lp-footer">
+        <div class="lp-footer-container">
+            <div class="lp-footer-col">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <span class="lp-brand-name" style="font-size: 1.25rem;">LUMORA<span>STUDIO</span></span>
+                </div>
+                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.7; max-width: 320px;">
+                    Plataforma inteligente de gestão, agendamento online, comanda, ficha técnica e anamnese para o mercado de beleza e estética.
+                </p>
+            </div>
+
+            <div class="lp-footer-col">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="#recursos">Agendamento Online</a></li>
+                    <li><a href="#recursos">WhatsApp Automático</a></li>
+                    <li><a href="#recursos">Frente de Caixa & DRE</a></li>
+                    <li><a href="#recursos">Anamnese Digital</a></li>
+                    <li><a href="#precos">Tabela de Preços</a></li>
+                </ul>
+            </div>
+
+            <div class="lp-footer-col">
+                <h4>Segmentos</h4>
+                <ul>
+                    <li><a href="#">Salões de Beleza</a></li>
+                    <li><a href="#">Barbearias</a></li>
+                    <li><a href="#">Clínicas de Estética</a></li>
+                    <li><a href="#">Lash & Brow Designers</a></li>
+                    <li><a href="#">Esmalterias & Podologia</a></li>
+                </ul>
+            </div>
+
+            <div class="lp-footer-col">
+                <h4>Acesso</h4>
+                <ul>
+                    <li><a th:href="@{/login}">Área do Cliente (Login)</a></li>
+                    <li><a th:href="@{/register}">Cadastrar Novo Estúdio</a></li>
+                    <li><a href="#faq">Dúvidas Frequentes</a></li>
+                    <li><a href="#">Termos de Uso</a></li>
+                    <li><a href="#">Privacidade & LGPD</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lp-footer-bottom">
+            <div>
+                © 2026 Lumora Studio SaaS. Todos os direitos reservados.
+            </div>
+            <div style="display: flex; gap: 1.5rem;">
+                <span><i class="bi bi-shield-check text-success"></i> Conexão Segura SSL</span>
+                <span><i class="bi bi-lock-fill text-warning"></i> 100% Compatível com LGPD</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT DA LANDING PAGE -->
+    <script>
+        // Toggle Pricing (Mensal / Anual)
+        function toggleBillingCycle() {
+            const toggle = document.getElementById('billingToggle');
+            const isAnnual = toggle.checked;
+
+            const soloEl = document.getElementById('priceSolo');
+            const studioEl = document.getElementById('priceStudio');
+            const vipEl = document.getElementById('priceVip');
+
+            if (isAnnual) {
+                // 20% de desconto no plano anual
+                soloEl.innerText = '47';
+                studioEl.innerText = '99';
+                vipEl.innerText = '179';
+            } else {
+                soloEl.innerText = '59';
+                studioEl.innerText = '129';
+                vipEl.innerText = '229';
+            }
+        }
+
+        // Toggle Accordion FAQ
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            const wasActive = item.classList.contains('active');
+            
+            // Fecha todos os outros itens
+            document.querySelectorAll('.lp-faq-item').forEach(i => i.classList.remove('active'));
+            
+            if (!wasActive) {
+                item.classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

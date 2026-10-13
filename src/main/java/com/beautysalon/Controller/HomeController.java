@@ -45,14 +45,15 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String root(Authentication authentication) {
+    public String root(Authentication authentication, Model model) {
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
             Optional<User> userOpt = userRepository.findByUsername(authentication.getName());
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
                 return "redirect:/" + userOpt.get().getEmpresa().getSlug() + "/home";
             }
         }
-        return "redirect:/login";
+        model.addAttribute("pageTitle", "Lumora Studio | Software de Gestão e Agendamento para Salões e Estética");
+        return "landing/index";
     }
 
     @GetMapping({"/{slug}", "/{slug}/home"})
