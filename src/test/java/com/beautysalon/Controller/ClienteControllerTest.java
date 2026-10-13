@@ -44,6 +44,12 @@ class ClienteControllerTest {
     private AnamneseService anamneseService;
 
     @Mock
+    private com.beautysalon.service.AnamnesePdfService anamnesePdfService;
+
+    @Mock
+    private com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -98,6 +104,7 @@ class ClienteControllerTest {
         when(clienteRepository.findByIdAndEmpresaId(10L, EMPRESA_ID)).thenReturn(Optional.of(clienteMock));
         when(anamneseService.buscarHistoricoPorCliente(10L)).thenReturn(Collections.emptyList());
         when(userRepository.findAllByEmpresaIdAndAtivoTrue(EMPRESA_ID)).thenReturn(Collections.emptyList());
+        when(anamneseFormBuilderService.listarCamposAtivosDoTenant()).thenReturn(Collections.emptyList());
 
         Model model = new ConcurrentModel();
         String view = controller.viewAnamnese(SLUG, 10L, model);
@@ -107,6 +114,7 @@ class ClienteControllerTest {
         assertEquals(SLUG, model.getAttribute("empresaSlug"));
         assertTrue(model.containsAttribute("historicoAnamnese"));
         assertTrue(model.containsAttribute("profissionais"));
+        assertTrue(model.containsAttribute("camposCustomizados"));
     }
 
     @Test
@@ -121,6 +129,7 @@ class ClienteControllerTest {
                 "50g Pó + 100ml OX 30v",
                 "Sem sensibilidade",
                 "Manter hidratação",
+                "{\"porosidade\":\"alta\",\"fundoClareamento\":\"9\"}",
                 "http://foto-antes.jpg",
                 "http://foto-depois.jpg",
                 "data:image/png;base64,assinaturaSimulada",
@@ -135,11 +144,25 @@ class ClienteControllerTest {
                 eq("50g Pó + 100ml OX 30v"),
                 eq("Sem sensibilidade"),
                 eq("Manter hidratação"),
+                eq("{\"porosidade\":\"alta\",\"fundoClareamento\":\"9\"}"),
                 eq("http://foto-antes.jpg"),
                 eq("http://foto-depois.jpg"),
                 eq("data:image/png;base64,assinaturaSimulada"),
                 eq(2L)
         );
-        assertEquals("Ficha química e fotos registradas com sucesso!", redirectAttributes.getFlashAttributes().get("mensagemSucesso"));
+        assertEquals("Ficha técnica, avaliação clínica e fotos registradas com sucesso!", redirectAttributes.getFlashAttributes().get("mensagemSucesso"));
+    }
+
+    @Test
+    @DisplayName("Deve realizar download do PDF do prontuário da anamnese")
+    void deveBaixarPdfAnamnese() {
+        byte[] mockBytes = new byte[]{1, 2, 3};
+        when(anamnesePdfService.gerarPdfProntuario(50L)).thenReturn(mockBytes);
+
+        var response = controller.downloadAnamnesePdf(SLUG, 10L, 50L);
+
+        assertEquals(200, response.getStatusCode().value());
+        assertArrayEquals(mockBytes, response.getBody());
+        assertEquals("application/pdf", response.getHeaders().getContentType().toString());
     }
 }

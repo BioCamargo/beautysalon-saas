@@ -21,17 +21,23 @@ public class ClienteController {
     private final ClienteService clienteService;
     private final SmsService smsService;
     private final com.beautysalon.service.AnamneseService anamneseService;
+    private final com.beautysalon.service.AnamnesePdfService anamnesePdfService;
+    private final com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService;
     private final com.beautysalon.repository.UserRepository userRepository;
     private final com.beautysalon.repository.ClienteRepository clienteRepository;
 
     public ClienteController(ClienteService clienteService,
                              SmsService smsService,
                              com.beautysalon.service.AnamneseService anamneseService,
+                             com.beautysalon.service.AnamnesePdfService anamnesePdfService,
+                             com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService,
                              com.beautysalon.repository.UserRepository userRepository,
                              com.beautysalon.repository.ClienteRepository clienteRepository) {
         this.clienteService = clienteService;
         this.smsService = smsService;
         this.anamneseService = anamneseService;
+        this.anamnesePdfService = anamnesePdfService;
+        this.anamneseFormBuilderService = anamneseFormBuilderService;
         this.userRepository = userRepository;
         this.clienteRepository = clienteRepository;
     }
@@ -128,10 +134,12 @@ public class ClienteController {
 
         var historico = anamneseService.buscarHistoricoPorCliente(id);
         var profissionais = userRepository.findAllByEmpresaIdAndAtivoTrue(empresaId);
+        var camposCustomizados = anamneseFormBuilderService.listarCamposAtivosDoTenant();
 
         model.addAttribute("cliente", cliente);
         model.addAttribute("historicoAnamnese", historico);
         model.addAttribute("profissionais", profissionais);
+        model.addAttribute("camposCustomizados", camposCustomizados);
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Ficha de Anamnese & Evolução: " + cliente.getNome());
         return "clientes/anamnese";
@@ -144,6 +152,7 @@ public class ClienteController {
                                  @RequestParam(required = false) String formulaQuimica,
                                  @RequestParam(required = false) String historicoCapilarAlergias,
                                  @RequestParam(required = false) String observacoesTecnicas,
+                                 @RequestParam(required = false) String dadosClinicosJson,
                                  @RequestParam(required = false) String fotoAntesUrl,
                                  @RequestParam(required = false) String fotoDepoisUrl,
                                  @RequestParam(required = false) String assinaturaDigitalBase64,
@@ -156,14 +165,26 @@ public class ClienteController {
                 formulaQuimica,
                 historicoCapilarAlergias,
                 observacoesTecnicas,
+                dadosClinicosJson,
                 fotoAntesUrl,
                 fotoDepoisUrl,
                 assinaturaDigitalBase64,
                 profissionalId
         );
 
-        redirectAttributes.addFlashAttribute("mensagemSucesso", "Ficha química e fotos registradas com sucesso!");
+        redirectAttributes.addFlashAttribute("mensagemSucesso", "Ficha técnica, avaliação clínica e fotos registradas com sucesso!");
         return "redirect:/" + slug + "/clientes/" + id + "/anamnese";
+    }
+
+    @GetMapping("/{id}/anamnese/{anamneseId}/pdf")
+    public ResponseEntity<byte[]> downloadAnamnesePdf(@PathVariable String slug,
+                                                      @PathVariable Long id,
+                                                      @PathVariable Long anamneseId) {
+        byte[] pdfBytes = anamnesePdfService.gerarPdfProntuario(anamneseId);
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "prontuario-anamnese-" + id + "-" + anamneseId + ".pdf");
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 
     private String gerarCodigo() {
