@@ -20,11 +20,141 @@
             </div>
         </div>
 
-        <div class="topbar-right">
+        <div class="topbar-right d-flex align-items-center gap-2">
+            <!-- BADGE DE STATUS DE ASSINATURA / TRIAL -->
+            <!-- 1. Período de Testes Ativo -->
+            <button type="button" class="btn-trial-badge" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
+                    th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() == 'TRIAL'}"
+                    title="Seu estúdio está no período de teste gratuito. Clique para conhecer os planos.">
+                <i class="bi bi-stars text-warning"></i>
+                <span>Teste: <strong th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 7} + ' dias'">7 dias</strong></span>
+                <span class="badge-upgrade-text">Assinar</span>
+            </button>
+
+            <!-- 2. Assinatura Expirada -->
+            <button type="button" class="btn-trial-badge trial-expired" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
+                    th:if="${empresaStatusAssinatura != null and empresaStatusAssinatura.name() == 'EXPIRADA'}"
+                    title="Período de teste encerrado. Clique para reativar o acesso.">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Teste Encerrado</span>
+                <span class="badge-upgrade-text">Ativar</span>
+            </button>
+
+            <!-- 3. Assinatura Regular Ativa -->
+            <div class="btn-trial-badge trial-active"
+                 th:if="${empresaStatusAssinatura != null and empresaStatusAssinatura.name() == 'ATIVA'}"
+                 title="Assinatura Ativa e Regularizada">
+                <i class="bi bi-gem"></i>
+                <span th:text="${empresaPlano != null ? empresaPlano.nomeExibicao : 'Plano Studio'}">Plano Studio</span>
+            </div>
+
             <!-- Badge de Relógio / Data -->
             <div class="topbar-time-badge d-none d-md-flex">
                 <i class="bi bi-clock"></i>
                 <span id="topbarLiveClock">Hoje</span>
+            </div>
+        </div>
+
+        <!-- MODAL DE PLANOS E UPGRADE SAAS -->
+        <div class="modal fade" id="modalPlanosSaaS" tabindex="-1" aria-labelledby="modalPlanosSaaSLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: 1px solid rgba(197, 160, 89, 0.35);">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #0b0f19 0%, #1e293b 100%); color: #ffffff; border-bottom: 1px solid rgba(197, 160, 89, 0.2);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-gem text-warning fs-4"></i>
+                            <div>
+                                <h5 class="modal-title mb-0" id="modalPlanosSaaSLabel" style="font-family: var(--font-serif); font-weight: 700;">Planos & Assinatura Lumora</h5>
+                                <div style="font-size: 0.8rem; color: #94a3b8;" th:text="'Estúdio: ' + (${empresaNome} ?: 'Seu Estúdio') + ' • ' + (${empresaDiasRestantesTrial} ?: 7) + ' dias restantes de teste'">Estúdio Lumora</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body p-4" style="background: #f8fafc;">
+                        <p class="text-secondary text-center mb-4" style="font-size: 0.95rem;">
+                            Escolha o plano ideal para a estrutura da sua equipe e mantenha seu estúdio funcionando sem interrupções.
+                        </p>
+
+                        <div class="row g-3">
+                            <!-- PLANO SOLO -->
+                            <div class="col-md-4">
+                                <div class="card h-100 border p-3 text-center" style="border-radius: 16px; background: #ffffff;">
+                                    <h6 class="fw-bold mb-1">Plano Solo</h6>
+                                    <div class="text-muted" style="font-size: 0.75rem; min-height: 32px;">Profissional autônomo individual</div>
+                                    <div class="my-3">
+                                        <span class="fs-6 fw-bold">R$</span>
+                                        <span class="fs-2 fw-bolder text-dark">59</span>
+                                        <span class="text-muted" style="font-size: 0.8rem;">/mês</span>
+                                    </div>
+                                    <ul class="list-unstyled text-start small text-secondary mb-3" style="font-size: 0.82rem; line-height: 1.7;">
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> 1 Profissional</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Agendamentos ilimitados</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Link na bio do Instagram</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Anamnese digital touch</li>
+                                    </ul>
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                       target="_blank" class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
+                                        <i class="bi bi-whatsapp me-1 text-success"></i> Ativar Solo
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- PLANO STUDIO (DESTAQUE) -->
+                            <div class="col-md-4">
+                                <div class="card h-100 border p-3 text-center position-relative shadow-sm" style="border-radius: 16px; background: linear-gradient(180deg, #ffffff 0%, #fffbf0 100%); border-color: var(--accent-gold) !important; border-width: 2px !important;">
+                                    <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill" style="background: var(--accent-gold); color: #0b0f19; font-size: 0.68rem; font-weight: 800; text-transform: uppercase;">Mais Popular</span>
+                                    <h6 class="fw-bold mb-1 mt-1 text-dark">Plano Studio</h6>
+                                    <div class="text-muted" style="font-size: 0.75rem; min-height: 32px;">Equipes até 5 profissionais</div>
+                                    <div class="my-3">
+                                        <span class="fs-6 fw-bold">R$</span>
+                                        <span class="fs-2 fw-bolder text-dark">129</span>
+                                        <span class="text-muted" style="font-size: 0.8rem;">/mês</span>
+                                    </div>
+                                    <ul class="list-unstyled text-start small text-secondary mb-3" style="font-size: 0.82rem; line-height: 1.7;">
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> <strong>Até 5 Profissionais</strong></li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> <strong>WhatsApp Automático</strong></li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Comissões automáticas</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Ficha técnica & estoque</li>
+                                    </ul>
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                       target="_blank" class="btn btn-warning btn-sm rounded-pill mt-auto fw-bold text-dark" style="background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%); border: none;">
+                                        <i class="bi bi-whatsapp me-1"></i> Ativar Studio
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- PLANO VIP -->
+                            <div class="col-md-4">
+                                <div class="card h-100 border p-3 text-center" style="border-radius: 16px; background: #ffffff;">
+                                    <h6 class="fw-bold mb-1">Plano VIP</h6>
+                                    <div class="text-muted" style="font-size: 0.75rem; min-height: 32px;">Grandes salões e clínicas</div>
+                                    <div class="my-3">
+                                        <span class="fs-6 fw-bold">R$</span>
+                                        <span class="fs-2 fw-bolder text-dark">229</span>
+                                        <span class="text-muted" style="font-size: 0.8rem;">/mês</span>
+                                    </div>
+                                    <ul class="list-unstyled text-start small text-secondary mb-3" style="font-size: 0.82rem; line-height: 1.7;">
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> <strong>Profissionais Ilimitados</strong></li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> DRE & Margem real</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Inteligência Anti-Churn</li>
+                                        <li><i class="bi bi-check-circle-fill text-success me-1"></i> Suporte prioritário VIP</li>
+                                    </ul>
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                       target="_blank" class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
+                                        <i class="bi bi-whatsapp me-1 text-success"></i> Ativar VIP
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border mt-4 mb-0 d-flex align-items-center gap-2 p-2" style="border-radius: 12px; font-size: 0.82rem;">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <div>
+                                <strong>Pagamento Flexível via Pix ou Cartão:</strong> Ativação imediata em horário comercial. Chave Pix e nota fiscal emitidas automaticamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

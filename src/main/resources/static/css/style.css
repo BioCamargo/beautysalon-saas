@@ -1089,3 +1089,68 @@ textarea.form-control-modern {
         padding: 1.25rem;
     }
 }
+
+/* ==========================================================================
+   BADGE & MODAL DE TRIAL E ASSINATURA SAAS
+   ========================================================================== */
+.btn-trial-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    border-radius: 9999px;
+    padding: 0.4rem 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-trial-badge:hover {
+    background: rgba(197, 160, 89, 0.22);
+    border-color: var(--accent-gold);
+    transform: translateY(-1px);
+}
+
+.btn-trial-badge .badge-upgrade-text {
+    background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%);
+    color: #0b0f19;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.2rem;
+}
+
+.btn-trial-badge.trial-expired {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #be123c;
+    animation: pulseWarning 2s infinite;
+}
+
+.btn-trial-badge.trial-expired:hover {
+    background: rgba(239, 68, 68, 0.22);
+}
+
+.btn-trial-badge.trial-expired .badge-upgrade-text {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.btn-trial-badge.trial-active {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #15803d;
+    cursor: default;
+}
+
+@keyframes pulseWarning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+}

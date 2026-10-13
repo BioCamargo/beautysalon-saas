@@ -52,7 +52,7 @@ public class EmpresaServiceImpl implements EmpresaService {
             slugFinal = slug + "-" + contador++;
         }
 
-        // Cria a empresa
+        // Cria a empresa com Plano Studio em período de teste de 7 dias
         Empresa empresa = Empresa.builder()
                 .nome(dto.getNomeEmpresa())
                 .slug(slugFinal)
@@ -60,6 +60,9 @@ public class EmpresaServiceImpl implements EmpresaService {
                 .telefone(dto.getTelefoneEmpresa())
                 .cnpj(dto.getCnpj())
                 .segmento(dto.getSegmento() != null ? dto.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA)
+                .plano(com.beautysalon.model.PlanoSaaS.STUDIO)
+                .statusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL)
+                .dataExpiracaoTrial(java.time.LocalDateTime.now().plusDays(7))
                 .ativo(true)
                 .build();
 
@@ -144,6 +147,11 @@ public class EmpresaServiceImpl implements EmpresaService {
         dto.setEmail(e.getEmail());
         dto.setLogoUrl(e.getLogoUrl());
         dto.setSegmento(e.getSegmento() != null ? e.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA);
+        dto.setPlano(e.getPlano() != null ? e.getPlano() : com.beautysalon.model.PlanoSaaS.STUDIO);
+        dto.setStatusAssinatura(e.getStatusAssinatura() != null ? e.getStatusAssinatura() : com.beautysalon.model.StatusAssinatura.TRIAL);
+        dto.setDataExpiracaoTrial(e.getDataExpiracaoTrial());
+        dto.setDiasRestantesTrial(e.getDiasRestantesTrial());
+        dto.setAssinaturaValida(e.isAssinaturaValida());
         dto.setAtivo(e.isAtivo());
         return dto;
     }

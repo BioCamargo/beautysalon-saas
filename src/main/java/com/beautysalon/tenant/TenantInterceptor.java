@@ -90,8 +90,13 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setSlug(slug);
         TenantContext.setNome(empresa.getNome());
         TenantContext.setSegmento(empresa.getSegmento() != null ? empresa.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA);
+        TenantContext.setPlano(empresa.getPlano() != null ? empresa.getPlano() : com.beautysalon.model.PlanoSaaS.STUDIO);
+        TenantContext.setStatusAssinatura(empresa.getStatusAssinatura() != null ? empresa.getStatusAssinatura() : com.beautysalon.model.StatusAssinatura.TRIAL);
+        TenantContext.setDiasRestantesTrial(empresa.getDiasRestantesTrial());
+        TenantContext.setTrialAtivo(empresa.isTrialAtivo());
 
-        log.debug("Tenant definido: {} (id={}, nome={}, segmento={})", slug, empresa.getId(), empresa.getNome(), empresa.getSegmento());
+        log.debug("Tenant definido: {} (id={}, nome={}, segmento={}, plano={}, status={})", 
+                slug, empresa.getId(), empresa.getNome(), empresa.getSegmento(), empresa.getPlano(), empresa.getStatusAssinatura());
         return true;
     }
 
@@ -100,11 +105,15 @@ public class TenantInterceptor implements HandlerInterceptor {
                            @NonNull HttpServletResponse response,
                            @NonNull Object handler,
                            @Nullable ModelAndView modelAndView) {
-        // Injeta o slug, nome e segmento da empresa nos templates automaticamente
+        // Injeta os dados da empresa nos templates automaticamente
         if (modelAndView != null && TenantContext.getSlug() != null) {
             modelAndView.addObject("empresaSlug", TenantContext.getSlug());
             modelAndView.addObject("empresaNome", TenantContext.getNome());
             modelAndView.addObject("empresaSegmento", TenantContext.getSegmento());
+            modelAndView.addObject("empresaPlano", TenantContext.getPlano());
+            modelAndView.addObject("empresaStatusAssinatura", TenantContext.getStatusAssinatura());
+            modelAndView.addObject("empresaDiasRestantesTrial", TenantContext.getDiasRestantesTrial());
+            modelAndView.addObject("empresaTrialAtivo", TenantContext.isTrialAtivo());
         }
     }
 

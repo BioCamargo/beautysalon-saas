@@ -97,6 +97,29 @@ class TenantInterceptorTest {
         assertTrue(result);
         assertEquals(10L, TenantContext.getEmpresaId());
         assertEquals("studio-vip", TenantContext.getSlug());
+        assertEquals(com.beautysalon.model.PlanoSaaS.STUDIO, TenantContext.getPlano());
+        assertEquals(com.beautysalon.model.StatusAssinatura.TRIAL, TenantContext.getStatusAssinatura());
+    }
+
+    @Test
+    @DisplayName("Deve injetar atributos de plano e trial no ModelAndView via postHandle")
+    void deveInjetarAtributosDePlanoNoModelAndView() {
+        TenantContext.setSlug("studio-vip");
+        TenantContext.setNome("Studio VIP");
+        TenantContext.setPlano(com.beautysalon.model.PlanoSaaS.STUDIO);
+        TenantContext.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL);
+        TenantContext.setDiasRestantesTrial(7L);
+        TenantContext.setTrialAtivo(true);
+
+        org.springframework.web.servlet.ModelAndView mav = new org.springframework.web.servlet.ModelAndView();
+        tenantInterceptor.postHandle(request, response, new Object(), mav);
+
+        assertEquals("studio-vip", mav.getModel().get("empresaSlug"));
+        assertEquals("Studio VIP", mav.getModel().get("empresaNome"));
+        assertEquals(com.beautysalon.model.PlanoSaaS.STUDIO, mav.getModel().get("empresaPlano"));
+        assertEquals(com.beautysalon.model.StatusAssinatura.TRIAL, mav.getModel().get("empresaStatusAssinatura"));
+        assertEquals(7L, mav.getModel().get("empresaDiasRestantesTrial"));
+        assertEquals(true, mav.getModel().get("empresaTrialAtivo"));
     }
 
     @Test

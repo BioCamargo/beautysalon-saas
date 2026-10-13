@@ -15,6 +15,10 @@ public final class TenantContext {
     private static final ThreadLocal<String> CURRENT_EMPRESA_SLUG = new ThreadLocal<>();
     private static final ThreadLocal<String> CURRENT_EMPRESA_NOME = new ThreadLocal<>();
     private static final ThreadLocal<com.beautysalon.model.SegmentoEmpresa> CURRENT_EMPRESA_SEGMENTO = new ThreadLocal<>();
+    private static final ThreadLocal<com.beautysalon.model.PlanoSaaS> CURRENT_EMPRESA_PLANO = new ThreadLocal<>();
+    private static final ThreadLocal<com.beautysalon.model.StatusAssinatura> CURRENT_EMPRESA_STATUS_ASSINATURA = new ThreadLocal<>();
+    private static final ThreadLocal<Long> CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> CURRENT_EMPRESA_TRIAL_ATIVO = new ThreadLocal<>();
 
     private TenantContext() {}
 
@@ -51,6 +55,42 @@ public final class TenantContext {
         return seg != null ? seg : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA;
     }
 
+    public static void setPlano(com.beautysalon.model.PlanoSaaS plano) {
+        CURRENT_EMPRESA_PLANO.set(plano);
+    }
+
+    public static com.beautysalon.model.PlanoSaaS getPlano() {
+        com.beautysalon.model.PlanoSaaS p = CURRENT_EMPRESA_PLANO.get();
+        return p != null ? p : com.beautysalon.model.PlanoSaaS.STUDIO;
+    }
+
+    public static void setStatusAssinatura(com.beautysalon.model.StatusAssinatura status) {
+        CURRENT_EMPRESA_STATUS_ASSINATURA.set(status);
+    }
+
+    public static com.beautysalon.model.StatusAssinatura getStatusAssinatura() {
+        com.beautysalon.model.StatusAssinatura s = CURRENT_EMPRESA_STATUS_ASSINATURA.get();
+        return s != null ? s : com.beautysalon.model.StatusAssinatura.TRIAL;
+    }
+
+    public static void setDiasRestantesTrial(Long dias) {
+        CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL.set(dias);
+    }
+
+    public static Long getDiasRestantesTrial() {
+        Long d = CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL.get();
+        return d != null ? d : 0L;
+    }
+
+    public static void setTrialAtivo(Boolean ativo) {
+        CURRENT_EMPRESA_TRIAL_ATIVO.set(ativo);
+    }
+
+    public static Boolean isTrialAtivo() {
+        Boolean b = CURRENT_EMPRESA_TRIAL_ATIVO.get();
+        return b != null ? b : false;
+    }
+
     public static void setTenant(String slug, Long id) {
         CURRENT_EMPRESA_SLUG.set(slug);
         CURRENT_EMPRESA_ID.set(id);
@@ -77,5 +117,9 @@ public final class TenantContext {
         CURRENT_EMPRESA_SLUG.remove();
         CURRENT_EMPRESA_NOME.remove();
         CURRENT_EMPRESA_SEGMENTO.remove();
+        CURRENT_EMPRESA_PLANO.remove();
+        CURRENT_EMPRESA_STATUS_ASSINATURA.remove();
+        CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL.remove();
+        CURRENT_EMPRESA_TRIAL_ATIVO.remove();
     }
 }
