@@ -1,6 +1,5 @@
 package com.beautysalon.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class DREDTO {
     private BigDecimal receitaBrutaServicos;
     private BigDecimal receitaBrutaProdutos;
@@ -35,4 +33,25 @@ public class DREDTO {
     private BigDecimal despesasOperacionais;
     private BigDecimal resultadoLiquido;
     private BigDecimal lucratividadePercentual;
+
+    public DREDTO(BigDecimal receitaBrutaServicos, BigDecimal receitaBrutaProdutos, BigDecimal receitaBrutaTotal,
+                  BigDecimal deducoesDescontos, BigDecimal receitaLiquida, BigDecimal totalComissoesProfissionais,
+                  BigDecimal custoInsumosServicos, BigDecimal custoProdutosVendidos, BigDecimal totalCustosVariaveis,
+                  BigDecimal margemContribuicao, BigDecimal margemContribuicaoPercentual,
+                  BigDecimal despesasOperacionais, BigDecimal resultadoLiquido, BigDecimal lucratividadePercentual) {
+        this.receitaBrutaServicos = receitaBrutaServicos;
+        this.receitaBrutaProdutos = receitaBrutaProdutos;
+        this.receitaBrutaTotal = receitaBrutaTotal;
+        this.deducoesDescontos = deducoesDescontos;
+        this.receitaLiquida = receitaLiquida;
+        this.totalComissoesProfissionais = totalComissoesProfissionais;
+        this.custoInsumosServicos = custoInsumosServicos;
+        this.custoProdutosVendidos = custoProdutosVendidos;
+        this.totalCustosVariaveis = totalCustosVariaveis;
+        this.margemContribuicao = margemContribuicao;
+        this.margemContribuicaoPercentual = margemContribuicaoPercentual;
+        this.despesasOperacionais = despesasOperacionais;
+        this.resultadoLiquido = resultadoLiquido;
+        this.lucratividadePercentual = lucratividadePercentual;
+    }
 }

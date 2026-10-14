@@ -1,6 +1,5 @@
 package com.beautysalon.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class MetricaFormaPagamentoDTO {
     private String formaPagamento;
     private String nomeFormatado;
@@ -19,4 +17,15 @@ public class MetricaFormaPagamentoDTO {
     private BigDecimal percentual;
     private String corBadge;
     private String icone;
+
+    public MetricaFormaPagamentoDTO(String formaPagamento, String nomeFormatado, BigDecimal total,
+                                    long quantidade, BigDecimal percentual, String corBadge, String icone) {
+        this.formaPagamento = formaPagamento;
+        this.nomeFormatado = nomeFormatado;
+        this.total = total;
+        this.quantidade = quantidade;
+        this.percentual = percentual;
+        this.corBadge = corBadge;
+        this.icone = icone;
+    }
 }

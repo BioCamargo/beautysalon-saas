@@ -1,6 +1,5 @@
 package com.beautysalon.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,6 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class RentabilidadeServicoDTO {
     private Long servicoId;
     private String nomeServico;
@@ -23,4 +21,18 @@ public class RentabilidadeServicoDTO {
     private BigDecimal comissoesTotal;
     private BigDecimal lucroLiquidoTotal;
     private BigDecimal margemLucroPercentual;
+
+    public RentabilidadeServicoDTO(Long servicoId, String nomeServico, long quantidadeExecutada,
+                                   BigDecimal faturamentoTotal, BigDecimal custoInsumosTotal,
+                                   BigDecimal comissoesTotal, BigDecimal lucroLiquidoTotal,
+                                   BigDecimal margemLucroPercentual) {
+        this.servicoId = servicoId;
+        this.nomeServico = nomeServico;
+        this.quantidadeExecutada = quantidadeExecutada;
+        this.faturamentoTotal = faturamentoTotal;
+        this.custoInsumosTotal = custoInsumosTotal;
+        this.comissoesTotal = comissoesTotal;
+        this.lucroLiquidoTotal = lucroLiquidoTotal;
+        this.margemLucroPercentual = margemLucroPercentual;
+    }
 }

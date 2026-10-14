@@ -18,7 +18,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
- * Inteligência de Retenção de Clientes (Anti-Churn) e Preenchimento Inteligente de Agenda Ociosa.
+ * Inteligência de Retenção de Clientes (Anti-Churn) e Preenchimento Inteligente
+ * de Agenda Ociosa.
  */
 @Service
 public class InteligenciaNegocioService {
@@ -27,13 +28,14 @@ public class InteligenciaNegocioService {
     private final AgendamentoRepository agendamentoRepository;
 
     public InteligenciaNegocioService(ClienteRepository clienteRepository,
-                                      AgendamentoRepository agendamentoRepository) {
+            AgendamentoRepository agendamentoRepository) {
         this.clienteRepository = clienteRepository;
         this.agendamentoRepository = agendamentoRepository;
     }
 
     /**
-     * Identifica clientes que ultrapassaram o ciclo ideal de retorno do último serviço e não possuem agendamento futuro.
+     * Identifica clientes que ultrapassaram o ciclo ideal de retorno do último
+     * serviço e não possuem agendamento futuro.
      */
     public List<ClienteResgateDTO> identificarClientesParaResgate() {
         Long empresaId = TenantContext.getEmpresaId();
@@ -42,7 +44,8 @@ public class InteligenciaNegocioService {
         LocalDate hoje = LocalDate.now();
 
         for (Cliente c : clientes) {
-            List<Agendamento> historico = agendamentoRepository.findByEmpresaIdAndClienteIdOrderByDataHoraDesc(empresaId, c.getId());
+            List<Agendamento> historico = agendamentoRepository
+                    .findByEmpresaIdAndClienteIdOrderByDataHoraDesc(empresaId, c.getId());
             if (historico.isEmpty()) {
                 continue;
             }
@@ -50,7 +53,8 @@ public class InteligenciaNegocioService {
             // Verifica se possui algum agendamento futuro já marcado
             boolean temAgendamentoFuturo = historico.stream()
                     .anyMatch(a -> a.getDataHora().toLocalDate().isAfter(hoje) ||
-                            (a.getDataHora().toLocalDate().isEqual(hoje) && !"CANCELADO".equals(a.getStatus()) && !"CONCLUIDO".equals(a.getStatus())));
+                            (a.getDataHora().toLocalDate().isEqual(hoje) && !"CANCELADO".equals(a.getStatus())
+                                    && !"CONCLUIDO".equals(a.getStatus())));
 
             if (temAgendamentoFuturo) {
                 continue; // Cliente já está com horário marcado
@@ -88,11 +92,11 @@ public class InteligenciaNegocioService {
                 long atraso = diasPassados - cicloIdeal;
                 String urgencia = atraso <= 15 ? "MODERADO" : (atraso <= 45 ? "ALTO" : "CRÍTICO");
 
-                String profNome = ultimo.getProfissional() != null ? ultimo.getProfissional().getNome() : "nosso profissional";
+                String profNome = ultimo.getProfissional() != null ? ultimo.getProfissional().getNome()
+                        : "nosso profissional";
                 String msg = String.format(
                         "Olá %s! Já faz %d dias desde seu último procedimento de %s com %s. Que tal renovar o seu visual essa semana? Temos horários disponíveis com condições especiais!",
-                        c.getNome(), diasPassados, nomeServico, profNome
-                );
+                        c.getNome(), diasPassados, nomeServico, profNome);
 
                 resgates.add(ClienteResgateDTO.builder()
                         .clienteId(c.getId())
@@ -117,7 +121,8 @@ public class InteligenciaNegocioService {
     }
 
     /**
-     * Analisa os próximos 7 dias em busca de dias e horários com baixa taxa de ocupação (buracos na grade).
+     * Analisa os próximos 7 dias em busca de dias e horários com baixa taxa de
+     * ocupação (buracos na grade).
      */
     public List<OciosidadeAgendaDTO> analisarOciosidadeProximosDias() {
         Long empresaId = TenantContext.getEmpresaId();
@@ -132,7 +137,8 @@ public class InteligenciaNegocioService {
             LocalDateTime inicio = data.atStartOfDay();
             LocalDateTime fim = data.atTime(LocalTime.MAX);
 
-            List<Agendamento> agendados = agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, inicio, fim);
+            List<Agendamento> agendados = agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, inicio,
+                    fim);
             long totalAtendimentos = agendados.stream()
                     .filter(a -> !"CANCELADO".equals(a.getStatus()))
                     .count();

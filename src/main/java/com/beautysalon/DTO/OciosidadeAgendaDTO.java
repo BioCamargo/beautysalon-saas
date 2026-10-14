@@ -1,6 +1,5 @@
 package com.beautysalon.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,6 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class OciosidadeAgendaDTO {
     private LocalDate data;
     private String diaSemana; // Ex: TERÇA-FEIRA
@@ -23,4 +21,16 @@ public class OciosidadeAgendaDTO {
     private double taxaOcupacaoPercentual;
     private boolean oportunidadePromocao; // true se ocupação < 40%
     private List<String> horariosVagos;
+
+    public OciosidadeAgendaDTO(LocalDate data, String diaSemana, int totalHorariosDisponiveis,
+                               int totalAgendamentosMarcados, double taxaOcupacaoPercentual,
+                               boolean oportunidadePromocao, List<String> horariosVagos) {
+        this.data = data;
+        this.diaSemana = diaSemana;
+        this.totalHorariosDisponiveis = totalHorariosDisponiveis;
+        this.totalAgendamentosMarcados = totalAgendamentosMarcados;
+        this.taxaOcupacaoPercentual = taxaOcupacaoPercentual;
+        this.oportunidadePromocao = oportunidadePromocao;
+        this.horariosVagos = horariosVagos;
+    }
 }

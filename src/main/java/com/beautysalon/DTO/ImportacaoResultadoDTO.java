@@ -1,9 +1,7 @@
 package com.beautysalon.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +11,6 @@ import java.util.List;
  */
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ImportacaoResultadoDTO {
 
     private int totalLinhasLidas;
@@ -24,6 +20,18 @@ public class ImportacaoResultadoDTO {
 
     @Builder.Default
     private List<String> alertas = new ArrayList<>();
+
+    public ImportacaoResultadoDTO() {
+        this.alertas = new ArrayList<>();
+    }
+
+    public ImportacaoResultadoDTO(int totalLinhasLidas, int totalImportados, int totalDuplicadosIgnorados, int totalErros, List<String> alertas) {
+        this.totalLinhasLidas = totalLinhasLidas;
+        this.totalImportados = totalImportados;
+        this.totalDuplicadosIgnorados = totalDuplicadosIgnorados;
+        this.totalErros = totalErros;
+        this.alertas = alertas != null ? alertas : new ArrayList<>();
+    }
 
     public boolean isSucessoGeral() {
         return totalImportados > 0;
