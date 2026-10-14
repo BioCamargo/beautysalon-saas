@@ -110,6 +110,53 @@
         </div>
     </form>
 
+    <!-- CARD DE SUCESSO & ONBOARDING DO LINK EXCLUSIVO (Exibido após cadastro) -->
+    <div id="success-onboarding-container" style="display: none; text-align: center; animation: fadeIn 0.4s ease-in-out;">
+        <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(34, 197, 94, 0.12); color: #16a34a; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; border: 2px solid rgba(34, 197, 94, 0.25);">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <div style="display: inline-block; background: rgba(184, 134, 11, 0.12); color: var(--accent-gold, #b8860b); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; border-radius: 20px; margin-bottom: 0.5rem;">
+            Ambiente Provisionado
+        </div>
+
+        <h3 style="font-family: var(--font-serif); font-size: 1.55rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+            Parabéns! Seu Estúdio está pronto.
+        </h3>
+        
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">
+            O portal de gestão do <strong id="studioNameDisplay" style="color: #0f172a;">Seu Estúdio</strong> foi ativado com sucesso!
+        </p>
+
+        <!-- CARD DO LINK EXCLUSIVO -->
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                <span style="color: #475569; font-size: 0.78rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                    <i class="bi bi-link-45deg me-1 text-primary"></i> Link Exclusivo do seu Salão
+                </span>
+                <span style="font-size: 0.72rem; color: #16a34a; font-weight: 600; background: rgba(34, 197, 94, 0.1); padding: 2px 8px; border-radius: 10px;">
+                    <i class="bi bi-envelope-check me-1"></i> Enviado por E-mail
+                </span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.5rem 0.75rem;">
+                <input type="text" id="exclusiveUrlText" readonly style="border: none; background: transparent; font-family: monospace; font-size: 0.92rem; color: #0f172a; font-weight: 700; width: 100%; outline: none;" />
+                <button type="button" onclick="copyExclusiveUrl()" id="btnCopyUrl" class="btn btn-sm btn-dark" style="border-radius: 6px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; padding: 0.35rem 0.75rem;">
+                    <i class="bi bi-clipboard me-1" id="copyIcon"></i> <span id="copyText">Copiar</span>
+                </button>
+            </div>
+            
+            <div style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dashed #cbd5e1; font-size: 0.82rem; color: #475569; line-height: 1.5;">
+                <i class="bi bi-bookmark-star-fill text-warning me-1"></i> <strong>Dica de Ouro:</strong> Salve este link nos <strong>Favoritos</strong> do navegador do salão e envie para a sua equipe. Todo acesso ao seu estúdio será feito sempre por este endereço.
+            </div>
+        </div>
+
+        <a id="btnGoToStudio" href="#" class="btn-auth" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1.5rem; font-size: 1rem;">
+            <span>Acessar Meu Estúdio Agora</span>
+            <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
     <!-- LINK PARA VOLTAR AO LOGIN -->
     <div class="auth-footer">
         <span>Já possui seu estúdio cadastrado? </span>
@@ -143,7 +190,27 @@
             submitBtn.innerHTML = '<span>Cadastrar Estúdio & Acessar</span> <i class="bi bi-arrow-right-circle-fill ms-2"></i>';
 
             if (data.success) {
-                window.location.href = data.redirectUrl || '/login?registered=true';
+                const slug = data.slug;
+                const fullUrl = window.location.origin + '/' + slug + '/login';
+
+                // Salva localmente como o último salão registrado/acessado
+                try {
+                    localStorage.setItem('lumora_last_slug', slug);
+                    document.cookie = "lumora_last_slug=" + encodeURIComponent(slug) + "; path=/; max-age=2592000";
+                } catch(err) {
+                    console.log('Storage info:', err);
+                }
+
+                // Transição suave para a tela de celebração de onboarding
+                document.getElementById('registerForm').style.display = 'none';
+                document.querySelector('.auth-header').style.display = 'none';
+                document.querySelector('.auth-footer').style.display = 'none';
+
+                document.getElementById('exclusiveUrlText').value = fullUrl;
+                document.getElementById('studioNameDisplay').textContent = data.empresaNome || 'Seu Estúdio';
+                document.getElementById('btnGoToStudio').href = fullUrl + '?registered=true';
+
+                document.getElementById('success-onboarding-container').style.display = 'block';
             } else {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'auth-alert auth-alert-error';
@@ -175,6 +242,27 @@
             messageContainer.appendChild(errorDiv);
         });
     });
+
+    function copyExclusiveUrl() {
+        const input = document.getElementById('exclusiveUrlText');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(input.value).then(() => {
+            const btn = document.getElementById('btnCopyUrl');
+            const icon = document.getElementById('copyIcon');
+            const text = document.getElementById('copyText');
+
+            btn.classList.replace('btn-dark', 'btn-success');
+            icon.classList.replace('bi-clipboard', 'bi-check-lg');
+            text.textContent = 'Copiado!';
+
+            setTimeout(() => {
+                btn.classList.replace('btn-success', 'btn-dark');
+                icon.classList.replace('bi-check-lg', 'bi-clipboard');
+                text.textContent = 'Copiar';
+            }, 2500);
+        });
+    }
 </script>
 
 </body>

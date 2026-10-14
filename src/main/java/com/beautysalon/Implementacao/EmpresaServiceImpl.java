@@ -82,6 +82,8 @@ public class EmpresaServiceImpl implements EmpresaService {
 
         userRepository.save(owner);
         log.info("Usuário OWNER criado: {} para empresa {}", owner.getUsername(), empresa.getSlug());
+        log.info("🎉 [ONBOARDING] Link exclusivo de acesso gerado para '{}': /{}/login (Enviado para: {})",
+                empresa.getNome(), empresa.getSlug(), owner.getEmail());
 
         return empresa.getSlug();
     }

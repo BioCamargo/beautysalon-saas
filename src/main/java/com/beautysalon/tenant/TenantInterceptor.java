@@ -48,15 +48,20 @@ public class TenantInterceptor implements HandlerInterceptor {
         String path = uri.substring(contextPath.length());
 
         // Extrai o slug: /meu-salao/clientes → "meu-salao"
+        // Ou rotas REST: /api/v1/meu-salao/clientes → "meu-salao"
         String[] parts = path.split("/");
         if (parts.length < 2) {
             return true;
         }
 
         String slug = parts[1];
-
-        // Ignora paths que não são slugs de empresa (recursos estáticos, auth, etc.)
-        if (isPublicPath(slug)) {
+        if ("api".equals(slug)) {
+            if (parts.length >= 4 && "v1".equals(parts[2]) && !isPublicPath(parts[3])) {
+                slug = parts[3];
+            } else {
+                return true;
+            }
+        } else if (isPublicPath(slug)) {
             return true;
         }
 
@@ -138,6 +143,7 @@ public class TenantInterceptor implements HandlerInterceptor {
     private boolean isPublicPath(String segment) {
         return switch (segment) {
             case "login", "logout", "register", "register-empresa",
+                 "select-tenant",
                  "termos", "privacidade",
                  "css", "js", "images", "uploads", "favicon.ico",
                  "api", "actuator", "error", "" -> true;

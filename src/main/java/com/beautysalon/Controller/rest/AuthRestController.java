@@ -16,6 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Autenticação REST (JWT)", description = "Endpoints para login, autenticação e obtenção de Tokens JWT")
@@ -75,5 +78,31 @@ public class AuthRestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro na autenticação: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/find-tenants")
+    @Operation(summary = "Localizar links exclusivos de salões por e-mail")
+    public ResponseEntity<?> findTenantsByEmail(@RequestParam("email") String email) {
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Informe um e-mail válido."));
+        }
+
+        List<User> users = userRepository.findAllByEmail(email.trim().toLowerCase());
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Nenhum estúdio encontrado associado a este e-mail."));
+        }
+
+        List<Map<String, String>> saloes = users.stream()
+                .filter(u -> u.getEmpresa() != null && u.getEmpresa().isAtivo())
+                .map(u -> Map.of(
+                        "nome", u.getEmpresa().getNome(),
+                        "slug", u.getEmpresa().getSlug(),
+                        "url", "/" + u.getEmpresa().getSlug() + "/login"
+                ))
+                .distinct()
+                .toList();
+
+        return ResponseEntity.ok(Map.of("saloes", saloes));
     }
 }

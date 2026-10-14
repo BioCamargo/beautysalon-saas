@@ -2,7 +2,6 @@ package com.beautysalon.Controller;
 
 import com.beautysalon.DTO.ClienteDTO;
 import com.beautysalon.Inteface.ClienteService;
-import com.beautysalon.service.SmsService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 
 @Controller
 @RequestMapping("/{slug}/clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;
-    private final SmsService smsService;
     private final com.beautysalon.service.AnamneseService anamneseService;
     private final com.beautysalon.service.AnamnesePdfService anamnesePdfService;
     private final com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService;
@@ -28,7 +25,6 @@ public class ClienteController {
     private final com.beautysalon.service.ClienteImportacaoService clienteImportacaoService;
 
     public ClienteController(ClienteService clienteService,
-                             SmsService smsService,
                              com.beautysalon.service.AnamneseService anamneseService,
                              com.beautysalon.service.AnamnesePdfService anamnesePdfService,
                              com.beautysalon.service.AnamneseFormBuilderService anamneseFormBuilderService,
@@ -36,7 +32,6 @@ public class ClienteController {
                              com.beautysalon.repository.ClienteRepository clienteRepository,
                              com.beautysalon.service.ClienteImportacaoService clienteImportacaoService) {
         this.clienteService = clienteService;
-        this.smsService = smsService;
         this.anamneseService = anamneseService;
         this.anamnesePdfService = anamnesePdfService;
         this.anamneseFormBuilderService = anamneseFormBuilderService;
@@ -111,20 +106,6 @@ public class ClienteController {
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Pesquisa de Clientes");
         return "clientes/list";
-    }
-
-    @PostMapping("/{id}/enviar-sms-confirmacao")
-    public ResponseEntity<String> enviarSmsConfirmacao(@PathVariable String slug, @PathVariable Long id) {
-        ClienteDTO cliente = clienteService.buscarPorId(id);
-        try {
-            String resposta = smsService.enviarSms(
-                    cliente.getTelefone(),
-                    "Confirmação de cadastro: " + gerarCodigo()
-            );
-            return ResponseEntity.ok("SMS enviado: " + resposta);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Erro ao enviar SMS");
-        }
     }
 
     // ================= ANAMNESE DIGITAL & FOTOS ANTES/DEPOIS =================
@@ -235,9 +216,5 @@ public class ClienteController {
             redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao processar planilha: " + e.getMessage());
         }
         return "redirect:/" + slug + "/clientes";
-    }
-
-    private String gerarCodigo() {
-        return String.format("%06d", new Random().nextInt(999999));
     }
 }

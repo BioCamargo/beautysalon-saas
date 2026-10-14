@@ -11,5 +11,8 @@ public interface ServicoInsumoRepository extends JpaRepository<ServicoInsumo, Lo
 
     List<ServicoInsumo> findByServicoIdAndEmpresaId(Long servicoId, Long empresaId);
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"produto", "servico"})
+    List<ServicoInsumo> findAllByEmpresaId(Long empresaId);
+
     void deleteByServicoIdAndEmpresaId(Long servicoId, Long empresaId);
 }

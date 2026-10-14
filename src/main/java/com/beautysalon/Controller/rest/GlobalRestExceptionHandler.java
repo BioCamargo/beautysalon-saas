@@ -8,11 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
-@RestControllerAdvice(basePackages = "com.beautysalon.controller.rest")
+@RestControllerAdvice(annotations = RestController.class)
 public class GlobalRestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

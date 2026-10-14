@@ -9,10 +9,15 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    @Override
+    @EntityGraph(attributePaths = {"empresa"})
+    java.util.Optional<User> findById(Long id);
+
     // Busca dentro de uma empresa específica
     @EntityGraph(attributePaths = {"empresa"})
     Optional<User> findByUsernameAndEmpresaId(String username, Long empresaId);
 
+    @EntityGraph(attributePaths = {"empresa"})
     Optional<User> findByEmailAndEmpresaId(String email, Long empresaId);
 
     @EntityGraph(attributePaths = {"empresa"})

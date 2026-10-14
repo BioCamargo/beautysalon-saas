@@ -128,12 +128,12 @@
                                         <i class="bi bi-clock-history"></i>
                                     </a>
 
-                                    <!-- BOTÃO ENVIAR SMS / LEMBRETE -->
-                                    <button type="button" class="btn-icon sms" title="Enviar Lembrete por SMS"
-                                            th:attr="data-id=${c.id}, data-name=${c.nome}, data-slug=${empresaSlug}"
-                                            onclick="enviarLembreteSms(this)">
-                                        <i class="bi bi-chat-text-fill"></i>
-                                    </button>
+                                    <!-- CONVERSAR NO WHATSAPP -->
+                                    <a th:if="${c.telefone != null and !#strings.isEmpty(c.telefone)}"
+                                       th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(#strings.replace(c.telefone, ' ', ''), '-', ''), '(', ''), ')', ''), '+', '')}"
+                                       target="_blank" class="btn-icon" style="color: #25D366;" title="Conversar no WhatsApp">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </a>
 
                                     <!-- EDITAR -->
                                     <a class="btn-icon edit" th:href="@{/{slug}/clientes/edit/{id}(slug=${empresaSlug}, id=${c.id})}" title="Editar Dados">
@@ -259,42 +259,6 @@
             anamneseModalInstance = new bootstrap.Modal(document.getElementById('anamneseModal'));
         }
         anamneseModalInstance.show();
-    }
-
-    function enviarLembreteSms(button) {
-        const clienteId = button.getAttribute('data-id');
-        const clienteNome = button.getAttribute('data-name');
-        const slug = button.getAttribute('data-slug');
-        const tokenMeta = document.querySelector("meta[name='_csrf']");
-        const headerMeta = document.querySelector("meta[name='_csrf_header']");
-        const headers = {};
-        if (tokenMeta && headerMeta) {
-            headers[headerMeta.getAttribute('content')] = tokenMeta.getAttribute('content');
-        }
-
-        if (confirm(`Deseja disparar um SMS de confirmação para ${clienteNome}?`)) {
-            button.disabled = true;
-            const originalIcon = button.innerHTML;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-            fetch(`/${slug}/clientes/${clienteId}/enviar-sms-confirmacao`, {
-                method: 'POST',
-                headers: headers
-            })
-            .then(res => {
-                if (!res.ok) throw new Error('Falha no envio');
-                return res.text();
-            })
-            .then(msg => {
-                alert(`Sucesso: ${msg}`);
-                button.innerHTML = '<i class="bi bi-check-lg text-success"></i>';
-            })
-            .catch(err => {
-                alert('Erro ao enviar SMS: ' + err.message);
-                button.innerHTML = originalIcon;
-                button.disabled = false;
-            });
-        }
     }
 
     function atualizarArquivoImportacao(input) {

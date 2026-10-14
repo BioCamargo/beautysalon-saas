@@ -35,8 +35,4 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     long countByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio,
             java.time.LocalDateTime fim);
-
-    // Mantido para compatibilidade com método legado em AgendamentoServiceImpl
-    @Query("SELECT a FROM Agendamento a JOIN a.servicos s WHERE s.id = :servicoId")
-    List<Agendamento> findByServicoId(@Param("servicoId") Long servicoId);
 }

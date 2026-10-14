@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FinanceiroService {
@@ -425,6 +428,12 @@ public class FinanceiroService {
         BigDecimal custoInsumos = BigDecimal.ZERO;
         BigDecimal custoProdutosVendidos = BigDecimal.ZERO;
 
+        // Pré-carrega todos os insumos da empresa em 1 única query com EntityGraph, eliminando o gargalo N+1
+        List<ServicoInsumo> todosInsumos = servicoInsumoRepository.findAllByEmpresaId(empresaId);
+        Map<Long, List<ServicoInsumo>> insumosPorServico = todosInsumos.stream()
+                .filter(ins -> ins.getServico() != null && ins.getServico().getId() != null)
+                .collect(Collectors.groupingBy(ins -> ins.getServico().getId()));
+
         for (Comanda c : comandas) {
             if (c.getSubtotalServicos() != null) receitaServicos = receitaServicos.add(c.getSubtotalServicos());
             if (c.getSubtotalProdutos() != null) receitaProdutos = receitaProdutos.add(c.getSubtotalProdutos());
@@ -433,9 +442,10 @@ public class FinanceiroService {
 
             for (ComandaItem item : c.getItens()) {
                 if ("SERVICO".equals(item.getTipo()) && item.getServico() != null) {
-                    List<ServicoInsumo> insumos = servicoInsumoRepository.findByServicoIdAndEmpresaId(item.getServico().getId(), empresaId);
+                    List<ServicoInsumo> insumos = insumosPorServico.getOrDefault(item.getServico().getId(), Collections.emptyList());
                     for (ServicoInsumo ins : insumos) {
-                        BigDecimal precoCusto = ins.getProduto().getPrecoCusto() != null ? ins.getProduto().getPrecoCusto() : BigDecimal.ZERO;
+                        BigDecimal precoCusto = ins.getProduto() != null && ins.getProduto().getPrecoCusto() != null
+                                ? ins.getProduto().getPrecoCusto() : BigDecimal.ZERO;
                         BigDecimal custoItem = precoCusto.multiply(BigDecimal.valueOf((long) ins.getQuantidadeGasta() * item.getQuantidade()));
                         custoInsumos = custoInsumos.add(custoItem);
                     }

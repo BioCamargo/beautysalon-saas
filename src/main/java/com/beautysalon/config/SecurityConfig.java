@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import com.beautysalon.config.jwt.JwtAuthenticationFilter;
+import com.beautysalon.tenant.TenantUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -41,7 +42,7 @@ public class SecurityConfig {
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
             Object principal = authentication.getPrincipal();
-            if (principal instanceof com.beautysalon.tenant.TenantUserDetails tenantUser && tenantUser.getEmpresaSlug() != null) {
+            if (principal instanceof TenantUserDetails tenantUser && tenantUser.getEmpresaSlug() != null) {
                 response.sendRedirect("/" + tenantUser.getEmpresaSlug() + "/home");
                 return;
             }
@@ -68,6 +69,7 @@ public class SecurityConfig {
                                 "/",
                                 "/login",
                                 "/*/login",
+                                "/select-tenant",
                                 "/register",
                                 "/register-empresa",
                                 "/termos",
@@ -78,9 +80,10 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/favicon.ico",
                                 "/error",
-                                "/api/**",
+                                "/api/auth/**",
                                 "/*/agendar",
                                 "/*/agendar/**",
+                                "/api/v1/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
@@ -112,6 +115,16 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .authenticationDetailsSource(TenantAuthenticationDetails::new)
                         .successHandler(authenticationSuccessHandler())
+                        .failureHandler((request, response, exception) -> {
+                            if (exception instanceof com.beautysalon.exception.MultipleTenantsAuthenticationException mte) {
+                                request.getSession().setAttribute("PENDING_TENANT_CANDIDATES", mte.getCandidates());
+                                request.getSession().setAttribute("PENDING_TENANT_USERNAME", mte.getUsernameOrEmail());
+                                response.sendRedirect("/select-tenant");
+                                return;
+                            }
+                            request.getSession().setAttribute(org.springframework.security.web.WebAttributes.AUTHENTICATION_EXCEPTION, exception);
+                            response.sendRedirect("/login?error");
+                        })
                         .permitAll()
                 )
                 .logout(logout -> logout

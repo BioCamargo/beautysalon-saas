@@ -32,7 +32,12 @@ public class WhatsAppService {
                            EmpresaRepository empresaRepository) {
         this.configRepository = configRepository;
         this.empresaRepository = empresaRepository;
-        this.restTemplate = new RestTemplate();
+
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory =
+                new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000); // 5 segundos para conexão
+        factory.setReadTimeout(10000);  // 10 segundos para resposta
+        this.restTemplate = new RestTemplate(factory);
     }
 
     public Optional<WhatsAppConfig> obterConfiguracaoAtual() {

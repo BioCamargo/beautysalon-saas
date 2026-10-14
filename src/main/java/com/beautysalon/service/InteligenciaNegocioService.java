@@ -24,6 +24,8 @@ import java.util.*;
 @Service
 public class InteligenciaNegocioService {
 
+    private static final Locale LOCALE_PT_BR = Locale.forLanguageTag("pt-BR");
+
     private final ClienteRepository clienteRepository;
     private final AgendamentoRepository agendamentoRepository;
 
@@ -146,7 +148,7 @@ public class InteligenciaNegocioService {
             double ocupacao = Math.min(100.0, (totalAtendimentos / (double) CAPACIDADE_ESTIMADA_DIA) * 100.0);
             boolean oport = ocupacao < 40.0; // Menos de 40% ocupado é considerado ocioso / oportunidade
 
-            String diaSemana = data.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("pt", "BR")).toUpperCase();
+            String diaSemana = data.getDayOfWeek().getDisplayName(TextStyle.FULL, LOCALE_PT_BR).toUpperCase();
 
             List<String> vagos = new ArrayList<>();
             if (oport) {

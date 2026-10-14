@@ -5,7 +5,6 @@ import com.beautysalon.model.Cliente;
 import com.beautysalon.repository.ClienteRepository;
 import com.beautysalon.repository.UserRepository;
 import com.beautysalon.service.AnamneseService;
-import com.beautysalon.service.SmsService;
 import com.beautysalon.tenant.TenantContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +34,6 @@ class ClienteControllerTest {
 
     @Mock
     private ClienteService clienteService;
-
-    @Mock
-    private SmsService smsService;
 
     @Mock
     private AnamneseService anamneseService;

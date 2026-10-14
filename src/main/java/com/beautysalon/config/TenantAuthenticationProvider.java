@@ -36,13 +36,12 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
     private final PasswordEncoder passwordEncoder;
 
     public TenantAuthenticationProvider(UserRepository userRepository,
-                                      EmpresaRepository empresaRepository,
-                                      @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder) {
+            EmpresaRepository empresaRepository,
+            @org.springframework.context.annotation.Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -58,7 +57,8 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
         if (authentication.getDetails() instanceof TenantAuthenticationDetails details) {
             slug = details.getSlug();
         }
-        if ((slug == null || slug.isBlank()) && RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes sra) {
+        if ((slug == null || slug.isBlank())
+                && RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes sra) {
             HttpServletRequest req = sra.getRequest();
             String p = req.getParameter("slug");
             if (p != null && !p.isBlank()) {
@@ -83,20 +83,31 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
             // Busca pelo username ou pelo email dentro desta empresa
             userToAuthenticate = userRepository.findByUsernameAndEmpresaId(loginInput, empresa.getId())
                     .or(() -> userRepository.findByEmailAndEmpresaId(loginInput, empresa.getId()))
-                    .orElseThrow(() -> new BadCredentialsException("Usuário ou e-mail não encontrado neste salão (" + empresa.getNome() + ")."));
+                    .orElseThrow(() -> new BadCredentialsException(
+                            "Usuário ou e-mail não encontrado neste salão (" + empresa.getNome() + ")."));
 
             if (!passwordEncoder.matches(rawPassword, userToAuthenticate.getPassword())) {
                 throw new BadCredentialsException("Senha incorreta.");
             }
         } else {
             // CENÁRIO 2: Slug NÃO foi informado (login genérico /login)
-            List<User> candidates = new ArrayList<>(userRepository.findAllByUsername(loginInput));
-            if (candidates.isEmpty()) {
-                candidates.addAll(userRepository.findAllByEmail(loginInput));
-            }
+            String inputClean = loginInput.trim().toLowerCase();
+            boolean isEmail = inputClean.contains("@");
 
-            if (candidates.isEmpty()) {
-                throw new BadCredentialsException("Usuário ou e-mail não encontrado.");
+            List<User> candidates;
+            if (isEmail) {
+                candidates = new ArrayList<>(userRepository.findAllByEmail(inputClean));
+                if (candidates.isEmpty()) {
+                    throw new BadCredentialsException("E-mail não encontrado.");
+                }
+            } else {
+                candidates = new ArrayList<>(userRepository.findAllByUsername(inputClean));
+                if (candidates.isEmpty()) {
+                    candidates.addAll(userRepository.findAllByEmail(inputClean));
+                }
+                if (candidates.isEmpty()) {
+                    throw new BadCredentialsException("Usuário ou e-mail não encontrado.");
+                }
             }
 
             // Filtra os usuários cuja senha confere
@@ -111,11 +122,57 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
             if (matchingPassword.size() == 1) {
                 userToAuthenticate = matchingPassword.get(0);
             } else {
-                // Existe mais de um salão com exatamente o mesmo usuário e senha
-                throw new BadCredentialsException(
-                        "Você possui acesso a múltiplos estabelecimentos com este usuário. " +
-                        "Por favor, acesse pelo link exclusivo do seu salão (ex: /{slug}/login) ou informe o identificador do salão."
-                );
+                // Existe mais de um registro compatível
+                if (isEmail) {
+                    // Verifica se há mais de um colaborador compartilhando o mesmo e-mail na mesma
+                    // empresa
+                    long totalSaloesDistintos = matchingPassword.stream()
+                            .map(u -> u.getEmpresa() != null ? u.getEmpresa().getId() : null)
+                            .filter(java.util.Objects::nonNull)
+                            .distinct()
+                            .count();
+
+                    if (totalSaloesDistintos < matchingPassword.size()) {
+                        throw new BadCredentialsException(
+                                "Este e-mail está associado a múltiplos colaboradores neste estabelecimento. " +
+                                        "Por favor, acesse utilizando seu Nome de Usuário (username).");
+                    }
+                } else {
+                    // O login foi por USERNAME: verificar se os múltiplos registros pertencem à
+                    // MESMA pessoa (mesmo e-mail)
+                    long totalEmailsDistintos = matchingPassword.stream()
+                            .map(User::getEmail)
+                            .filter(java.util.Objects::nonNull)
+                            .distinct()
+                            .count();
+
+                    if (totalEmailsDistintos > 1) {
+                        // Segurança Crítica (Anti-Cross-Tenant Leak): Pessoas diferentes possuem o
+                        // mesmo username e mesma senha!
+                        throw new BadCredentialsException(
+                                "Existe mais de um estabelecimento com este nome de usuário. " +
+                                        "Por favor, utilize o seu E-MAIL pessoal para acessar ou utilize o link exclusivo do seu salão.");
+                    }
+                }
+
+                // Usuário legítimo com múltiplos salões autorizados
+                List<com.beautysalon.DTO.TenantCandidateDTO> candidatesDTO = matchingPassword.stream()
+                        .map(u -> com.beautysalon.DTO.TenantCandidateDTO.builder()
+                                .userId(u.getId())
+                                .empresaId(u.getEmpresa() != null ? u.getEmpresa().getId() : null)
+                                .empresaNome(u.getEmpresa() != null ? u.getEmpresa().getNome() : "Estabelecimento")
+                                .empresaSlug(u.getEmpresa() != null ? u.getEmpresa().getSlug() : "")
+                                .empresaLogo(u.getEmpresa() != null ? u.getEmpresa().getLogoUrl() : null)
+                                .role(u.getTenantRole() != null ? u.getTenantRole().name() : "COLABORADOR")
+                                .username(u.getUsername())
+                                .email(u.getEmail())
+                                .build())
+                        .toList();
+
+                throw new com.beautysalon.exception.MultipleTenantsAuthenticationException(
+                        "Múltiplos estabelecimentos encontrados para este usuário.",
+                        candidatesDTO,
+                        loginInput);
             }
         }
 
@@ -128,8 +185,7 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
         return new UsernamePasswordAuthenticationToken(
                 tenantUserDetails,
                 null,
-                tenantUserDetails.getAuthorities()
-        );
+                tenantUserDetails.getAuthorities());
     }
 
     @Override
