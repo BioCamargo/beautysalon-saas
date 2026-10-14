@@ -1,14 +1,11 @@
 package com.beautysalon.config;
 
-import com.beautysalon.Implementacao.UserDetailsServiceImpl;
 import com.beautysalon.model.User;
 import com.beautysalon.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import com.beautysalon.config.jwt.JwtAuthenticationFilter;
@@ -22,14 +19,14 @@ import java.util.Optional;
 @Configuration
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
+    private final TenantAuthenticationProvider tenantAuthenticationProvider;
     private final UserRepository userRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
+    public SecurityConfig(@org.springframework.context.annotation.Lazy TenantAuthenticationProvider tenantAuthenticationProvider,
                           UserRepository userRepository,
                           JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.userDetailsService = userDetailsService;
+        this.tenantAuthenticationProvider = tenantAuthenticationProvider;
         this.userRepository = userRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -39,25 +36,18 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    @SuppressWarnings("deprecation")
-    public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof com.beautysalon.tenant.TenantUserDetails tenantUser && tenantUser.getEmpresaSlug() != null) {
+                response.sendRedirect("/" + tenantUser.getEmpresaSlug() + "/home");
+                return;
+            }
+
             String username = authentication.getName();
-            Optional<User> userOpt = userRepository.findByUsername(username);
+            Optional<User> userOpt = userRepository.findFirstByUsername(username);
 
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
                 String slug = userOpt.get().getEmpresa().getSlug();
@@ -71,12 +61,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authenticationProvider(authProvider())
+                .authenticationProvider(tenantAuthenticationProvider)
                 .authorizeHttpRequests(auth -> auth
                         // 1. RECURSOS ESTÁTICOS E PÁGINAS PÚBLICAS
                         .requestMatchers(
                                 "/",
                                 "/login",
+                                "/*/login",
                                 "/register",
                                 "/register-empresa",
                                 "/termos",
@@ -98,7 +89,8 @@ public class SecurityConfig {
                         // 2. REGRAS POR PAPEL DO TENANT (OWNER / ADMIN)
                         .requestMatchers(
                                 "/*/usuarios/**",
-                                "/*/relatorios/**"
+                                "/*/relatorios/**",
+                                "/*/configuracoes/**"
                         ).hasAnyRole("OWNER", "ADMIN")
 
                         // 3. PÁGINAS PROTEGIDAS DO TENANT
@@ -117,6 +109,8 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .authenticationDetailsSource(TenantAuthenticationDetails::new)
                         .successHandler(authenticationSuccessHandler())
                         .permitAll()
                 )
@@ -125,6 +119,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
+
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/api/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")

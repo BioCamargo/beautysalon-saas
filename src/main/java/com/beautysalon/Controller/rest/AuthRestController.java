@@ -45,8 +45,12 @@ public class AuthRestController {
             );
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-            User user = userRepository.findByUsername(request.username())
+
+            User user = userDetails instanceof com.beautysalon.tenant.TenantUserDetails tud
+                    ? tud.getUser()
+                    : userRepository.findFirstByUsername(request.username())
                     .orElseThrow(() -> new IllegalStateException("Usuário não localizado no sistema."));
+
 
             Long empresaId = user.getEmpresa() != null ? user.getEmpresa().getId() : null;
             String empresaSlug = user.getEmpresa() != null ? user.getEmpresa().getSlug() : null;

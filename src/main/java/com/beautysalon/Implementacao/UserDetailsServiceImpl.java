@@ -2,8 +2,6 @@ package com.beautysalon.Implementacao;
 
 import com.beautysalon.model.User;
 import com.beautysalon.repository.UserRepository;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,22 +34,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+        List<User> users = repo.findAllByUsername(username);
+        if (users.isEmpty()) {
+            users = repo.findAllByEmail(username);
+        }
+        if (users.isEmpty()) {
+            throw new UsernameNotFoundException("Usuário não encontrado: " + username);
+        }
 
-        // Converte o TenantRole para authority do Spring Security
-        // Ex: TenantRole.ADMIN → "ROLE_ADMIN"
-        String authority = "ROLE_" + user.getTenantRole().name();
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(authority));
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.isAtivo(),     // enabled
-                true,               // accountNonExpired
-                true,               // credentialsNonExpired
-                true,               // accountNonLocked
-                authorities
-        );
+        User user = users.get(0);
+        return new com.beautysalon.tenant.TenantUserDetails(user);
     }
 }

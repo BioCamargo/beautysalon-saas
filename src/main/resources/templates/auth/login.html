@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Beauty Salon Studio</title>
+    <title th:text="${pageTitle} ?: 'Login | Beauty Salon Studio'">Login | Beauty Salon Studio</title>
     
     <!-- Bootstrap Icons & Fonts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,23 +15,38 @@
 <div class="auth-card-modern">
     <!-- CABEÇALHO DO CARD -->
     <div class="auth-header">
-        <img th:src="@{/images/logo.jpg}" alt="Beauty Salon Studio" class="auth-logo-img"
+        <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" 
+             th:src="${empresaLogo}" 
+             alt="Logo Salão" 
+             class="auth-logo-img"
              onerror="this.style.display='none'; document.getElementById('authBrandFallback').style.display='block';" />
+        <img th:if="${empresaLogo == null or empresaLogo.isEmpty()}" 
+             th:src="@{/images/logo.jpg}" 
+             alt="Beauty Salon Studio" 
+             class="auth-logo-img"
+             onerror="this.style.display='none'; document.getElementById('authBrandFallback').style.display='block';" />
+        
         <div id="authBrandFallback" style="display: none; margin-bottom: 1rem;">
-            <div class="auth-title-brand">BEAUTY SALON</div>
+            <div class="auth-title-brand" th:text="${empresaNome} ?: 'BEAUTY SALON'">BEAUTY SALON</div>
         </div>
-        <div class="auth-subtitle-brand">Sistema de Gestão do Estúdio</div>
+        <div class="auth-subtitle-brand" th:text="${empresaNome != null ? 'Portal de Acesso — ' + empresaNome : 'Sistema de Gestão do Estúdio'}">Sistema de Gestão do Estúdio</div>
+    </div>
+
+    <!-- IDENTIFICAÇÃO DO TENANT QUANDO ACESSADO VIA /{slug}/login -->
+    <div th:if="${empresaSlug != null}" style="background: rgba(184, 134, 11, 0.08); border: 1px solid rgba(184, 134, 11, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
+        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente do Estúdio</small>
+        <strong style="color: var(--accent-gold, #b8860b); font-size: 1.05rem;" th:text="${empresaNome} ?: ${empresaSlug}">Studio Lumora VIP</strong>
     </div>
 
     <!-- MENSAGENS DE ALERTA -->
     <div th:if="${param.error}" class="auth-alert auth-alert-error">
         <i class="bi bi-exclamation-triangle-fill"></i>
-        <span>Usuário ou senha inválidos. Tente novamente.</span>
+        <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null and session.SPRING_SECURITY_LAST_EXCEPTION.message != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Usuário ou senha inválidos. Tente novamente.'}">Usuário ou senha inválidos. Tente novamente.</span>
     </div>
 
     <div th:if="${param.registered}" class="auth-alert auth-alert-success">
         <i class="bi bi-check-circle-fill"></i>
-        <span>Cadastro realizado com sucesso! Faça login abaixo.</span>
+        <span>Estúdio cadastrado com sucesso! Faça login para começar.</span>
     </div>
 
     <div th:if="${param.logout}" class="auth-alert auth-alert-success">
@@ -41,9 +56,13 @@
 
     <!-- FORMULÁRIO DE LOGIN -->
     <form th:action="@{/login}" method="post">
+        
+        <!-- Campo Slug Oculto se já veio na URL -->
+        <input th:if="${empresaSlug != null}" type="hidden" name="slug" th:value="${empresaSlug}" />
+
         <div class="auth-input-group">
             <i class="bi bi-person-fill"></i>
-            <input type="text" id="username" name="username" placeholder="Nome de usuário" required autofocus />
+            <input type="text" id="username" name="username" placeholder="Nome de usuário ou e-mail" required autofocus />
         </div>
 
         <div class="auth-input-group">
@@ -52,6 +71,12 @@
             <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
                 <i class="bi bi-eye" id="toggleIcon"></i>
             </button>
+        </div>
+
+        <!-- Se estiver no login genérico (/login), oferece campo opcional de slug para desambiguação -->
+        <div th:if="${empresaSlug == null}" class="auth-input-group">
+            <i class="bi bi-shop"></i>
+            <input type="text" id="slug" name="slug" placeholder="Identificador do Salão (opcional se usuário for único)" />
         </div>
 
         <button type="submit" class="btn-auth mt-2">

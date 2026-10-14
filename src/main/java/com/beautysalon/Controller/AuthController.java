@@ -2,33 +2,49 @@ package com.beautysalon.Controller;
 
 import com.beautysalon.DTO.RegisterEmpresaDTO;
 import com.beautysalon.Inteface.EmpresaService;
+import com.beautysalon.model.Empresa;
+import com.beautysalon.repository.EmpresaRepository;
 import jakarta.validation.Valid;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class AuthController {
 
     private final EmpresaService empresaService;
+    private final EmpresaRepository empresaRepository;
 
-    public AuthController(EmpresaService empresaService) {
+    public AuthController(EmpresaService empresaService, EmpresaRepository empresaRepository) {
         this.empresaService = empresaService;
+        this.empresaRepository = empresaRepository;
     }
 
-    @GetMapping("/login")
-    public String login(Model model) {
+    @GetMapping({"/login", "/{slug}/login"})
+    public String login(@PathVariable(required = false) String slug, Model model) {
+        if (slug != null && !slug.isBlank()) {
+            Optional<Empresa> empresaOpt = empresaRepository.findBySlug(slug);
+            if (empresaOpt.isPresent()) {
+                Empresa emp = empresaOpt.get();
+                model.addAttribute("empresaNome", emp.getNome());
+                model.addAttribute("empresaSlug", emp.getSlug());
+                model.addAttribute("empresaLogo", emp.getLogoUrl());
+                model.addAttribute("pageTitle", "Login - " + emp.getNome());
+            } else {
+                model.addAttribute("empresaSlug", slug);
+                model.addAttribute("pageTitle", "Login - Lumora");
+            }
+        } else {
+            model.addAttribute("pageTitle", "Login - Lumora");
+        }
         model.addAttribute("contentPage", "auth/login");
-        model.addAttribute("pageTitle", "Login - Lumora");
         return "home/index";
     }
 
@@ -65,7 +81,7 @@ public class AuthController {
             String slug = empresaService.registrarNovaEmpresa(dto);
             response.put("success", true);
             response.put("slug", slug);
-            response.put("redirectUrl", "/login?registered=true");
+            response.put("redirectUrl", "/" + slug + "/login?registered=true");
             return response;
         } catch (Exception e) {
             response.put("success", false);
