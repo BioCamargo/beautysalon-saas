@@ -81,7 +81,7 @@ public class FinanceiroController {
         User operador = null;
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             operador = userRepository.findByUsernameAndEmpresaId(auth.getName(), com.beautysalon.tenant.TenantContext.getEmpresaId())
-                    .or(() -> userRepository.findByUsername(auth.getName()))
+                    .or(() -> userRepository.findFirstByUsername(auth.getName()))
                     .orElse(null);
         }
         try {
@@ -103,7 +103,7 @@ public class FinanceiroController {
         User operador = null;
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             operador = userRepository.findByUsernameAndEmpresaId(auth.getName(), com.beautysalon.tenant.TenantContext.getEmpresaId())
-                    .or(() -> userRepository.findByUsername(auth.getName()))
+                    .or(() -> userRepository.findFirstByUsername(auth.getName()))
                     .orElse(null);
         }
         try {
@@ -127,7 +127,7 @@ public class FinanceiroController {
         User operador = null;
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             operador = userRepository.findByUsernameAndEmpresaId(auth.getName(), com.beautysalon.tenant.TenantContext.getEmpresaId())
-                    .or(() -> userRepository.findByUsername(auth.getName()))
+                    .or(() -> userRepository.findFirstByUsername(auth.getName()))
                     .orElse(null);
         }
         try {
@@ -188,7 +188,9 @@ public class FinanceiroController {
                                        @RequestParam(required = false) BigDecimal precoUnitario,
                                        @RequestParam(required = false) BigDecimal percentualComissao,
                                        Authentication auth) {
-        User usuario = auth != null ? userRepository.findByUsername(auth.getName()).orElse(null) : null;
+        User usuario = auth != null ? userRepository.findByUsernameAndEmpresaId(auth.getName(), com.beautysalon.tenant.TenantContext.getEmpresaId())
+                .or(() -> userRepository.findFirstByUsername(auth.getName()))
+                .orElse(null) : null;
         financeiroService.adicionarItemComanda(id, tipo, servicoId, produtoId, profissionalId, quantidade, precoUnitario, percentualComissao, usuario);
         return "redirect:/" + slug + "/financeiro/comandas/" + id;
     }
@@ -247,7 +249,9 @@ public class FinanceiroController {
                                 @RequestParam(required = false) String cupomCodigo,
                                 Authentication auth,
                                 RedirectAttributes redirectAttributes) {
-        User operador = auth != null ? userRepository.findByUsername(auth.getName()).orElse(null) : null;
+        User operador = auth != null ? userRepository.findByUsernameAndEmpresaId(auth.getName(), com.beautysalon.tenant.TenantContext.getEmpresaId())
+                .or(() -> userRepository.findFirstByUsername(auth.getName()))
+                .orElse(null) : null;
         try {
             String formaFinal = formaPagamento;
             if ("MULTIPLO".equalsIgnoreCase(formaPagamento) && detalheMultiplo != null && !detalheMultiplo.isBlank()) {

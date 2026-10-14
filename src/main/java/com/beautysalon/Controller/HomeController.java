@@ -50,11 +50,18 @@ public class HomeController {
     @GetMapping("/")
     public String root(Authentication authentication, Model model) {
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            if (authentication.getPrincipal() instanceof com.beautysalon.tenant.TenantUserDetails tud && tud.getEmpresaSlug() != null) {
+                return "redirect:/" + tud.getEmpresaSlug() + "/home";
+            }
             Optional<User> userOpt = userRepository.findByUsername(authentication.getName());
+            if (userOpt.isEmpty()) {
+                userOpt = userRepository.findFirstByUsername(authentication.getName());
+            }
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
                 return "redirect:/" + userOpt.get().getEmpresa().getSlug() + "/home";
             }
         }
+
         model.addAttribute("pageTitle", "Lumora Studio | Software de Gestão e Agendamento para Salões e Estética");
         return "landing/index";
     }
