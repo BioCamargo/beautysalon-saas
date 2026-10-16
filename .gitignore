@@ -46,7 +46,7 @@ application-*.properties
 .env
 uploads/
 
-### Guias e Notas Locais ###
+### Guias, Estratégias e Notas Internas (Apenas Local) ###
 docs/GUIA_GIT_FLUXO_BRANCHES.md
 docs/LOCAL_*.md
 docs/ROADMAP_PRODUTO_SAAS_VENDAVEL.md
@@ -55,12 +55,25 @@ docs/checklist-*.html
 docs/code_review_report.md
 docs/RELATORIO_EXECUCAO_MELHORIAS.md
 docs/ui_ux_audit_report.md
-.cursorrules
+docs/RELATORIO_PUBLICACAO_OFICIAL_E_GTM_LOCAL.md
+docs/UX_LAWS_ANALISE_E_MELHORIAS_LUMORA.md
+docs/nexipro_brand_book_marketing.md
+docs/ANALISE_TECNICA_E_MELHORIAS.md
+docs/PLANO_15_DIAS_JAVA_BACKEND.md
+docs/EXPANSAO_MERCADO_JAVA_AVANCADO.md
+docs/DEPLOY_AWS_CLOUD_ARCHITECTURE.md
 
-### E2E Tests & Node.js ###
+### Squad IA & Regras Internas (Apenas Local) ###
+.cursorrules
+.agents/
+
+### Scripts de Automação & Testes E2E (Apenas Local) ###
+scripts/
+e2e/
 node_modules/
 **/node_modules/
 test-results/
 playwright-report/
 blob-report/
+
 
