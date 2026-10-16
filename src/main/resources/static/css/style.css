@@ -70,7 +70,7 @@
 }
 
 html, body {
-    height: 100%;
+    min-height: 100%;
 }
 
 body {
@@ -80,6 +80,7 @@ body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 a {
@@ -866,21 +867,47 @@ textarea.form-control-modern {
 .auth-page {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%);
-    padding: 1.5rem;
+    padding: 1rem 1rem;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .auth-card-modern {
+    margin: auto 0;
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     background: #ffffff;
     border-radius: var(--radius-lg);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
-    padding: 2.5rem 2rem;
+    padding: 1.5rem 2rem;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+.auth-card-modern.auth-card-wide {
+    max-width: 860px;
+    padding: 1.25rem 2.25rem 1.15rem;
+}
+
+.auth-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .auth-card-modern.auth-card-wide {
+        padding: 1.25rem 1.25rem;
+    }
+    .auth-grid-2col {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
 }
 
 .auth-card-modern::before {
@@ -895,55 +922,89 @@ textarea.form-control-modern {
 
 .auth-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .auth-logo-img {
-    max-height: 64px;
-    max-width: 220px;
+    max-height: 48px;
+    max-width: 180px;
     object-fit: contain;
-    margin-bottom: 1rem;
+    margin-bottom: 0.4rem;
 }
 
 .auth-title-brand {
     font-family: var(--font-serif);
-    font-size: 1.6rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--text-main);
     letter-spacing: 1px;
 }
 
 .auth-subtitle-brand {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
-    margin-top: 0.25rem;
+    margin-top: 0.15rem;
+}
+
+.auth-field-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 0.15rem;
+    letter-spacing: 0.3px;
 }
 
 .auth-input-group {
     position: relative;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.45rem;
 }
 
 .auth-input-group i {
     position: absolute;
-    left: 1rem;
+    left: 0.85rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 0.9rem;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .auth-input-group input {
     width: 100%;
-    padding: 0.8rem 1rem 0.8rem 2.6rem;
+    height: 38px;
+    padding: 0.45rem 0.85rem 0.45rem 2.4rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     background-color: var(--bg-app);
     transition: var(--transition);
+    box-sizing: border-box;
 }
 
-.auth-input-group input:focus {
+.auth-input-group select {
+    width: 100%;
+    height: 38px;
+    padding: 0.45rem 2rem 0.45rem 2.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 0.88rem;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    box-sizing: border-box;
+}
+
+.auth-input-group input:focus,
+.auth-input-group select:focus {
     outline: none;
     border-color: var(--accent-gold);
     background-color: #ffffff;
@@ -1154,3 +1215,280 @@ textarea.form-control-modern {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.75; }
 }
+
+/* ==========================================================================
+   LUMORA 2.0 - DESIGN SYSTEM EXPANSION (ANTI-POLUIÇÃO & LUXURY TOKENS)
+   ========================================================================== */
+
+:root {
+    /* Superfícies & Bordas Nobres */
+    --gold-primary: #d4af37;
+    --gold-hover: #b8860b;
+    --gold-champagne: #f4e8c1;
+    --gold-gradient: linear-gradient(135deg, #f5e3ad 0%, #d4af37 50%, #b8860b 100%);
+    --gold-glow: rgba(212, 175, 55, 0.28);
+    --bg-silk: #faf9f6;
+    --border-lux: rgba(212, 175, 55, 0.22);
+    --border-subtle: #e2e8f0;
+}
+
+/* 1. GLASS CARD LUXURY (Superfície limpa com respiro) */
+.glass-card-lux {
+    background: #ffffff;
+    border: 1px solid var(--border-lux);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 0 1px 1px rgba(212, 175, 55, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.glass-card-lux:hover {
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.07), 0 0 1px 1px rgba(212, 175, 55, 0.25);
+}
+
+/* 2. BOTÃO PRIMÁRIO ASSINATURA OURO CHAMPANHE */
+.btn-gold-action {
+    background: var(--gold-gradient);
+    color: #0b0f19 !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px var(--gold-glow);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-gold-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+    color: #000000 !important;
+}
+
+.btn-gold-action:active {
+    transform: translateY(0);
+}
+
+/* 3. BOTÃO SECUNDÁRIO GHOST (Zero Poluição) */
+.btn-ghost-lux {
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.7rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-ghost-lux:hover {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border-color: #cbd5e1;
+}
+
+/* 4. SPEED POS CHIPS (Frente de Caixa Sem Modais) */
+.speed-pos-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.speed-pos-chip {
+    flex: 1 1 calc(25% - 0.75rem);
+    min-width: 110px;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+
+.speed-pos-chip i {
+    font-size: 1.35rem;
+    color: var(--accent-gold);
+}
+
+.speed-pos-chip:hover {
+    border-color: rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.04);
+    transform: translateY(-2px);
+}
+
+.speed-pos-chip.active {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.12);
+    color: #0b0f19;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.2);
+}
+
+/* 5. TOAST NOTIFIER FLUTUANTE (Substituição de alert/confirm) */
+#lux-toast-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 380px;
+    pointer-events: none;
+}
+
+.lux-toast {
+    pointer-events: auto;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid var(--accent-gold);
+    animation: luxToastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: all 0.25s ease;
+}
+
+.lux-toast.toast-success { border-left-color: #10b981; }
+.lux-toast.toast-error   { border-left-color: #ef4444; }
+.lux-toast.toast-warning { border-left-color: #f59e0b; }
+.lux-toast.toast-info    { border-left-color: #3b82f6; }
+
+.lux-toast-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    margin-top: 0.1rem;
+}
+
+.lux-toast.toast-success .lux-toast-icon { color: #10b981; }
+.lux-toast.toast-error   .lux-toast-icon { color: #ef4444; }
+.lux-toast.toast-warning .lux-toast-icon { color: #f59e0b; }
+.lux-toast.toast-info    .lux-toast-icon { color: #3b82f6; }
+
+.lux-toast-content {
+    flex: 1;
+}
+
+.lux-toast-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+}
+
+.lux-toast-msg {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.lux-toast-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.lux-toast-close:hover {
+    color: var(--text-main);
+}
+
+@keyframes luxToastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes luxToastFadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+}
+
+/* 6. EMPTY STATE ELEGANTE (Anti-Poluição) */
+.empty-state-lux {
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background: #ffffff;
+    border: 1px dashed var(--border-lux);
+    border-radius: 16px;
+    margin: 1.5rem 0;
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--accent-gold);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    max-width: 440px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.5;
+}
+
+/* MODAL GLOBAL DE CONFIRMAÇÃO LUXO */
+#luxConfirmModal {
+    z-index: 1060 !important;
+}
+#luxConfirmModal .modal-dialog {
+    z-index: 1065 !important;
+}
+#luxConfirmModal .modal-content {
+    z-index: 1070 !important;
+    pointer-events: auto !important;
+}
+#luxConfirmModal button {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+

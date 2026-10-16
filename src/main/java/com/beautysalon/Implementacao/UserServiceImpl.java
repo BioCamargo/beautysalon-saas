@@ -48,6 +48,31 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
+    @org.springframework.beans.factory.annotation.Value("${upload.dir:uploads}")
+    private String uploadDir = "uploads";
+
+    private String processarUploadImagem(org.springframework.web.multipart.MultipartFile imagemFile) throws IOException {
+        if (imagemFile == null || imagemFile.isEmpty()) {
+            return null;
+        }
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        String originalFilename = imagemFile.getOriginalFilename();
+        String extensao = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extensao = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        }
+        String nomeArquivo = UUID.randomUUID() + extensao;
+        Path caminho = uploadPath.resolve(nomeArquivo);
+
+        try (java.io.InputStream inputStream = imagemFile.getInputStream()) {
+            Files.copy(inputStream, caminho, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
+        return "/uploads/" + nomeArquivo;
+    }
+
     @Override
     @Transactional
     public UserDTO salvar(UserDTO dto) throws IOException {
@@ -66,6 +91,10 @@ public class UserServiceImpl implements UserService {
         user.setPercentualComissao(dto.getPercentualComissao() != null ? dto.getPercentualComissao() : java.math.BigDecimal.ZERO);
         user.setEspecialidade(dto.getEspecialidade());
         user.setTelefone(dto.getTelefone());
+        user.setChavePix(dto.getChavePix());
+        if (dto.getHoraInicioExpediente() != null) user.setHoraInicioExpediente(dto.getHoraInicioExpediente());
+        if (dto.getHoraFimExpediente() != null) user.setHoraFimExpediente(dto.getHoraFimExpediente());
+        user.setDiasTrabalho(dto.getDiasTrabalho() != null ? dto.getDiasTrabalho() : "SEGUNDA,TERCA,QUARTA,QUINTA,SEXTA,SABADO");
         user.setCorAgenda(dto.getCorAgenda() != null && !dto.getCorAgenda().isBlank() ? dto.getCorAgenda() : "#d4af37");
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
@@ -73,15 +102,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (dto.getImagem() != null && !dto.getImagem().isEmpty()) {
-            String uploadDir = "uploads/";
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            String nomeArquivo = UUID.randomUUID() + "_" + dto.getImagem().getOriginalFilename();
-            Path caminho = uploadPath.resolve(nomeArquivo);
-            dto.getImagem().transferTo(caminho.toFile());
-            user.setImagem("/uploads/" + nomeArquivo);
+            String caminhoImagem = processarUploadImagem(dto.getImagem());
+            user.setImagem(caminhoImagem);
         }
 
         return toDTO(userRepository.save(user));
@@ -100,6 +122,10 @@ public class UserServiceImpl implements UserService {
         }
         existente.setEspecialidade(dto.getEspecialidade());
         existente.setTelefone(dto.getTelefone());
+        existente.setChavePix(dto.getChavePix());
+        if (dto.getHoraInicioExpediente() != null) existente.setHoraInicioExpediente(dto.getHoraInicioExpediente());
+        if (dto.getHoraFimExpediente() != null) existente.setHoraFimExpediente(dto.getHoraFimExpediente());
+        if (dto.getDiasTrabalho() != null) existente.setDiasTrabalho(dto.getDiasTrabalho());
         if (dto.getCorAgenda() != null && !dto.getCorAgenda().isBlank()) {
             existente.setCorAgenda(dto.getCorAgenda());
         }
@@ -108,6 +134,14 @@ public class UserServiceImpl implements UserService {
         }
         if (dto.getTenantRole() != null) {
             existente.setTenantRole(dto.getTenantRole());
+        }
+        if (dto.getImagem() != null && !dto.getImagem().isEmpty()) {
+            try {
+                String caminhoImagem = processarUploadImagem(dto.getImagem());
+                existente.setImagem(caminhoImagem);
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao processar imagem do usuário: " + e.getMessage(), e);
+            }
         }
         return toDTO(userRepository.save(existente));
     }
@@ -146,6 +180,10 @@ public class UserServiceImpl implements UserService {
         user.setPercentualComissao(dto.getPercentualComissao() != null ? dto.getPercentualComissao() : java.math.BigDecimal.ZERO);
         user.setEspecialidade(dto.getEspecialidade());
         user.setTelefone(dto.getTelefone());
+        user.setChavePix(dto.getChavePix());
+        if (dto.getHoraInicioExpediente() != null) user.setHoraInicioExpediente(dto.getHoraInicioExpediente());
+        if (dto.getHoraFimExpediente() != null) user.setHoraFimExpediente(dto.getHoraFimExpediente());
+        if (dto.getDiasTrabalho() != null && !dto.getDiasTrabalho().isBlank()) user.setDiasTrabalho(dto.getDiasTrabalho());
         user.setCorAgenda(dto.getCorAgenda() != null && !dto.getCorAgenda().isBlank() ? dto.getCorAgenda() : "#d4af37");
 
         userRepository.save(user);
@@ -163,6 +201,10 @@ public class UserServiceImpl implements UserService {
         dto.setPercentualComissao(user.getPercentualComissao());
         dto.setEspecialidade(user.getEspecialidade());
         dto.setTelefone(user.getTelefone());
+        dto.setChavePix(user.getChavePix());
+        dto.setHoraInicioExpediente(user.getHoraInicioExpediente());
+        dto.setHoraFimExpediente(user.getHoraFimExpediente());
+        dto.setDiasTrabalho(user.getDiasTrabalho());
         dto.setCorAgenda(user.getCorAgenda());
         if (user.getEmpresa() != null) {
             dto.setEmpresaId(user.getEmpresa().getId());

@@ -169,6 +169,19 @@
                     <div id="fullCalendarAgendamentos"></div>
                 </div>
             </div>
+
+            <!-- CONTAINER OCULTO DE AUSÊNCIAS & FOLGAS (TC-USR-03) -->
+            <div id="ausenciasDataContainer" style="display: none;">
+                <div th:each="aus : ${ausencias}" class="ausencia-item"
+                     th:attr="data-prof=${aus.profissional != null ? aus.profissional.nome : 'Profissional'},
+                              data-tipo=${aus.tipo},
+                              data-motivo=${aus.motivo},
+                              data-data=${aus.dataEspecifica},
+                              data-dia=${aus.diaSemanaRecorrente},
+                              data-inicio=${aus.horaInicio},
+                              data-fim=${aus.horaFim}">
+                </div>
+            </div>
         </main>
     </div>
 </div>
@@ -248,6 +261,27 @@
             }
         });
 
+        // INCLUSÃO DOS BLOQUEIOS DE AUSÊNCIAS, FOLGAS E FÉRIAS (TC-USR-03)
+        document.querySelectorAll('.ausencia-item').forEach(el => {
+            const prof = el.dataset.prof;
+            const motivo = el.dataset.motivo || el.dataset.tipo || 'Folga / Ausência';
+            const dataEsp = el.dataset.data;
+            const horaIni = el.dataset.inicio ? el.dataset.inicio.slice(0, 5) : '00:00';
+            const horaFim = el.dataset.fim ? el.dataset.fim.slice(0, 5) : '23:59';
+
+            if (dataEsp) {
+                events.push({
+                    title: `⛔ BLOQUEADO: ${prof} (${motivo})`,
+                    start: `${dataEsp}T${horaIni}:00`,
+                    end: `${dataEsp}T${horaFim}:00`,
+                    backgroundColor: '#64748b',
+                    borderColor: '#475569',
+                    textColor: '#ffffff',
+                    display: 'block'
+                });
+            }
+        });
+
         calendarInstance = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             locale: 'pt-br',
@@ -281,30 +315,45 @@
         });
     }
 
-    $(document).ready(function() {
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfTokenEl = document.querySelector("meta[name='_csrf']");
+        const csrfHeaderEl = document.querySelector("meta[name='_csrf_header']");
+        const token = csrfTokenEl ? csrfTokenEl.getAttribute("content") : '';
+        const header = csrfHeaderEl ? csrfHeaderEl.getAttribute("content") : '';
 
-        $('.btn-delete-agendamento').on('click', function(e) {
-            e.preventDefault();
-            const id = $(this).data('id');
-            const cliente = $(this).data('cliente') || 'este agendamento';
-            const slug = $(this).data('slug');
+        document.querySelectorAll('.btn-delete-agendamento').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                const cliente = this.dataset.cliente || 'este agendamento';
+                const slug = this.dataset.slug;
 
-            if (confirm(`Tem certeza que deseja cancelar e excluir o agendamento de ${cliente}?`)) {
-                $.ajax({
-                    type: 'POST',
-                    url: `/${slug}/agendamentos/deletar/${id}`,
-                    headers: { [header]: token },
-                    data: { _csrf: token },
-                    success: function() {
-                        location.reload();
-                    },
-                    error: function(xhr) {
-                        alert('Erro ao excluir agendamento: ' + (xhr.responseText || 'Falha na requisição'));
+                window.luxConfirm(
+                    'Cancelar Agendamento',
+                    `Deseja realmente cancelar e remover o horário de ${cliente}?`,
+                    () => {
+                        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                        if (header && token) headers[header] = token;
+
+                        fetch(`/${slug}/agendamentos/deletar/${id}`, {
+                            method: 'POST',
+                            headers: headers,
+                            body: `_csrf=${encodeURIComponent(token)}`
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                window.showToast('Agendamento cancelado com sucesso!', 'success');
+                                setTimeout(() => location.reload(), 800);
+                            } else {
+                                return res.text().then(text => { throw new Error(text || 'Falha ao excluir'); });
+                            }
+                        })
+                        .catch(err => {
+                            window.showToast('Erro ao excluir: ' + err.message, 'error');
+                        });
                     }
-                });
-            }
+                );
+            });
         });
     });
 </script>

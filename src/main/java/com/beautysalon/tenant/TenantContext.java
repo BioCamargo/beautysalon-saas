@@ -17,10 +17,19 @@ public final class TenantContext {
     private static final ThreadLocal<com.beautysalon.model.SegmentoEmpresa> CURRENT_EMPRESA_SEGMENTO = new ThreadLocal<>();
     private static final ThreadLocal<com.beautysalon.model.PlanoSaaS> CURRENT_EMPRESA_PLANO = new ThreadLocal<>();
     private static final ThreadLocal<com.beautysalon.model.StatusAssinatura> CURRENT_EMPRESA_STATUS_ASSINATURA = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_EMPRESA_LOGO_URL = new ThreadLocal<>();
     private static final ThreadLocal<Long> CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> CURRENT_EMPRESA_TRIAL_ATIVO = new ThreadLocal<>();
 
     private TenantContext() {}
+
+    public static void setLogoUrl(String logoUrl) {
+        CURRENT_EMPRESA_LOGO_URL.set(logoUrl);
+    }
+
+    public static String getLogoUrl() {
+        return CURRENT_EMPRESA_LOGO_URL.get();
+    }
 
     public static void setEmpresaId(Long id) {
         CURRENT_EMPRESA_ID.set(id);
@@ -116,6 +125,7 @@ public final class TenantContext {
         CURRENT_EMPRESA_ID.remove();
         CURRENT_EMPRESA_SLUG.remove();
         CURRENT_EMPRESA_NOME.remove();
+        CURRENT_EMPRESA_LOGO_URL.remove();
         CURRENT_EMPRESA_SEGMENTO.remove();
         CURRENT_EMPRESA_PLANO.remove();
         CURRENT_EMPRESA_STATUS_ASSINATURA.remove();

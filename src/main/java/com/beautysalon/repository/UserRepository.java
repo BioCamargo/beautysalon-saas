@@ -13,12 +13,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {"empresa"})
     java.util.Optional<User> findById(Long id);
 
-    // Busca dentro de uma empresa específica
+    // Busca dentro de uma empresa específica (case-insensitive)
     @EntityGraph(attributePaths = {"empresa"})
     Optional<User> findByUsernameAndEmpresaId(String username, Long empresaId);
 
     @EntityGraph(attributePaths = {"empresa"})
+    Optional<User> findByUsernameIgnoreCaseAndEmpresaId(String username, Long empresaId);
+
+    @EntityGraph(attributePaths = {"empresa"})
     Optional<User> findByEmailAndEmpresaId(String email, Long empresaId);
+
+    @EntityGraph(attributePaths = {"empresa"})
+    Optional<User> findByEmailIgnoreCaseAndEmpresaId(String email, Long empresaId);
 
     @EntityGraph(attributePaths = {"empresa"})
     List<User> findAllByEmpresaId(Long empresaId);
@@ -39,12 +45,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {"empresa"})
     List<User> findAllByUsername(String username);
 
+    @EntityGraph(attributePaths = {"empresa"})
+    List<User> findAllByUsernameIgnoreCase(String username);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findFirstByEmail(String email);
 
     @EntityGraph(attributePaths = {"empresa"})
     List<User> findAllByEmail(String email);
+
+    @EntityGraph(attributePaths = {"empresa"})
+    List<User> findAllByEmailIgnoreCase(String email);
 
 
     boolean existsByUsernameAndEmpresaId(String username, Long empresaId);

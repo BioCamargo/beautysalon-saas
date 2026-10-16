@@ -70,11 +70,18 @@ public class ServicoController {
         }
 
         if (dto.getImagemFile() != null && !dto.getImagemFile().isEmpty()) {
-            Path dirPath = Paths.get(uploadDir);
+            Path dirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(dirPath);
-            String nomeArquivo = System.currentTimeMillis() + "_" + dto.getImagemFile().getOriginalFilename();
+            String originalFilename = dto.getImagemFile().getOriginalFilename();
+            String extensao = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extensao = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            }
+            String nomeArquivo = System.currentTimeMillis() + "_" + java.util.UUID.randomUUID().toString().substring(0, 8) + extensao;
             Path caminhoCompleto = dirPath.resolve(nomeArquivo);
-            dto.getImagemFile().transferTo(caminhoCompleto.toFile());
+            try (java.io.InputStream is = dto.getImagemFile().getInputStream()) {
+                Files.copy(is, caminhoCompleto, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
             dto.setImagem(nomeArquivo);
         }
 
@@ -114,11 +121,18 @@ public class ServicoController {
         }
 
         if (dto.getImagemFile() != null && !dto.getImagemFile().isEmpty()) {
-            Path dirPath = Paths.get(uploadDir);
+            Path dirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(dirPath);
-            String nomeArquivo = System.currentTimeMillis() + "_" + dto.getImagemFile().getOriginalFilename();
+            String originalFilename = dto.getImagemFile().getOriginalFilename();
+            String extensao = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extensao = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            }
+            String nomeArquivo = System.currentTimeMillis() + "_" + java.util.UUID.randomUUID().toString().substring(0, 8) + extensao;
             Path caminhoCompleto = dirPath.resolve(nomeArquivo);
-            dto.getImagemFile().transferTo(caminhoCompleto.toFile());
+            try (java.io.InputStream is = dto.getImagemFile().getInputStream()) {
+                Files.copy(is, caminhoCompleto, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
             dto.setImagem(nomeArquivo);
         }
 

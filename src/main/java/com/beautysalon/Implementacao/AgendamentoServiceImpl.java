@@ -26,6 +26,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     private final ServicoRepository servicoRepository;
     private final EmpresaRepository empresaRepository;
     private final com.beautysalon.repository.UserRepository userRepository;
+    private final com.beautysalon.repository.AusenciaProfissionalRepository ausenciaProfissionalRepository;
     private final com.beautysalon.service.WhatsAppService whatsAppService;
     private final com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer;
 
@@ -34,6 +35,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                                   ServicoRepository servicoRepository,
                                   EmpresaRepository empresaRepository,
                                   com.beautysalon.repository.UserRepository userRepository,
+                                  com.beautysalon.repository.AusenciaProfissionalRepository ausenciaProfissionalRepository,
                                   com.beautysalon.service.WhatsAppService whatsAppService,
                                   com.beautysalon.config.messaging.producer.EventMessageProducer eventMessageProducer) {
         this.agendamentoRepository = agendamentoRepository;
@@ -41,6 +43,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         this.servicoRepository = servicoRepository;
         this.empresaRepository = empresaRepository;
         this.userRepository = userRepository;
+        this.ausenciaProfissionalRepository = ausenciaProfissionalRepository;
         this.whatsAppService = whatsAppService;
         this.eventMessageProducer = eventMessageProducer;
     }
@@ -181,6 +184,37 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         "Conflito de agenda: O profissional já possui atendimento entre %s e %s.",
                         existenteInicio.format(fmt), existenteFim.format(fmt)
                 ));
+            }
+        }
+
+        // Validação de Ausências, Folgas e Férias do Profissional (TC-USR-03)
+        List<com.beautysalon.model.AusenciaProfissional> ausencias = ausenciaProfissionalRepository
+                .findByProfissionalIdAndEmpresaIdAndAtivoTrue(profissionalId, empresaId);
+
+        for (var aus : ausencias) {
+            boolean dataCoincide = false;
+            if (aus.getDataEspecifica() != null && aus.getDataEspecifica().isEqual(novoInicio.toLocalDate())) {
+                dataCoincide = true;
+            } else if (aus.getDiaSemanaRecorrente() != null && aus.getDiaSemanaRecorrente() == novoInicio.getDayOfWeek()) {
+                dataCoincide = true;
+            }
+
+            if (dataCoincide) {
+                java.time.LocalTime ausInicio = aus.getHoraInicio() != null ? aus.getHoraInicio() : java.time.LocalTime.MIN;
+                java.time.LocalTime ausFim = aus.getHoraFim() != null ? aus.getHoraFim() : java.time.LocalTime.MAX;
+
+                java.time.LocalTime slotInicio = novoInicio.toLocalTime();
+                java.time.LocalTime slotFim = novoFim.toLocalTime();
+
+                if (slotInicio.isBefore(ausFim) && slotFim.isAfter(ausInicio)) {
+                    java.time.format.DateTimeFormatter timeFmt = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+                    throw new RuntimeException(String.format(
+                            "O profissional está indisponível/ausente neste período (%s às %s): %s.",
+                            ausInicio.format(timeFmt),
+                            ausFim.format(timeFmt),
+                            aus.getMotivo() != null && !aus.getMotivo().isBlank() ? aus.getMotivo() : aus.getTipo()
+                    ));
+                }
             }
         }
     }

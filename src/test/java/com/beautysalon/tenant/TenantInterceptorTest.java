@@ -110,12 +110,14 @@ class TenantInterceptorTest {
         TenantContext.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL);
         TenantContext.setDiasRestantesTrial(7L);
         TenantContext.setTrialAtivo(true);
+        TenantContext.setLogoUrl("data:image/png;base64,mockLogo");
 
         org.springframework.web.servlet.ModelAndView mav = new org.springframework.web.servlet.ModelAndView();
         tenantInterceptor.postHandle(request, response, new Object(), mav);
 
         assertEquals("studio-vip", mav.getModel().get("empresaSlug"));
         assertEquals("Studio VIP", mav.getModel().get("empresaNome"));
+        assertEquals("data:image/png;base64,mockLogo", mav.getModel().get("empresaLogo"));
         assertEquals(com.beautysalon.model.PlanoSaaS.STUDIO, mav.getModel().get("empresaPlano"));
         assertEquals(com.beautysalon.model.StatusAssinatura.TRIAL, mav.getModel().get("empresaStatusAssinatura"));
         assertEquals(7L, mav.getModel().get("empresaDiasRestantesTrial"));

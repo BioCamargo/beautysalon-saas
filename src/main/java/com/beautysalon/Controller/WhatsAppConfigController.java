@@ -51,10 +51,35 @@ public class WhatsAppConfigController {
             WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual()
                     .orElseThrow(() -> new IllegalStateException("Nenhuma configuração do WhatsApp encontrada."));
 
+            String empresaNome = com.beautysalon.tenant.TenantContext.getNome() != null 
+                    ? com.beautysalon.tenant.TenantContext.getNome() : "Studio Lumora";
+            String dataHoje = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String horaAtual = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+
+            String mensagemTeste;
+            if (config.getMensagemAgendamentoCustom() != null && !config.getMensagemAgendamentoCustom().isBlank()) {
+                mensagemTeste = config.getMensagemAgendamentoCustom()
+                        .replace("{empresa}", empresaNome)
+                        .replace("{cliente}", "Cliente VIP (Teste)")
+                        .replace("{servico}", "Corte & Escova Modelada")
+                        .replace("{data}", dataHoje)
+                        .replace("{hora}", horaAtual);
+            } else {
+                mensagemTeste = String.format(
+                        "🌸 *%s — Teste de Integração WhatsApp*\n\n" +
+                        "Olá, *Cliente VIP (Teste)*! ✨\n" +
+                        "Seu agendamento para *Corte & Escova Modelada* foi confirmado com sucesso!\n\n" +
+                        "📅 *Data:* %s\n" +
+                        "⏰ *Horário:* %s\n\n" +
+                        "As variáveis dinâmicas ({cliente}, {servico}, {data}, {hora}) foram substituídas perfeitamente! 🚀",
+                        empresaNome, dataHoje, horaAtual
+                );
+            }
+
             boolean enviado = whatsAppService.enviarMensagemTexto(
                     config,
                     telefoneTeste,
-                    "🎉 *Teste de Conexão WhatsApp*\n\nSeu estúdio está conectado com sucesso ao sistema BeautySalon SaaS! As mensagens automáticas estão ativas."
+                    mensagemTeste
             );
 
             if (enviado) {

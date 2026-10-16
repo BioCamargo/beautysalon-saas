@@ -50,6 +50,21 @@ public class User {
 
     private String telefone;
 
+    @Column(name = "chave_pix")
+    private String chavePix;
+
+    @Column(name = "hora_inicio_expediente")
+    @Builder.Default
+    private java.time.LocalTime horaInicioExpediente = java.time.LocalTime.of(8, 0);
+
+    @Column(name = "hora_fim_expediente")
+    @Builder.Default
+    private java.time.LocalTime horaFimExpediente = java.time.LocalTime.of(19, 0);
+
+    @Column(name = "dias_trabalho")
+    @Builder.Default
+    private String diasTrabalho = "SEGUNDA,TERCA,QUARTA,QUINTA,SEXTA,SABADO";
+
     @Builder.Default
     private String corAgenda = "#d4af37"; // Cor para identificar na agenda multiprofissional
 

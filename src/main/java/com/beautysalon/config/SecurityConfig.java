@@ -83,6 +83,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/*/agendar",
                                 "/*/agendar/**",
+                                "/agendamento/**",
                                 "/api/v1/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -122,8 +123,13 @@ public class SecurityConfig {
                                 response.sendRedirect("/select-tenant");
                                 return;
                             }
+                            String slug = request.getParameter("slug");
                             request.getSession().setAttribute(org.springframework.security.web.WebAttributes.AUTHENTICATION_EXCEPTION, exception);
-                            response.sendRedirect("/login?error");
+                            if (slug != null && !slug.isBlank()) {
+                                response.sendRedirect("/" + slug.trim().toLowerCase() + "/login?error");
+                            } else {
+                                response.sendRedirect("/login?error");
+                            }
                         })
                         .permitAll()
                 )

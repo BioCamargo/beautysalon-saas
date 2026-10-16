@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,9 @@ class AgendamentoServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private com.beautysalon.repository.AusenciaProfissionalRepository ausenciaProfissionalRepository;
 
     @Mock
     private WhatsAppService whatsAppService;
@@ -212,5 +216,39 @@ class AgendamentoServiceImplTest {
         assertEquals("CONFIRMADO", atualizado.getStatus());
         assertEquals(novaDataHora, atualizado.getDataHora());
         verify(agendamentoRepository, times(1)).save(agOriginal);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar agendar no período de ausência/folga do profissional (TC-USR-03)")
+    void deveLancarExcecaoQuandoProfissionalEstiverEmAusenciaOuFolga() {
+        LocalDateTime dataHora = LocalDateTime.now().plusDays(2).withHour(10).withMinute(0);
+
+        AgendamentoDTO dto = new AgendamentoDTO();
+        dto.setClienteId(10L);
+        dto.setServicoId(20L);
+        dto.setProfissionalId(30L);
+        dto.setDataHora(dataHora);
+
+        com.beautysalon.model.AusenciaProfissional folga = com.beautysalon.model.AusenciaProfissional.builder()
+                .id(1L)
+                .profissional(profissionalMock)
+                .empresa(empresaMock)
+                .tipo("FOLGA_PONTUAL")
+                .motivo("Folga Médica")
+                .dataEspecifica(dataHora.toLocalDate())
+                .horaInicio(LocalTime.of(9, 0))
+                .horaFim(LocalTime.of(12, 0))
+                .ativo(true)
+                .build();
+
+        when(empresaRepository.findById(EMPRESA_ID)).thenReturn(Optional.of(empresaMock));
+        when(clienteRepository.findByIdAndEmpresaId(10L, EMPRESA_ID)).thenReturn(Optional.of(clienteMock));
+        when(servicoRepository.findByIdAndEmpresaId(20L, EMPRESA_ID)).thenReturn(Optional.of(servicoMock));
+        when(agendamentoRepository.findByEmpresaIdAndProfissionalIdOrderByDataHoraAsc(EMPRESA_ID, 30L)).thenReturn(List.of());
+        when(ausenciaProfissionalRepository.findByProfissionalIdAndEmpresaIdAndAtivoTrue(30L, EMPRESA_ID)).thenReturn(List.of(folga));
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> agendamentoService.salvar(dto));
+        assertTrue(ex.getMessage().contains("indisponível/ausente"));
+        assertTrue(ex.getMessage().contains("Folga Médica"));
     }
 }

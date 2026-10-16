@@ -80,9 +80,10 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
                 throw new DisabledException("Este estabelecimento encontra-se desativado.");
             }
 
-            // Busca pelo username ou pelo email dentro desta empresa
-            userToAuthenticate = userRepository.findByUsernameAndEmpresaId(loginInput, empresa.getId())
-                    .or(() -> userRepository.findByEmailAndEmpresaId(loginInput, empresa.getId()))
+            String inputTrimmed = loginInput.trim();
+            // Busca pelo username ou pelo email dentro desta empresa (case-insensitive com fallback)
+            userToAuthenticate = userRepository.findByUsernameIgnoreCaseAndEmpresaId(inputTrimmed, empresa.getId())
+                    .or(() -> userRepository.findByEmailIgnoreCaseAndEmpresaId(inputTrimmed, empresa.getId()))
                     .orElseThrow(() -> new BadCredentialsException(
                             "Usuário ou e-mail não encontrado neste salão (" + empresa.getNome() + ")."));
 
@@ -91,24 +92,30 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
             }
         } else {
             // CENÁRIO 2: Slug NÃO foi informado (login genérico /login)
-            String inputClean = loginInput.trim().toLowerCase();
+            String inputClean = loginInput.trim();
             boolean isEmail = inputClean.contains("@");
 
-            List<User> candidates;
+            List<User> rawCandidates = new ArrayList<>();
             if (isEmail) {
-                candidates = new ArrayList<>(userRepository.findAllByEmail(inputClean));
-                if (candidates.isEmpty()) {
+                rawCandidates.addAll(userRepository.findAllByEmailIgnoreCase(inputClean));
+                if (rawCandidates.isEmpty()) {
+                    rawCandidates.addAll(userRepository.findAllByUsernameIgnoreCase(inputClean));
+                }
+                if (rawCandidates.isEmpty()) {
                     throw new BadCredentialsException("E-mail não encontrado.");
                 }
             } else {
-                candidates = new ArrayList<>(userRepository.findAllByUsername(inputClean));
-                if (candidates.isEmpty()) {
-                    candidates.addAll(userRepository.findAllByEmail(inputClean));
+                rawCandidates.addAll(userRepository.findAllByUsernameIgnoreCase(inputClean));
+                if (rawCandidates.isEmpty()) {
+                    rawCandidates.addAll(userRepository.findAllByEmailIgnoreCase(inputClean));
                 }
-                if (candidates.isEmpty()) {
+                if (rawCandidates.isEmpty()) {
                     throw new BadCredentialsException("Usuário ou e-mail não encontrado.");
                 }
             }
+
+            // Remove duplicados
+            List<User> candidates = rawCandidates.stream().distinct().toList();
 
             // Filtra os usuários cuja senha confere
             List<User> matchingPassword = candidates.stream()
@@ -119,44 +126,37 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
                 throw new BadCredentialsException("Senha incorreta.");
             }
 
-            if (matchingPassword.size() == 1) {
-                userToAuthenticate = matchingPassword.get(0);
+            // Filtra contas e empresas ativas
+            List<User> activeCandidates = matchingPassword.stream()
+                    .filter(User::isAtivo)
+                    .filter(u -> u.getEmpresa() == null || u.getEmpresa().isAtivo())
+                    .toList();
+
+            if (activeCandidates.isEmpty()) {
+                throw new DisabledException("Sua conta de usuário ou estabelecimento está desativado.");
+            }
+
+            if (activeCandidates.size() == 1) {
+                userToAuthenticate = activeCandidates.get(0);
             } else {
                 // Existe mais de um registro compatível
                 if (isEmail) {
-                    // Verifica se há mais de um colaborador compartilhando o mesmo e-mail na mesma
-                    // empresa
-                    long totalSaloesDistintos = matchingPassword.stream()
+                    // Verifica se há mais de um colaborador compartilhando o mesmo e-mail na mesma empresa
+                    long totalSaloesDistintos = activeCandidates.stream()
                             .map(u -> u.getEmpresa() != null ? u.getEmpresa().getId() : null)
                             .filter(java.util.Objects::nonNull)
                             .distinct()
                             .count();
 
-                    if (totalSaloesDistintos < matchingPassword.size()) {
+                    if (totalSaloesDistintos < activeCandidates.size()) {
                         throw new BadCredentialsException(
-                                "Este e-mail está associado a múltiplos colaboradores neste estabelecimento. " +
+                                "Este e-mail está associado a múltiplos colaboradores no mesmo estabelecimento. " +
                                         "Por favor, acesse utilizando seu Nome de Usuário (username).");
-                    }
-                } else {
-                    // O login foi por USERNAME: verificar se os múltiplos registros pertencem à
-                    // MESMA pessoa (mesmo e-mail)
-                    long totalEmailsDistintos = matchingPassword.stream()
-                            .map(User::getEmail)
-                            .filter(java.util.Objects::nonNull)
-                            .distinct()
-                            .count();
-
-                    if (totalEmailsDistintos > 1) {
-                        // Segurança Crítica (Anti-Cross-Tenant Leak): Pessoas diferentes possuem o
-                        // mesmo username e mesma senha!
-                        throw new BadCredentialsException(
-                                "Existe mais de um estabelecimento com este nome de usuário. " +
-                                        "Por favor, utilize o seu E-MAIL pessoal para acessar ou utilize o link exclusivo do seu salão.");
                     }
                 }
 
-                // Usuário legítimo com múltiplos salões autorizados
-                List<com.beautysalon.DTO.TenantCandidateDTO> candidatesDTO = matchingPassword.stream()
+                // Usuário legítimo com múltiplos salões autorizados (mesmo usuário/senha em estabelecimentos distintos)
+                List<com.beautysalon.DTO.TenantCandidateDTO> candidatesDTO = activeCandidates.stream()
                         .map(u -> com.beautysalon.DTO.TenantCandidateDTO.builder()
                                 .userId(u.getId())
                                 .empresaId(u.getEmpresa() != null ? u.getEmpresa().getId() : null)

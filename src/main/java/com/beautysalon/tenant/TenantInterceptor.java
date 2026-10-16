@@ -99,6 +99,7 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setStatusAssinatura(empresa.getStatusAssinatura() != null ? empresa.getStatusAssinatura() : com.beautysalon.model.StatusAssinatura.TRIAL);
         TenantContext.setDiasRestantesTrial(empresa.getDiasRestantesTrial());
         TenantContext.setTrialAtivo(empresa.isTrialAtivo());
+        TenantContext.setLogoUrl(empresa.getLogoUrl());
 
         log.debug("Tenant definido: {} (id={}, nome={}, segmento={}, plano={}, status={})", 
                 slug, empresa.getId(), empresa.getNome(), empresa.getSegmento(), empresa.getPlano(), empresa.getStatusAssinatura());
@@ -119,6 +120,7 @@ public class TenantInterceptor implements HandlerInterceptor {
             if (!isRedirect) {
                 modelAndView.addObject("empresaSlug", TenantContext.getSlug());
                 modelAndView.addObject("empresaNome", TenantContext.getNome());
+                modelAndView.addObject("empresaLogo", TenantContext.getLogoUrl());
                 modelAndView.addObject("empresaSegmento", TenantContext.getSegmento());
                 modelAndView.addObject("empresaPlano", TenantContext.getPlano());
                 modelAndView.addObject("empresaStatusAssinatura", TenantContext.getStatusAssinatura());

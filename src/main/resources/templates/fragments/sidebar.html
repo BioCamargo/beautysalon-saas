@@ -10,11 +10,14 @@
         <div class="sidebar-header">
             <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}"
                 style="text-align: center; display: block; text-decoration: none;">
-                <img th:src="@{/images/logo.jpg}" alt="Beauty Salon Studio" class="sidebar-logo-img"
+                <img th:src="${empresaLogo != null and !empresaLogo.isEmpty() ? empresaLogo : '/images/logo.jpg'}" 
+                    th:alt="${empresaNome != null ? empresaNome : 'Beauty Salon Studio'}" 
+                    class="sidebar-logo-img"
+                    style="max-height: 48px; width: auto; object-fit: contain; margin: 0 auto 0.4rem; display: block;"
                     onerror="this.style.display='none'; document.getElementById('fallbackLogo').style.display='block';" />
-                <div id="fallbackLogo" style="display: none;">
-                    <div class="sidebar-brand-name">BEAUTY SALON</div>
-                    <div class="sidebar-brand-tag" th:text="${empresaNome != null ? empresaNome : 'STUDIO & ESTÉTICA'}">
+                <div id="fallbackLogo" th:style="${empresaLogo != null and !empresaLogo.isEmpty()} ? 'display: none;' : 'display: block;'">
+                    <div class="sidebar-brand-name" th:text="${empresaNome != null ? empresaNome : 'BEAUTY SALON'}">BEAUTY SALON</div>
+                    <div class="sidebar-brand-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'STUDIO & ESTÉTICA'}">
                         STUDIO & ESTÉTICA</div>
                 </div>
             </a>

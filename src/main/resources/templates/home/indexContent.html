@@ -16,126 +16,94 @@
             <!-- BANNER DE BOAS-VINDAS & APRESENTAÇÃO -->
             <div th:replace="~{home/welcome :: welcome}"></div>
 
-            <!-- CARDS DE METRICAS / KPIS INTELIGENTES -->
-            <div class="stat-grid">
+            <!-- CARDS DE MÉTRICAS / KPIS INTELIGENTES (LUMORA LUXURY METRICS) -->
+            <div class="stat-grid mb-4">
                 <!-- CARD CAIXA / FATURAMENTO -->
-                <a th:href="@{/{slug}/financeiro(slug=${empresaSlug})}" class="stat-card">
+                <a th:href="@{/{slug}/financeiro(slug=${empresaSlug})}" class="stat-card glass-card-lux" style="text-decoration: none;">
                     <div class="stat-info">
-                        <span class="stat-label">Fluxo de Caixa</span>
-                        <span class="stat-value" th:text="${caixaAberto != null ? 'Caixa Aberto' : 'Caixa Fechado'}">Caixa</span>
-                        <span class="stat-desc" th:if="${caixaAberto != null}">
-                            <i class="bi bi-circle-fill text-success" style="font-size: 0.6rem;"></i> Aberto hoje
+                        <span class="stat-label text-muted" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Fluxo de Caixa</span>
+                        <div class="stat-value fw-bold" style="font-size: 1.45rem; color: var(--text-main); margin: 0.35rem 0;" th:text="${caixaAberto != null ? 'Caixa Aberto' : 'Caixa Fechado'}">Caixa</div>
+                        <span class="stat-desc" th:if="${caixaAberto != null}" style="font-size: 0.82rem; color: #10b981; font-weight: 600;">
+                            <i class="bi bi-check-circle-fill"></i> Operando normalmente
                         </span>
-                        <span class="stat-desc" th:if="${caixaAberto == null}">
-                            <i class="bi bi-circle-fill text-danger" style="font-size: 0.6rem;"></i> Clique p/ abrir
+                        <span class="stat-desc" th:if="${caixaAberto == null}" style="font-size: 0.82rem; color: #ef4444; font-weight: 600;">
+                            <i class="bi bi-lock-fill"></i> Clique para abrir o caixa
                         </span>
                     </div>
-                    <div class="stat-icon-box stat-icon-gold">
-                        <i class="bi bi-cash-coin"></i>
+                    <div class="stat-icon-box" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(212, 175, 55, 0.12); color: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                        <i class="bi bi-wallet2"></i>
                     </div>
                 </a>
 
                 <!-- CARD AGENDAMENTOS HOJE -->
-                <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug})}" class="stat-card">
+                <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug})}" class="stat-card glass-card-lux" style="text-decoration: none;">
                     <div class="stat-info">
-                        <span class="stat-label">Atendimentos Hoje</span>
-                        <span class="stat-value" th:text="${agendamentosHoje != null ? agendamentosHoje : 0}">0</span>
-                        <span class="stat-desc"><i class="bi bi-calendar-check text-primary"></i> Na agenda de hoje</span>
+                        <span class="stat-label text-muted" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Atendimentos Hoje</span>
+                        <div class="stat-value fw-bold" style="font-size: 1.45rem; color: var(--text-main); margin: 0.35rem 0;" th:text="${agendamentosHoje != null ? agendamentosHoje : 0}">0</div>
+                        <span class="stat-desc" style="font-size: 0.82rem; color: var(--text-secondary);">
+                            <i class="bi bi-calendar-check text-warning"></i> Confirmados na agenda
+                        </span>
                     </div>
-                    <div class="stat-icon-box stat-icon-blue">
-                        <i class="bi bi-calendar3"></i>
+                    <div class="stat-icon-box" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(212, 175, 55, 0.12); color: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                        <i class="bi bi-calendar-event"></i>
                     </div>
                 </a>
 
                 <!-- CARD ESTOQUE & CAPITAL PARADO -->
-                <a th:href="@{/{slug}/estoque(slug=${empresaSlug})}" class="stat-card">
+                <a th:href="@{/{slug}/estoque(slug=${empresaSlug})}" class="stat-card glass-card-lux" style="text-decoration: none;">
                     <div class="stat-info">
-                        <span class="stat-label">Capital em Estoque</span>
-                        <span class="stat-value" th:text="'R$ ' + ${valorParadoEstoque != null ? #numbers.formatDecimal(valorParadoEstoque, 1, 2, 'COMMA') : '0,00'}">R$ 0,00</span>
-                        <span class="stat-desc">
-                            <i class="bi bi-exclamation-triangle-fill text-danger" th:if="${qtdEstoqueBaixo > 0}"></i>
-                            <span th:text="${qtdEstoqueBaixo + ' itens em estoque baixo'}">0 itens baixos</span>
+                        <span class="stat-label text-muted" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Capital em Estoque</span>
+                        <div class="stat-value fw-bold" style="font-size: 1.45rem; color: var(--text-main); margin: 0.35rem 0;" th:text="'R$ ' + ${valorParadoEstoque != null ? #numbers.formatDecimal(valorParadoEstoque, 1, 2, 'COMMA') : '0,00'}">R$ 0,00</div>
+                        <span class="stat-desc" th:if="${qtdEstoqueBaixo > 0}" style="font-size: 0.82rem; color: #ef4444; font-weight: 600;">
+                            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${qtdEstoqueBaixo + ' itens em baixa'}">0 itens</span>
+                        </span>
+                        <span class="stat-desc" th:if="${qtdEstoqueBaixo == 0}" style="font-size: 0.82rem; color: #10b981; font-weight: 600;">
+                            <i class="bi bi-check-all"></i> Níveis adequados
                         </span>
                     </div>
-                    <div class="stat-icon-box stat-icon-emerald">
-                        <i class="bi bi-box-seam-fill"></i>
+                    <div class="stat-icon-box" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(212, 175, 55, 0.12); color: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                        <i class="bi bi-box-seam"></i>
                     </div>
                 </a>
 
-                <!-- CARD CLIENTES & FIDELIZAÇÃO -->
-                <a th:href="@{/{slug}/fidelizacao(slug=${empresaSlug})}" class="stat-card">
+                <!-- CARD CLIENTES & CRM -->
+                <a th:href="@{/{slug}/fidelizacao(slug=${empresaSlug})}" class="stat-card glass-card-lux" style="text-decoration: none;">
                     <div class="stat-info">
-                        <span class="stat-label">CRM & Fidelização</span>
-                        <span class="stat-value" th:text="${totalClientes != null ? totalClientes : 0}">0</span>
-                        <span class="stat-desc">
-                            <i class="bi bi-gift-fill text-warning"></i>
+                        <span class="stat-label text-muted" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Base de Clientes</span>
+                        <div class="stat-value fw-bold" style="font-size: 1.45rem; color: var(--text-main); margin: 0.35rem 0;" th:text="${totalClientes != null ? totalClientes : 0}">0</div>
+                        <span class="stat-desc" style="font-size: 0.82rem; color: var(--text-secondary);">
+                            <i class="bi bi-gift text-warning"></i>
                             <span th:text="${(aniversariantesMes != null ? aniversariantesMes.size() : 0) + ' aniversariantes no mês'}">0 aniversariantes</span>
                         </span>
                     </div>
-                    <div class="stat-icon-box stat-icon-purple">
-                        <i class="bi bi-heart-fill"></i>
+                    <div class="stat-icon-box" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(212, 175, 55, 0.12); color: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                        <i class="bi bi-people"></i>
                     </div>
                 </a>
             </div>
 
-            <!-- GRÁFICOS VISUAIS INTERATIVOS (CHART.JS) -->
-            <div class="row g-4 mb-4">
-                <!-- GRÁFICO 1: EVOLUÇÃO DO FATURAMENTO (ÚLTIMOS 7 DIAS) -->
-                <div class="col-lg-7">
-                    <div class="content-card h-100">
-                        <div class="card-header-custom d-flex justify-content-between align-items-center">
-                            <h3 class="card-title-custom">
-                                <i class="bi bi-graph-up-arrow text-success"></i>
-                                <span>Faturamento Recente (Últimos 7 dias)</span>
-                            </h3>
-                            <span class="badge bg-success">Em tempo real</span>
-                        </div>
-                        <div class="p-3">
-                            <canvas id="faturamentoChart" height="130"></canvas>
-                        </div>
+            <!-- AÇÕES RÁPIDAS COM HIERARQUIA CLARA (1 BOTÃO PRIMÁRIO) -->
+            <div class="glass-card-lux mb-4" style="padding: 1.25rem 1.75rem;">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold" style="font-size: 0.95rem; color: var(--text-main);">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Ações Rápidas:
+                        </span>
+                        <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn-gold-action">
+                            <i class="bi bi-calendar-plus"></i> Novo Horário
+                        </a>
                     </div>
-                </div>
-
-                <!-- GRÁFICO 2: TOP SERVIÇOS & PRODUTOS MAIS VENDIDOS -->
-                <div class="col-lg-5">
-                    <div class="content-card h-100">
-                        <div class="card-header-custom d-flex justify-content-between align-items-center">
-                            <h3 class="card-title-custom">
-                                <i class="bi bi-pie-chart-fill text-primary"></i>
-                                <span>Top 5 Mais Vendidos</span>
-                            </h3>
-                            <span class="badge" style="background-color: var(--accent-gold); color: #000;">Ranking</span>
-                        </div>
-                        <div class="p-3 d-flex align-items-center justify-content-center">
-                            <div style="max-height: 220px; width: 100%;">
-                                <canvas id="topItensChart"></canvas>
-                            </div>
-                        </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn-ghost-lux">
+                            <i class="bi bi-person-plus"></i> Novo Cliente
+                        </a>
+                        <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn-ghost-lux">
+                            <i class="bi bi-scissors"></i> Novo Serviço
+                        </a>
+                        <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug})}" class="btn-ghost-lux">
+                            <i class="bi bi-calendar3"></i> Abrir Grade
+                        </a>
                     </div>
-                </div>
-            </div>
-
-            <!-- ATALHOS RÁPIDOS -->
-            <div class="content-card mb-4">
-                <div class="card-header-custom">
-                    <h3 class="card-title-custom">
-                        <i class="bi bi-lightning-charge-fill text-warning"></i>
-                        <span>Ações Rápidas do Studio</span>
-                    </h3>
-                </div>
-                <div class="p-3 d-flex flex-wrap gap-2">
-                    <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold">
-                        <i class="bi bi-calendar-plus"></i> Novo Agendamento
-                    </a>
-                    <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn btn-secondary">
-                        <i class="bi bi-person-plus"></i> Cadastrar Cliente
-                    </a>
-                    <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn btn-secondary">
-                        <i class="bi bi-scissors"></i> Novo Serviço
-                    </a>
-                    <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug})}" class="btn btn-primary ms-auto">
-                        <i class="bi bi-calendar3"></i> Abrir Agenda Completa
-                    </a>
                 </div>
             </div>
 
@@ -219,12 +187,19 @@
                             </td>
                         </tr>
                         <tr th:if="${listaAgendamentosHoje == null or #lists.isEmpty(listaAgendamentosHoje)}">
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                <i class="bi bi-calendar-check" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--accent-gold);"></i>
-                                Não há atendimentos agendados para o dia de hoje.<br>
-                                <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
-                                    <i class="bi bi-plus-lg"></i> Agendar Novo Horário
-                                </a>
+                            <td colspan="7" class="p-0 border-0">
+                                <div class="empty-state-lux">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </div>
+                                    <div class="empty-state-title">Nenhum atendimento na agenda de hoje</div>
+                                    <div class="empty-state-desc">
+                                        Seus horários para hoje estão livres. Que tal agendar um novo cliente ou convidar clientes fiéis pelo WhatsApp?
+                                    </div>
+                                    <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn-gold-action">
+                                        <i class="bi bi-calendar-plus"></i> Agendar Novo Horário
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
@@ -238,7 +213,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
-        // 1. Gráfico de Faturamento
+        // 1. Gráfico de Faturamento com visual aveludado e suave
         const faturamentoLabels = /*[[${diasLabels}]]*/ ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
         const faturamentoData = /*[[${faturamentoDias}]]*/ [0, 0, 0, 0, 0, 0, 0];
 
@@ -251,23 +226,37 @@
                     datasets: [{
                         label: 'Faturamento (R$)',
                         data: faturamentoData,
-                        borderColor: '#c5a059',
-                        backgroundColor: 'rgba(197, 160, 89, 0.1)',
-                        borderWidth: 3,
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                        borderWidth: 2.5,
                         fill: true,
-                        tension: 0.35,
+                        tension: 0.4,
                         pointRadius: 4,
-                        pointBackgroundColor: '#b08d46'
+                        pointBackgroundColor: '#d4af37',
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#111827',
+                            titleColor: '#f4e8c1',
+                            bodyColor: '#ffffff',
+                            padding: 10,
+                            cornerRadius: 8,
+                            borderColor: 'rgba(212, 175, 55, 0.3)',
+                            borderWidth: 1
+                        }
                     },
                     scales: {
+                        x: {
+                            grid: { display: false }
+                        },
                         y: {
                             beginAtZero: true,
+                            grid: { color: 'rgba(0, 0, 0, 0.04)' },
                             ticks: {
                                 callback: function(value) { return 'R$ ' + value; }
                             }

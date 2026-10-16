@@ -28,19 +28,22 @@ public class AgendamentoController {
     private final com.beautysalon.repository.UserRepository userRepository;
     private final com.beautysalon.repository.AgendamentoRepository agendamentoRepository;
     private final com.beautysalon.service.FinanceiroService financeiroService;
+    private final com.beautysalon.service.ProfissionalService profissionalService;
 
     public AgendamentoController(AgendamentoService agendamentoService,
                                  ClienteService clienteService,
                                  ServicoService servicoService,
                                  com.beautysalon.repository.UserRepository userRepository,
                                  com.beautysalon.repository.AgendamentoRepository agendamentoRepository,
-                                 com.beautysalon.service.FinanceiroService financeiroService) {
+                                 com.beautysalon.service.FinanceiroService financeiroService,
+                                 com.beautysalon.service.ProfissionalService profissionalService) {
         this.agendamentoService = agendamentoService;
         this.clienteService = clienteService;
         this.servicoService = servicoService;
         this.userRepository = userRepository;
         this.agendamentoRepository = agendamentoRepository;
         this.financeiroService = financeiroService;
+        this.profissionalService = profissionalService;
     }
 
     @GetMapping
@@ -49,6 +52,7 @@ public class AgendamentoController {
         model.addAttribute("agendamentos", agendamentos);
         model.addAttribute("servicos", servicoService.listarTodos());
         model.addAttribute("profissionais", userRepository.findAllByEmpresaIdAndAtivoTrue(com.beautysalon.tenant.TenantContext.getEmpresaId()));
+        model.addAttribute("ausencias", profissionalService.listarAusencias());
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Agendamentos");
         return "agendamentos/list";

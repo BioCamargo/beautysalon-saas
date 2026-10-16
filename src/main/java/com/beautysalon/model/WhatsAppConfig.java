@@ -61,9 +61,15 @@ public class WhatsAppConfig {
     private boolean notificarAniversario = true;
 
     // --- TEMPLATES CUSTOMIZADOS (Opcional) ---
-    @Column(length = 1000)
+    @Column(name = "mensagem_agendamento_custom", length = 1000)
     private String mensagemAgendamentoCustom;
 
-    @Column(length = 1000)
+    @Column(name = "mensagem_lembrete_custom", length = 1000)
     private String mensagemLembreteCustom;
+
+    @Column(name = "mensagem_comanda_custom", length = 1000)
+    private String mensagemComandaCustom;
+
+    @Column(name = "mensagem_aniversario_custom", length = 1000)
+    private String mensagemAniversarioCustom;
 }

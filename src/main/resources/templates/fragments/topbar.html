@@ -21,6 +21,18 @@
         </div>
 
         <div class="topbar-right d-flex align-items-center gap-2">
+            <!-- IDENTIFICAÇÃO DO SALÃO (LOGO & NOME) -->
+            <div class="d-none d-md-flex align-items-center gap-2 px-2 py-1 rounded bg-light border me-1" 
+                 th:if="${empresaNome != null}"
+                 style="font-size: 0.82rem; font-weight: 600; color: #334155;">
+                <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" 
+                     th:src="${empresaLogo}" 
+                     alt="Logo" 
+                     style="height: 22px; width: 22px; object-fit: contain; border-radius: 4px;" />
+                <i th:if="${empresaLogo == null or empresaLogo.isEmpty()}" class="bi bi-shop text-muted"></i>
+                <span th:text="${empresaNome}">Studio Lumora VIP</span>
+            </div>
+
             <!-- BADGE DE STATUS DE ASSINATURA / TRIAL -->
             <!-- 1. Período de Testes Ativo -->
             <button type="button" class="btn-trial-badge" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
@@ -200,7 +212,53 @@
             </div>
         </div>
 
+        <!-- MODAL GLOBAL DE CONFIRMAÇÃO ELEGANTE & LUXO (Substitui confirm() nativo do navegador) -->
+        <div class="modal fade" id="luxConfirmModal" tabindex="-1" aria-labelledby="luxConfirmTitle" aria-hidden="true" style="z-index: 1060;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 420px; z-index: 1065; position: relative;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); position: relative; z-index: 1070;">
+                    <div class="modal-body p-4 text-center">
+                        <div id="luxConfirmIconContainer" class="d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.12); color: #dc2626; font-size: 1.85rem; transition: all 0.3s ease;">
+                            <i id="luxConfirmIcon" class="bi bi-trash3-fill"></i>
+                        </div>
+                        <h5 class="modal-title fw-bold mb-2" id="luxConfirmTitle" style="color: #0f172a; font-size: 1.2rem; letter-spacing: -0.02em;">Confirmar Exclusão</h5>
+                        <p class="text-secondary mb-4" id="luxConfirmMessage" style="font-size: 0.92rem; line-height: 1.5; color: #64748b; margin-bottom: 1.75rem;">
+                            Tem certeza que deseja prosseguir? Esta operação não poderá ser desfeita.
+                        </p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button type="button" class="btn btn-light flex-fill fw-semibold py-2" data-bs-dismiss="modal" id="luxConfirmCancelBtn" 
+                                    style="border-radius: 12px; border: 1px solid #e2e8f0; color: #475569; font-size: 0.92rem; cursor: pointer; position: relative; z-index: 1080;">
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn btn-danger flex-fill fw-semibold py-2" id="luxConfirmOkBtn" 
+                                    style="border-radius: 12px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); font-size: 0.92rem; cursor: pointer; position: relative; z-index: 1080;">
+                                Sim, Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap 5 Bundle JS garantido -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
         <script>
+            // Mover o modal imediatamente para o document.body para eliminar qualquer conflito de stacking context / z-index de containers pais
+            function relocLuxModalToBody() {
+                const m = document.getElementById('luxConfirmModal');
+                if (m && m.parentNode !== document.body) {
+                    document.body.appendChild(m);
+                }
+                return m;
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', relocLuxModalToBody);
+            } else {
+                relocLuxModalToBody();
+            }
+
             function updateLiveClock() {
                 const el = document.getElementById('topbarLiveClock');
                 if (el) {
@@ -218,6 +276,151 @@
                     sidebar.classList.toggle('show');
                 }
             }
+
+            /**
+             * Modal Global de Confirmação Sofisticado (Anti-alert / Anti-confirm)
+             */
+            window.luxConfirmAction = function(options) {
+                const config = Object.assign({
+                    title: 'Confirmar Ação',
+                    message: 'Tem certeza que deseja prosseguir?',
+                    confirmText: 'Confirmar',
+                    cancelText: 'Cancelar',
+                    type: 'danger',
+                    onConfirm: () => {}
+                }, typeof options === 'string' ? { title: options } : options);
+
+                const modalEl = relocLuxModalToBody();
+                if (!modalEl || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                    if (confirm(`${config.title}\n\n${config.message}`)) {
+                        if (typeof config.onConfirm === 'function') config.onConfirm();
+                    }
+                    return;
+                }
+
+                const titleEl = document.getElementById('luxConfirmTitle');
+                const msgEl = document.getElementById('luxConfirmMessage');
+                const okBtn = document.getElementById('luxConfirmOkBtn');
+                const cancelBtn = document.getElementById('luxConfirmCancelBtn');
+                const iconContainer = document.getElementById('luxConfirmIconContainer');
+                const iconEl = document.getElementById('luxConfirmIcon');
+
+                if (titleEl) titleEl.textContent = config.title;
+                if (msgEl) msgEl.textContent = config.message;
+                if (cancelBtn) cancelBtn.textContent = config.cancelText;
+
+                // Estilização conforme o tipo
+                if (config.type === 'danger') {
+                    if (iconContainer) {
+                        iconContainer.style.background = 'rgba(239, 68, 68, 0.12)';
+                        iconContainer.style.color = '#dc2626';
+                    }
+                    if (iconEl) iconEl.className = 'bi bi-trash3-fill';
+                    if (okBtn) {
+                        okBtn.className = 'btn btn-danger flex-fill fw-semibold py-2';
+                        okBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                        okBtn.style.boxShadow = '0 4px 12px rgba(220, 38, 38, 0.3)';
+                    }
+                } else if (config.type === 'warning') {
+                    if (iconContainer) {
+                        iconContainer.style.background = 'rgba(245, 158, 11, 0.12)';
+                        iconContainer.style.color = '#d97706';
+                    }
+                    if (iconEl) iconEl.className = 'bi bi-exclamation-triangle-fill';
+                    if (okBtn) {
+                        okBtn.className = 'btn btn-warning flex-fill fw-semibold py-2 text-dark';
+                        okBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                        okBtn.style.boxShadow = '0 4px 12px rgba(217, 119, 6, 0.3)';
+                    }
+                } else {
+                    if (iconContainer) {
+                        iconContainer.style.background = 'rgba(212, 175, 55, 0.15)';
+                        iconContainer.style.color = '#c5a059';
+                    }
+                    if (iconEl) iconEl.className = 'bi bi-question-circle-fill';
+                    if (okBtn) {
+                        okBtn.className = 'btn btn-gold-action flex-fill fw-semibold py-2';
+                        okBtn.style.background = 'linear-gradient(135deg, #c5a059 0%, #9e7d3b 100%)';
+                        okBtn.style.boxShadow = '0 4px 12px rgba(197, 160, 89, 0.3)';
+                    }
+                }
+
+                if (okBtn) okBtn.textContent = config.confirmText;
+
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+                // Clonar botão para limpar listeners anteriores
+                const newOkBtn = okBtn.cloneNode(true);
+                okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+                newOkBtn.addEventListener('click', () => {
+                    bsModal.hide();
+                    if (typeof config.onConfirm === 'function') {
+                        config.onConfirm();
+                    }
+                });
+
+                if (cancelBtn) {
+                    cancelBtn.onclick = () => bsModal.hide();
+                }
+
+                bsModal.show();
+            };
+
+            /**
+             * Atalho simplificado para exclusões e remoções seguras
+             * Suporta forms, botões dentro de forms, URLs e callbacks
+             */
+            window.luxConfirmDelete = function(target, title, message) {
+                let formToSubmit = null;
+                let urlToRedirect = null;
+                let callbackToRun = null;
+
+                if (typeof target === 'function') {
+                    callbackToRun = target;
+                } else if (typeof target === 'string') {
+                    urlToRedirect = target;
+                } else if (target && target.tagName === 'FORM') {
+                    formToSubmit = target;
+                } else if (target && target.form) {
+                    formToSubmit = target.form;
+                } else if (target && typeof target.closest === 'function') {
+                    formToSubmit = target.closest('form');
+                }
+
+                window.luxConfirmAction({
+                    title: title || 'Confirmar Exclusão',
+                    message: message || 'Deseja realmente excluir este registro? Esta ação é irreversível.',
+                    confirmText: 'Sim, Excluir',
+                    cancelText: 'Cancelar',
+                    type: 'danger',
+                    onConfirm: () => {
+                        if (callbackToRun) {
+                            callbackToRun();
+                        } else if (formToSubmit) {
+                            if (typeof HTMLFormElement.prototype.submit === 'function') {
+                                HTMLFormElement.prototype.submit.call(formToSubmit);
+                            } else {
+                                formToSubmit.submit();
+                            }
+                        } else if (urlToRedirect) {
+                            window.location.href = urlToRedirect;
+                        }
+                    }
+                });
+            };
+
+            // Compatibilidade retroativa para chamadas luxConfirm
+            window.luxConfirm = function(title, message, onConfirm) {
+                window.luxConfirmAction({
+                    title: title,
+                    message: message,
+                    confirmText: 'Confirmar',
+                    cancelText: 'Cancelar',
+                    type: 'gold',
+                    onConfirm: onConfirm
+                });
+            };
         </script>
     </header>
 

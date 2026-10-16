@@ -34,10 +34,18 @@ public class WebConfig implements WebMvcConfigurer {
                 );
     }
 
+    @org.springframework.beans.factory.annotation.Value("${upload.dir:uploads}")
+    private String uploadDir = "uploads";
+
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
+        java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir).toAbsolutePath().normalize();
+        String uploadUri = uploadPath.toUri().toString();
+        if (!uploadUri.endsWith("/")) {
+            uploadUri += "/";
+        }
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///C:/beautysalon/uploads/");
+                .addResourceLocations(uploadUri);
 
         registry.addResourceHandler("/css/**")
                 .addResourceLocations("classpath:/static/css/");

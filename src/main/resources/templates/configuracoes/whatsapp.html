@@ -45,6 +45,15 @@
             background: #fee2e2;
             color: #b91c1c;
         }
+        .cursor-pointer {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease-in-out;
+        }
+        .cursor-pointer:hover {
+            background-color: #e2e8f0 !important;
+            border-color: #94a3b8 !important;
+        }
     </style>
 </head>
 
@@ -224,6 +233,99 @@
                                             <input class="form-check-input" type="checkbox" name="notificarComandaFechada" th:checked="${config.notificarComandaFechada}">
                                         </div>
                                     </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                        <div>
+                                            <strong>Mensagem de Aniversário Automática</strong>
+                                            <div class="text-muted small">Parabeniza suas clientes no dia do aniversário com mensagem carinhosa e cupom de presente.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" name="notificarAniversario" th:checked="${config.notificarAniversario}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD: CUSTOMIZAÇÃO DE TEMPLATES & VARIÁVEIS DINÂMICAS -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom">
+                                <h4 class="card-title-custom">
+                                    <i class="bi bi-chat-text text-primary"></i>
+                                    <span>Customização de Mensagens (Templates Dinâmicos)</span>
+                                </h4>
+                            </div>
+                            <div class="p-4">
+                                <p class="text-muted small mb-3">
+                                    Personalize o texto de cada notificação. Utilize as tags dinâmicas como <code>{cliente}</code>, <code>{data}</code>, <code>{hora}</code> e <code>{servico}</code> para substituição automática.
+                                </p>
+
+                                <!-- 1. Confirmação de Agendamento -->
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold mb-0">1. Confirmação de Novo Agendamento</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('agendamento')">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
+                                        </button>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{cliente}')">{cliente}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{servico}')">{servico}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{data}')">{data}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{hora}')">{hora}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{empresa}')">{empresa}</span>
+                                    </div>
+                                    <textarea id="txtAgendamento" name="mensagemAgendamentoCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAgendamentoCustom}" placeholder="🌸 *{empresa}*&#10;&#10;Olá, *{cliente}*! ✨&#10;Seu agendamento para *{servico}* foi confirmado com sucesso!&#10;&#10;📅 *Data:* {data}&#10;⏰ *Horário:* {hora}&#10;&#10;Caso precise remarcar, entre em contato conosco. Estamos te esperando! 💕"></textarea>
+                                </div>
+
+                                <!-- 2. Lembrete de Horário -->
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold mb-0">2. Lembrete de Horário (Véspera / Dia)</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('lembrete')">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
+                                        </button>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{cliente}')">{cliente}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{servico}')">{servico}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{data}')">{data}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{hora}')">{hora}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{empresa}')">{empresa}</span>
+                                    </div>
+                                    <textarea id="txtLembrete" name="mensagemLembreteCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemLembreteCustom}" placeholder="⏰ *Lembrete de Atendimento - {empresa}*&#10;&#10;Olá, *{cliente}*! ✨&#10;Lembramos do seu horário agendado para *{data}* às *{hora}* ({servico}).&#10;&#10;Podemos confirmar sua presença? Responda com SIM. Até logo! 💕"></textarea>
+                                </div>
+
+                                <!-- 3. Recibo de Comanda Fechada -->
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold mb-0">3. Comprovante / Recibo de Comanda</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('comanda')">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
+                                        </button>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{cliente}')">{cliente}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{comanda}')">{comanda}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{total}')">{total}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{formaPagamento}')">{formaPagamento}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{empresa}')">{empresa}</span>
+                                    </div>
+                                    <textarea id="txtComanda" name="mensagemComandaCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemComandaCustom}" placeholder="🧾 *{empresa} - Comprovante de Atendimento*&#10;&#10;Olá, *{cliente}*! Segue o resumo do seu atendimento:&#10;&#10;💳 *Comanda:* {comanda}&#10;💰 *Total:* R$ {total}&#10;💳 *Forma de Pagamento:* {formaPagamento}&#10;&#10;Muito obrigado pela sua visita! Volte sempre! ✨"></textarea>
+                                </div>
+
+                                <!-- 4. Mensagem de Aniversário -->
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold mb-0">4. Parabéns de Aniversário</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('aniversario')">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
+                                        </button>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('aniversario', '{cliente}')">{cliente}</span>
+                                        <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('aniversario', '{empresa}')">{empresa}</span>
+                                    </div>
+                                    <textarea id="txtAniversario" name="mensagemAniversarioCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAniversarioCustom}" placeholder="🎂 *Parabéns, {cliente}!* 🎉&#10;&#10;A equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -256,6 +358,9 @@
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-send-fill"></i> Disparar Mensagem de Teste
                                 </button>
+                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+                                    <i class="bi bi-lightbulb text-warning"></i> <strong>Importante:</strong> Clique em <em>"Salvar Configurações"</em> ao lado antes de disparar o teste para gravar suas credenciais e templates.
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -310,6 +415,33 @@
         }
     }
     toggleProviderFields();
+
+    function inserirTag(tipo, tag) {
+        let textareaId = 'txt' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        let textarea = document.getElementById(textareaId);
+        if (textarea) {
+            let start = textarea.selectionStart || textarea.value.length;
+            let end = textarea.selectionEnd || textarea.value.length;
+            let text = textarea.value;
+            textarea.value = text.substring(0, start) + tag + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+        }
+    }
+
+    function restaurarPadrao(tipo) {
+        const padroes = {
+            agendamento: "🌸 *{empresa}*\n\nOlá, *{cliente}*! ✨\nSeu agendamento para *{servico}* foi confirmado com sucesso!\n\n📅 *Data:* {data}\n⏰ *Horário:* {hora}\n\nCaso precise remarcar, entre em contato conosco. Estamos te esperando! 💕",
+            lembrete: "⏰ *Lembrete de Atendimento - {empresa}*\n\nOlá, *{cliente}*! ✨\nLembramos do seu horário agendado para *{data}* às *{hora}* ({servico}).\n\nPodemos confirmar sua presença? Responda com SIM. Até logo! 💕",
+            comanda: "🧾 *{empresa} - Comprovante de Atendimento*\n\nOlá, *{cliente}*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* {comanda}\n💰 *Total:* R$ {total}\n💳 *Forma de Pagamento:* {formaPagamento}\n\nMuito obrigado pela sua visita! Volte sempre! ✨",
+            aniversario: "🎂 *Parabéns, {cliente}!* 🎉\n\nA equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"
+        };
+        let textareaId = 'txt' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        let textarea = document.getElementById(textareaId);
+        if (textarea && padroes[tipo]) {
+            textarea.value = padroes[tipo];
+        }
+    }
 </script>
 
 </body>

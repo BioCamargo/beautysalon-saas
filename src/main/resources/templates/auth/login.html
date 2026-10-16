@@ -15,21 +15,19 @@
 <div class="auth-card-modern">
     <!-- CABEÇALHO DO CARD -->
     <div class="auth-header">
-        <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" 
-             th:src="${empresaLogo}" 
-             alt="Logo Salão" 
-             class="auth-logo-img"
-             onerror="this.style.display='none'; document.getElementById('authBrandFallback').style.display='block';" />
-        <img th:if="${empresaLogo == null or empresaLogo.isEmpty()}" 
-             th:src="@{/images/logo.jpg}" 
-             alt="Beauty Salon Studio" 
-             class="auth-logo-img"
-             onerror="this.style.display='none'; document.getElementById('authBrandFallback').style.display='block';" />
-        
-        <div id="authBrandFallback" style="display: none; margin-bottom: 1rem;">
-            <div class="auth-title-brand" th:text="${empresaNome} ?: 'BEAUTY SALON'">BEAUTY SALON</div>
+        <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}">
+            <img th:src="${empresaLogo}" alt="Logo Salão" class="auth-logo-img" />
         </div>
-        <div class="auth-subtitle-brand" th:text="${empresaNome != null ? 'Portal de Acesso — ' + empresaNome : 'Sistema de Gestão do Estúdio'}">Sistema de Gestão do Estúdio</div>
+        <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.75rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(197, 160, 89, 0.05) 100%); border: 1.5px solid #d4af37; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 8V16H15" stroke="#b8860b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        <div class="auth-title-brand" th:text="${empresaNome} ?: 'LUMORA STUDIO'">LUMORA STUDIO</div>
+        <div class="auth-subtitle-brand" th:text="${empresaNome != null ? 'Portal Exclusivo — ' + empresaNome : 'Sistema de Gestão & Agendamento'}">Sistema de Gestão & Agendamento</div>
     </div>
 
     <!-- IDENTIFICAÇÃO DO TENANT QUANDO ACESSADO VIA /{slug}/login -->
@@ -49,7 +47,7 @@
     <!-- MENSAGENS DE ALERTA -->
     <div th:if="${param.error}" class="auth-alert auth-alert-error">
         <i class="bi bi-exclamation-triangle-fill"></i>
-        <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null and session.SPRING_SECURITY_LAST_EXCEPTION.message != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Usuário ou senha inválidos. Tente novamente.'}">Usuário ou senha inválidos. Tente novamente.</span>
+        <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null and session.SPRING_SECURITY_LAST_EXCEPTION.message != null and session.SPRING_SECURITY_LAST_EXCEPTION.message != 'Bad credentials' ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Usuário ou senha inválidos. Tente novamente.'}">Usuário ou senha inválidos. Tente novamente.</span>
     </div>
 
     <div th:if="${param.registered}" class="auth-alert auth-alert-success">

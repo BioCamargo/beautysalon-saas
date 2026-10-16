@@ -74,6 +74,12 @@ public class WhatsAppService {
         config.setNotificarComandaFechada(formConfig.isNotificarComandaFechada());
         config.setNotificarAniversario(formConfig.isNotificarAniversario());
 
+        // Templates Customizados
+        config.setMensagemAgendamentoCustom(formConfig.getMensagemAgendamentoCustom());
+        config.setMensagemLembreteCustom(formConfig.getMensagemLembreteCustom());
+        config.setMensagemComandaCustom(formConfig.getMensagemComandaCustom());
+        config.setMensagemAniversarioCustom(formConfig.getMensagemAniversarioCustom());
+
         return configRepository.save(config);
     }
 
@@ -100,14 +106,24 @@ public class WhatsAppService {
         String dataFormatada = agendamento.getDataHora().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String horaFormatada = agendamento.getDataHora().format(DateTimeFormatter.ofPattern("HH:mm"));
 
-        String mensagem = String.format(
-                "🌸 *%s*\n\nOlá, *%s*! ✨\nSeu agendamento para *%s* foi confirmado com sucesso!\n\n📅 *Data:* %s\n⏰ *Horário:* %s\n\nCaso precise remarcar, entre em contato conosco. Estamos te esperando! 💕",
-                empresaNome,
-                agendamento.getCliente().getNome(),
-                servicoNome,
-                dataFormatada,
-                horaFormatada
-        );
+        String mensagem;
+        if (config.getMensagemAgendamentoCustom() != null && !config.getMensagemAgendamentoCustom().isBlank()) {
+            mensagem = config.getMensagemAgendamentoCustom()
+                    .replace("{empresa}", empresaNome)
+                    .replace("{cliente}", agendamento.getCliente().getNome())
+                    .replace("{servico}", servicoNome)
+                    .replace("{data}", dataFormatada)
+                    .replace("{hora}", horaFormatada);
+        } else {
+            mensagem = String.format(
+                    "🌸 *%s*\n\nOlá, *%s*! ✨\nSeu agendamento para *%s* foi confirmado com sucesso!\n\n📅 *Data:* %s\n⏰ *Horário:* %s\n\nCaso precise remarcar, entre em contato conosco. Estamos te esperando! 💕",
+                    empresaNome,
+                    agendamento.getCliente().getNome(),
+                    servicoNome,
+                    dataFormatada,
+                    horaFormatada
+            );
+        }
 
         return enviarMensagemTexto(config, agendamento.getCliente().getTelefone(), mensagem);
     }
@@ -132,14 +148,24 @@ public class WhatsAppService {
         String empresaNome = comanda.getEmpresa() != null ? comanda.getEmpresa().getNome() : "Studio";
         String totalFormatado = String.format("%.2f", comanda.getValorTotal() != null ? comanda.getValorTotal() : java.math.BigDecimal.ZERO);
 
-        String mensagem = String.format(
-                "🧾 *%s - Comprovante de Atendimento*\n\nOlá, *%s*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* %s\n💰 *Total:* R$ %s\n💳 *Forma de Pagamento:* %s\n\nMuito obrigado pela sua visita! Volte sempre! ✨",
-                empresaNome,
-                comanda.getCliente().getNome(),
-                comanda.getNumeroComanda(),
-                totalFormatado,
-                comanda.getFormaPagamento() != null ? comanda.getFormaPagamento() : "PAGO"
-        );
+        String mensagem;
+        if (config.getMensagemComandaCustom() != null && !config.getMensagemComandaCustom().isBlank()) {
+            mensagem = config.getMensagemComandaCustom()
+                    .replace("{empresa}", empresaNome)
+                    .replace("{cliente}", comanda.getCliente().getNome())
+                    .replace("{comanda}", comanda.getNumeroComanda())
+                    .replace("{total}", totalFormatado)
+                    .replace("{formaPagamento}", comanda.getFormaPagamento() != null ? comanda.getFormaPagamento() : "PAGO");
+        } else {
+            mensagem = String.format(
+                    "🧾 *%s - Comprovante de Atendimento*\n\nOlá, *%s*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* %s\n💰 *Total:* R$ %s\n💳 *Forma de Pagamento:* %s\n\nMuito obrigado pela sua visita! Volte sempre! ✨",
+                    empresaNome,
+                    comanda.getCliente().getNome(),
+                    comanda.getNumeroComanda(),
+                    totalFormatado,
+                    comanda.getFormaPagamento() != null ? comanda.getFormaPagamento() : "PAGO"
+            );
+        }
 
         return enviarMensagemTexto(config, comanda.getCliente().getTelefone(), mensagem);
     }

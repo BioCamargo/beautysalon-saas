@@ -142,7 +142,7 @@
 
                                     <!-- EXCLUIR -->
                                     <a class="btn-icon delete" th:href="@{/{slug}/clientes/delete/{id}(slug=${empresaSlug}, id=${c.id})}"
-                                       onclick="return confirm('Deseja realmente remover este cliente do sistema?');" title="Excluir Cliente">
+                                       onclick="luxConfirmDelete(this.href, 'Excluir Cliente', 'Deseja realmente remover este cliente do sistema?'); return false;" title="Excluir Cliente">
                                         <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>

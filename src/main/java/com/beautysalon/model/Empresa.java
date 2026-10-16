@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -41,11 +42,16 @@ public class Empresa {
 
     private String email;
 
+    @Column(name = "logo_url", columnDefinition = "TEXT")
     private String logoUrl;
 
     private String chavePix; // CPF, CNPJ, Telefone, E-mail ou Aleatória
 
     private String cidade; // Cidade para geração do BR Code Pix
+
+    @Column(name = "taxa_cartao_estimada", precision = 5, scale = 2)
+    @Builder.Default
+    private BigDecimal taxaCartaoEstimada = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "segmento", length = 50)

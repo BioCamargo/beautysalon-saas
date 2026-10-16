@@ -25,24 +25,27 @@
     <header class="lp-navbar">
         <div class="lp-navbar-container">
             <a th:href="@{/}" class="lp-brand">
-                <img th:src="@{/images/logo.jpg}" alt="Lumora Studio" class="lp-brand-logo"
-                     onerror="this.style.display='none'; document.getElementById('navBrandFallback').style.display='inline-flex';" />
-                <div id="navBrandFallback" style="display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--lp-gold); color: var(--lp-gold);">
-                    <i class="bi bi-gem"></i>
+                <div class="lp-brand-emblem">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 8V16H15" stroke="#f4e8c1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
                 <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
             </a>
 
             <ul class="lp-nav-links">
                 <li><a href="#recursos">Recursos</a></li>
-                <li><a href="#diferenciais">Por que o Lumora?</a></li>
-                <li><a href="#precos">Planos & Preços</a></li>
-                <li><a href="#depoimentos">Depoimentos</a></li>
-                <li><a href="#faq">Dúvidas Frequentes</a></li>
+                <li><a href="#diferenciais">Diferenciais</a></li>
+                <li><a href="#precos">Planos</a></li>
+                <li><a href="#faq">FAQ</a></li>
             </ul>
 
             <div class="lp-nav-actions">
-                <a th:href="@{/login}" class="lp-btn-login">Entrar</a>
+                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()" title="Acessar o link exclusivo do seu salão">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Já sou cliente</span>
+                </button>
                 <a th:href="@{/register}" class="lp-btn-primary">
                     <span>Experimente Grátis</span>
                     <i class="bi bi-arrow-right"></i>
@@ -83,30 +86,8 @@
             <span><i class="bi bi-check-circle-fill"></i> Setup automático em 2 minutos</span>
         </div>
 
-        <!-- MOCKUP VISUAL INTERATIVO DO PRODUTO -->
+        <!-- MOCKUP VISUAL INTERATIVO DO PRODUTO (LIMPO & SEM ELEMENTOS POLUÍDOS SOBREPOSTOS) -->
         <div class="lp-mockup-wrapper">
-            <!-- Badge Flutuante 1 (WhatsApp) -->
-            <div class="lp-floating-badge lp-float-left">
-                <div class="lp-badge-icon lp-icon-wa">
-                    <i class="bi bi-whatsapp"></i>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">WhatsApp Automático</div>
-                    <div style="font-size: 0.9rem; font-weight: 700; color: #ffffff;">Lembrete enviado (Faltas -70%)</div>
-                </div>
-            </div>
-
-            <!-- Badge Flutuante 2 (Caixa / Faturamento) -->
-            <div class="lp-floating-badge lp-float-right">
-                <div class="lp-badge-icon lp-icon-cash">
-                    <i class="bi bi-cash-stack"></i>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">DRE em Tempo Real</div>
-                    <div style="font-size: 0.9rem; font-weight: 700; color: var(--lp-gold-light);">Comissões & DRE Calculados</div>
-                </div>
-            </div>
-
             <div class="lp-mockup-frame">
                 <div class="lp-mockup-topbar">
                     <span class="lp-mockup-dot lp-dot-red"></span>
@@ -170,6 +151,39 @@
                             </div>
                             <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Pronto para colocar na Bio do Instagram</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAIXA DE DESTAQUES SIMÉTRICA (ALINHADA & SEM TAPAR O SISTEMA) -->
+            <div class="lp-spotlight-strip">
+                <div class="lp-spotlight-card">
+                    <div class="lp-spotlight-icon lp-icon-wa">
+                        <i class="bi bi-whatsapp"></i>
+                    </div>
+                    <div>
+                        <div class="lp-spotlight-label">WhatsApp Inteligente</div>
+                        <div class="lp-spotlight-value">Reduz faltas em até 70%</div>
+                    </div>
+                </div>
+
+                <div class="lp-spotlight-card">
+                    <div class="lp-spotlight-icon lp-icon-cash">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div>
+                        <div class="lp-spotlight-label">DRE & Comissões</div>
+                        <div class="lp-spotlight-value">Rateio exato no centavo</div>
+                    </div>
+                </div>
+
+                <div class="lp-spotlight-card">
+                    <div class="lp-spotlight-icon lp-icon-link">
+                        <i class="bi bi-link-45deg"></i>
+                    </div>
+                    <div>
+                        <div class="lp-spotlight-label">Link Exclusivo na Bio</div>
+                        <div class="lp-spotlight-value">Agendamento 24/7 direto</div>
                     </div>
                 </div>
             </div>
@@ -595,8 +609,115 @@
         </div>
     </footer>
 
+    <!-- MODAL PARA LOCALIZAR STUDIO / LINK EXCLUSIVO (ZERO POLUIÇÃO DE LOGIN) -->
+    <div class="lp-modal-backdrop" id="modalFindStudio" onclick="if(event.target === this) closeFindStudioModal();">
+        <div class="lp-modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(212, 175, 55, 0.15); color: var(--lp-gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar meu Studio</h3>
+                </div>
+                <button type="button" onclick="closeFindStudioModal()" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.25rem;">
+                Cada salão possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar seu estúdio:
+            </p>
+
+            <form onsubmit="handleFindStudio(event)">
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">E-mail do Proprietário ou Salão:</label>
+                    <div style="position: relative;">
+                        <i class="bi bi-envelope" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                        <input type="email" id="inputFindEmail" placeholder="seuemail@exemplo.com" required
+                               style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.7rem 0.85rem 0.7rem 2.4rem; color: #ffffff; font-size: 0.95rem; outline: none;" />
+                    </div>
+                </div>
+
+                <button type="submit" id="btnFindStudioSubmit" class="lp-btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
+                    <span>Localizar meu Studio</span>
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+
+            <div id="findStudioResult" style="margin-top: 1.25rem; display: none;"></div>
+
+            <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
+                <span style="font-size: 0.82rem; color: #64748b;">Ainda não tem conta no Lumora?</span><br>
+                <a th:href="@{/register}" style="font-size: 0.85rem; color: var(--lp-gold-light); font-weight: 700; text-decoration: none;">
+                    Criar meu Studio grátis (7 dias de teste) &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT DA LANDING PAGE -->
     <script>
+        // Modal de Localização do Studio
+        function openFindStudioModal() {
+            document.getElementById('modalFindStudio').style.display = 'flex';
+            setTimeout(() => document.getElementById('inputFindEmail').focus(), 100);
+        }
+
+        function closeFindStudioModal() {
+            document.getElementById('modalFindStudio').style.display = 'none';
+            document.getElementById('findStudioResult').style.display = 'none';
+        }
+
+        async function handleFindStudio(e) {
+            e.preventDefault();
+            const email = document.getElementById('inputFindEmail').value.trim();
+            const resultBox = document.getElementById('findStudioResult');
+            const submitBtn = document.getElementById('btnFindStudioSubmit');
+
+            if (!email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Buscando...</span><i class="bi bi-arrow-repeat spin"></i>';
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; text-align: center;"><i class="bi bi-arrow-repeat spin"></i> Localizando estúdio...</div>';
+
+            try {
+                const res = await fetch(`/api/auth/find-tenants?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+
+                if (res.ok && data.tenants && data.tenants.length > 0) {
+                    let html = '<div style="font-size: 0.78rem; color: #10b981; font-weight: 700; margin-bottom: 0.5rem;"><i class="bi bi-check-circle-fill"></i> Studio(s) localizado(s):</div>';
+                    html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+                    data.tenants.forEach(t => {
+                        html += `
+                            <a href="/${t.slug}/login" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #ffffff; transition: all 0.2s ease;">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 0.92rem; color: #f4e8c1;">${t.nome}</div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8;">Link: /${t.slug}/login</div>
+                                </div>
+                                <span style="background: var(--lp-gold); color: #000; font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px;">
+                                    Entrar &rarr;
+                                </span>
+                            </a>
+                        `;
+                    });
+                    html += '</div>';
+                    resultBox.innerHTML = html;
+                } else {
+                    resultBox.innerHTML = `
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 0.75rem; color: #fca5a5; font-size: 0.83rem;">
+                            <i class="bi bi-exclamation-circle-fill me-1"></i> Nenhum salão ativo encontrado com esse e-mail. Verifique a digitação ou crie seu cadastro grátis.
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultBox.innerHTML = '<div style="color: #ef4444; font-size: 0.83rem;">Erro ao conectar com o servidor. Tente novamente.</div>';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Localizar meu Studio</span><i class="bi bi-search"></i>';
+            }
+        }
+
         // Toggle Pricing (Mensal / Anual)
         function toggleBillingCycle() {
             const toggle = document.getElementById('billingToggle');
@@ -631,6 +752,5 @@
             }
         }
     </script>
-
 </body>
 </html>

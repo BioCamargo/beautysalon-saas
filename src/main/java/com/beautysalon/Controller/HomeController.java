@@ -78,6 +78,11 @@ public class HomeController {
         return "landing/privacidade";
     }
 
+    @GetMapping("/agendamento/{slug}")
+    public String redirectAgendamentoPublico(@PathVariable String slug) {
+        return "redirect:/" + slug + "/agendar";
+    }
+
     @GetMapping({"/{slug}", "/{slug}/home"})
     public String dashboard(@PathVariable String slug, Model model) {
         Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();

@@ -93,7 +93,7 @@
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
                                     <a class="btn-icon delete" th:href="@{/{slug}/servicos/delete/{id}(slug=${empresaSlug}, id=${s.id})}"
-                                       onclick="return confirm('Deseja realmente excluir este serviço do catálogo?');" title="Excluir Serviço">
+                                       onclick="luxConfirmDelete(this.href, 'Excluir Serviço', 'Deseja realmente excluir este serviço do catálogo? Os atendimentos anteriores permanecerão no histórico.'); return false;" title="Excluir Serviço">
                                         <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </div>
@@ -127,5 +127,6 @@
     }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
