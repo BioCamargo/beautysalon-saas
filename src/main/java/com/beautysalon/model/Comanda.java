@@ -7,7 +7,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Comanda de Atendimento do Cliente, contendo Serviços, Produtos de Revenda e Comissões.
@@ -88,7 +90,7 @@ public class Comanda extends AuditableEntity {
 
     @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PagamentoComanda> pagamentos = new ArrayList<>();
+    private Set<PagamentoComanda> pagamentos = new LinkedHashSet<>();
 
     public BigDecimal getTotalPago() {
         if (pagamentos == null || pagamentos.isEmpty()) {

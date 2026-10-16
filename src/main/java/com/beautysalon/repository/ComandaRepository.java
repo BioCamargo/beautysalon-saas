@@ -15,23 +15,23 @@ import java.util.Optional;
 public interface ComandaRepository extends JpaRepository<Comanda, Long> {
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "empresa", "cliente", "caixa",
-            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto" })
+            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto", "pagamentos" })
     List<Comanda> findByEmpresaIdOrderByDataAberturaDesc(Long empresaId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "empresa", "cliente", "caixa",
-            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto" })
+            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto", "pagamentos" })
     List<Comanda> findByEmpresaIdAndStatusOrderByDataAberturaDesc(Long empresaId, String status);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "empresa", "cliente", "caixa",
-            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto" })
+            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto", "pagamentos" })
     List<Comanda> findByClienteIdAndEmpresaIdOrderByDataAberturaDesc(Long clienteId, Long empresaId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "empresa", "cliente", "caixa",
-            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto" })
+            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto", "pagamentos" })
     Optional<Comanda> findByIdAndEmpresaId(Long id, Long empresaId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = { "empresa", "cliente", "caixa",
-            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto" })
+            "agendamento", "itens", "itens.profissional", "itens.servico", "itens.produto", "pagamentos" })
     @Query("SELECT c FROM Comanda c WHERE c.empresa.id = :empresaId AND c.status = 'PAGA' AND c.dataFechamento BETWEEN :inicio AND :fim")
     List<Comanda> findComandasPagasPorPeriodo(@Param("empresaId") Long empresaId,
             @Param("inicio") LocalDateTime inicio,

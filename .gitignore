@@ -56,5 +56,11 @@ docs/code_review_report.md
 docs/RELATORIO_EXECUCAO_MELHORIAS.md
 docs/ui_ux_audit_report.md
 .cursorrules
-.agents/
+
+### E2E Tests & Node.js ###
+node_modules/
+**/node_modules/
+test-results/
+playwright-report/
+blob-report/
 

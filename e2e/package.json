@@ -1,0 +1,14 @@
+{
+  "name": "beautysalon-e2e",
+  "version": "1.0.0",
+  "description": "Suíte de Testes E2E e Simulação de Usuário Real - Beauty Salon SaaS",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
