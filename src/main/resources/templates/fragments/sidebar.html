@@ -8,17 +8,17 @@
     <aside th:fragment="sidebar(activePage)" class="app-sidebar" id="appSidebar">
         <!-- CABEÇALHO COM LOGO & EMPRESA -->
         <div class="sidebar-header">
-            <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}"
+            <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
                 style="text-align: center; display: block; text-decoration: none;">
-                <img th:src="${empresaLogo != null and !empresaLogo.isEmpty() ? empresaLogo : '/images/logo.jpg'}" 
-                    th:alt="${empresaNome != null ? empresaNome : 'Beauty Salon Studio'}" 
+                <img th:src="${empresaLogo != null and !empresaLogo.isEmpty() ? empresaLogo : '/images/nexipro-logo.svg'}" 
+                    th:alt="${empresaNome != null ? empresaNome : 'NEXI PRO'}" 
                     class="sidebar-logo-img"
-                    style="max-height: 48px; width: auto; object-fit: contain; margin: 0 auto 0.4rem; display: block;"
+                    style="max-height: 44px; width: auto; object-fit: contain; margin: 0 auto 0.4rem; display: block;"
                     onerror="this.style.display='none'; document.getElementById('fallbackLogo').style.display='block';" />
                 <div id="fallbackLogo" th:style="${empresaLogo != null and !empresaLogo.isEmpty()} ? 'display: none;' : 'display: block;'">
-                    <div class="sidebar-brand-name" th:text="${empresaNome != null ? empresaNome : 'BEAUTY SALON'}">BEAUTY SALON</div>
-                    <div class="sidebar-brand-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'STUDIO & ESTÉTICA'}">
-                        STUDIO & ESTÉTICA</div>
+                    <div class="sidebar-brand-name" th:text="${empresaNome != null ? empresaNome : 'NEXI PRO'}">NEXI PRO</div>
+                    <div class="sidebar-brand-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'GESTÃO INTELIGENTE'}">
+                        GESTÃO INTELIGENTE</div>
                 </div>
             </a>
         </div>
@@ -27,13 +27,13 @@
         <nav class="sidebar-nav">
             <div class="nav-section-title">Principal</div>
 
-            <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span>Dashboard</span>
             </a>
 
-            <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/agendamentos(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'agendamentos'} ? 'active' : ''">
                 <i class="bi bi-calendar3"></i>
                 <span>Agenda & Atendimentos</span>
@@ -41,19 +41,19 @@
 
             <div class="nav-section-title">Operação & Vendas</div>
 
-            <a th:href="@{/{slug}/financeiro(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/financeiro(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'financeiro'} ? 'active' : ''">
                 <i class="bi bi-cash-stack"></i>
                 <span>Financeiro & Caixa</span>
             </a>
 
-            <a th:href="@{/{slug}/estoque(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/estoque(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'estoque'} ? 'active' : ''">
                 <i class="bi bi-box-seam-fill"></i>
                 <span>Estoque & Produtos</span>
             </a>
 
-            <a th:href="@{/{slug}/fidelizacao(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/fidelizacao(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'fidelizacao'} ? 'active' : ''">
                 <i class="bi bi-heart-fill"></i>
                 <span>Fidelização & CRM</span>
@@ -61,13 +61,13 @@
 
             <div class="nav-section-title">Cadastros</div>
 
-            <a th:href="@{/{slug}/clientes(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/clientes(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'clientes'} ? 'active' : ''">
                 <i class="bi bi-people-fill"></i>
                 <span>Clientes</span>
             </a>
 
-            <a th:href="@{/{slug}/servicos(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/servicos(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'servicos'} ? 'active' : ''">
                 <i class="bi bi-scissors"></i>
                 <span>Catálogo de Serviços</span>
@@ -75,35 +75,35 @@
 
             <div class="nav-section-title" sec:authorize="hasAnyRole('OWNER', 'ADMIN')">Gestão & Relatórios</div>
 
-            <a th:href="@{/{slug}/relatorios(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/relatorios(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'relatorios'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-bar-chart-line-fill"></i>
                 <span>Relatórios & Métricas</span>
             </a>
 
-            <a th:href="@{/{slug}/usuarios(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/usuarios(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'usuarios'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-person-badge-fill"></i>
                 <span>Equipe & Comissões</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'whatsapp'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-whatsapp text-success"></i>
                 <span>Integração WhatsApp</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/anamnese(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/configuracoes/anamnese(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'anamnese-builder'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-ui-checks-grid text-warning"></i>
                 <span>Form Builder Anamnese</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug != null ? empresaSlug : 'lumora'})}" class="nav-link"
+            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'empresa'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-gear-fill text-primary"></i>

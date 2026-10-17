@@ -62,19 +62,19 @@ public class HomeController {
             }
         }
 
-        model.addAttribute("pageTitle", "Lumora Studio | Software de Gestão e Agendamento para Salões e Estética");
+        model.addAttribute("pageTitle", "NEXI PRO | Gestão Inteligente & Alta Performance para Salões, Barbearias e Clínicas");
         return "landing/index";
     }
 
     @GetMapping("/termos")
     public String termosDeUso(Model model) {
-        model.addAttribute("pageTitle", "Termos de Uso do Serviço | Lumora Studio SaaS");
+        model.addAttribute("pageTitle", "Termos de Uso do Serviço | NEXI PRO");
         return "landing/termos";
     }
 
     @GetMapping("/privacidade")
     public String politicaDePrivacidade(Model model) {
-        model.addAttribute("pageTitle", "Política de Privacidade & LGPD | Lumora Studio SaaS");
+        model.addAttribute("pageTitle", "Política de Privacidade & LGPD | NEXI PRO");
         return "landing/privacidade";
     }
 
@@ -132,7 +132,7 @@ public class HomeController {
         model.addAttribute("contentPage", "home/indexContent");
         model.addAttribute("content", "home/welcome");
         model.addAttribute("empresaSlug", slug);
-        model.addAttribute("pageTitle", "Dashboard - Lumora");
+        model.addAttribute("pageTitle", "Dashboard - NEXI PRO");
         return "home/index";
     }
 }

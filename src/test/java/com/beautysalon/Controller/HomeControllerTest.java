@@ -63,7 +63,7 @@ class HomeControllerTest {
     @InjectMocks
     private HomeController controller;
 
-    private static final String SLUG = "studio-lumora";
+    private static final String SLUG = "studio-nexipro";
     private static final Long EMPRESA_ID = 1L;
 
     @BeforeEach
@@ -110,7 +110,7 @@ class HomeControllerTest {
     @Test
     @DisplayName("Deve redirecionar para o dashboard do salão quando o usuário já estiver logado")
     void deveRedirecionarParaDashboardQuandoAutenticado() {
-        Empresa empresa = Empresa.builder().id(EMPRESA_ID).slug(SLUG).nome("Studio Lumora").build();
+        Empresa empresa = Empresa.builder().id(EMPRESA_ID).slug(SLUG).nome("Studio NEXI PRO").build();
         User user = User.builder().id(10L).username("admin").empresa(empresa).build();
 
         when(authentication.isAuthenticated()).thenReturn(true);

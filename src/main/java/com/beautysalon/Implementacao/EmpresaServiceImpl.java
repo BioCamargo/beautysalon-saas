@@ -126,7 +126,7 @@ public class EmpresaServiceImpl implements EmpresaService {
 
     /**
      * Converte nome da empresa em slug URL-safe.
-     * Ex: "Studio Lumora & Cia." → "studio-lumora-cia"
+     * Ex: "Studio NEXI PRO & Cia." → "studio-nexi-pro-cia"
      */
     public static String gerarSlug(String nome) {
         String normalizado = Normalizer.normalize(nome, Normalizer.Form.NFD)

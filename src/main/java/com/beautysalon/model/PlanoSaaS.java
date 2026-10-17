@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 
 /**
- * Planos de assinatura comercial do Lumora SaaS.
+ * Planos de assinatura comercial do NEXI PRO SaaS.
  */
 @Getter
 public enum PlanoSaaS {

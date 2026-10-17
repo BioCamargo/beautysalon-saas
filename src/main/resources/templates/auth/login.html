@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} ?: 'Login | Beauty Salon Studio'">Login | Beauty Salon Studio</title>
+    <title th:text="${pageTitle} ?: 'Login | NEXI PRO - Gestão Inteligente'">Login | NEXI PRO - Gestão Inteligente</title>
     
+    <!-- Favicon Oficial NEXI PRO -->
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+
     <!-- Bootstrap Icons & Fonts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,30 +21,26 @@
     <div class="auth-header">
         <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}">
             <img th:src="${empresaLogo}" alt="Logo Salão" class="auth-logo-img" />
+            <div class="auth-title-brand" th:text="${empresaNome}">NEXI PRO</div>
+            <div class="auth-subtitle-brand">Portal Exclusivo do Estabelecimento</div>
         </div>
-        <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.75rem;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(197, 160, 89, 0.05) 100%); border: 1.5px solid #d4af37; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 8V16H15" stroke="#b8860b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
+        <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.85rem; text-align: center;">
+            <img th:src="@{/images/nexipro-logo-dark.svg}" alt="NEXI PRO" style="height: 52px; width: auto; max-width: 100%; display: inline-block;" />
+            <div th:if="${empresaNome != null}" class="auth-title-brand" style="margin-top: 0.5rem;" th:text="${empresaNome}">Studio VIP</div>
         </div>
-        <div class="auth-title-brand" th:text="${empresaNome} ?: 'LUMORA STUDIO'">LUMORA STUDIO</div>
-        <div class="auth-subtitle-brand" th:text="${empresaNome != null ? 'Portal Exclusivo — ' + empresaNome : 'Sistema de Gestão & Agendamento'}">Sistema de Gestão & Agendamento</div>
     </div>
 
     <!-- IDENTIFICAÇÃO DO TENANT QUANDO ACESSADO VIA /{slug}/login -->
-    <div th:if="${empresaSlug != null}" style="background: rgba(184, 134, 11, 0.08); border: 1px solid rgba(184, 134, 11, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
-        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente do Estúdio</small>
-        <strong style="color: var(--accent-gold, #b8860b); font-size: 1.05rem;" th:text="${empresaNome} ?: ${empresaSlug}">Studio Lumora VIP</strong>
+    <div th:if="${empresaSlug != null}" style="background: rgba(0, 210, 238, 0.07); border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
+        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente do Estabelecimento</small>
+        <strong style="color: #0284c7; font-size: 1.05rem;" th:text="${empresaNome} ?: ${empresaSlug}">Studio VIP</strong>
     </div>
 
     <!-- BANNER DE ACESSO RÁPIDO AO ESTÚDIO RECENTE (Quando no login genérico) -->
-    <div th:if="${empresaSlug == null}" id="recentStudioBanner" style="display: none; background: rgba(184, 134, 11, 0.1); border: 1px solid rgba(184, 134, 11, 0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
-        <small style="color: #64748b; font-size: 0.72rem; text-transform: uppercase; font-weight: 700; display: block;">Estúdio Acessado Recentemente</small>
-        <a id="recentStudioLink" href="#" style="color: var(--accent-gold, #b8860b); font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
-            <i class="bi bi-shop"></i> <span id="recentStudioSlugText">Entrar no meu Salão</span> <i class="bi bi-arrow-right"></i>
+    <div th:if="${empresaSlug == null}" id="recentStudioBanner" style="display: none; background: rgba(0, 210, 238, 0.08); border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
+        <small style="color: #64748b; font-size: 0.72rem; text-transform: uppercase; font-weight: 700; display: block;">Estabelecimento Acessado Recentemente</small>
+        <a id="recentStudioLink" href="#" style="color: #0284c7; font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
+            <i class="bi bi-shop"></i> <span id="recentStudioSlugText">Entrar no meu Estabelecimento</span> <i class="bi bi-arrow-right"></i>
         </a>
     </div>
 
@@ -116,13 +116,13 @@
     if (currentSlug) {
         // Salva nos cookies e local storage para acessos futuros
         try {
-            localStorage.setItem('lumora_last_slug', currentSlug);
-            document.cookie = "lumora_last_slug=" + encodeURIComponent(currentSlug) + "; path=/; max-age=2592000";
+            localStorage.setItem('nexipro_last_slug', currentSlug);
+            document.cookie = "nexipro_last_slug=" + encodeURIComponent(currentSlug) + "; path=/; max-age=2592000";
         } catch(e) {}
     } else {
         // Se estiver no login genérico, verifica se já existe um estúdio salvo no navegador
         try {
-            const lastSlug = localStorage.getItem('lumora_last_slug');
+            const lastSlug = localStorage.getItem('nexipro_last_slug');
             if (lastSlug) {
                 const banner = document.getElementById('recentStudioBanner');
                 const link = document.getElementById('recentStudioLink');

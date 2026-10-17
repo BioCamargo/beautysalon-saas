@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} ?: 'Termos de Uso | Lumora Studio SaaS'">Termos de Uso | Lumora Studio SaaS</title>
+    <title th:text="${pageTitle} ?: 'Termos de Uso | NEXI PRO - Gestão Inteligente'">Termos de Uso | NEXI PRO - Gestão Inteligente</title>
     
+    <!-- Favicon Oficial NEXI PRO -->
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,13 +23,8 @@
     <!-- NAVBAR SIMPLIFICADA -->
     <header class="lp-navbar">
         <div class="lp-navbar-container">
-            <a th:href="@{/}" class="lp-brand">
-                <img th:src="@{/images/logo.jpg}" alt="Lumora Studio" class="lp-brand-logo"
-                     onerror="this.style.display='none'; document.getElementById('navBrandFallback').style.display='inline-flex';" />
-                <div id="navBrandFallback" style="display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--lp-gold); color: var(--lp-gold);">
-                    <i class="bi bi-gem"></i>
-                </div>
-                <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
+            <a th:href="@{/}" class="lp-brand" style="text-decoration: none;">
+                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 38px; width: auto;" />
             </a>
 
             <div class="lp-nav-actions">
@@ -51,12 +50,12 @@
             
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">1. Objeto e Aceitação dos Termos</h3>
             <p style="margin-bottom: 1.5rem;">
-                Estes Termos de Uso regem a contratação e utilização da plataforma <strong>LUMORA STUDIO</strong>, um software como serviço (SaaS) multi-tenant voltado para a gestão operacional, financeira, agendamento online e controle técnico de salões de beleza, barbearias, clínicas de estética e estúdios correlatos. Ao se cadastrar ou utilizar a plataforma, você (doravante denominado "Assinante" ou "Estúdio") concorda integralmente com as disposições deste instrumento.
+                Estes Termos de Uso regem a contratação e utilização da plataforma <strong>NEXI PRO</strong>, um software como serviço (SaaS) multi-tenant voltado para a gestão operacional, financeira, agendamento online e controle técnico de salões de beleza, barbearias, clínicas de estética e estúdios correlatos. Ao se cadastrar ou utilizar a plataforma, você (doravante denominado "Assinante" ou "Estabelecimento") concorda integralmente com as disposições deste instrumento.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">2. Período de Avaliação Gratuita (Trial)</h3>
             <p style="margin-bottom: 1.5rem;">
-                Novos estúdios cadastrados recebem automaticamente uma licença de teste de <strong>7 (sete) dias corridos</strong> para avaliação dos recursos da plataforma. Durante o período de trial, nenhuma cobrança é realizada e não há exigência de cadastro de cartão de crédito. Ao término do período de trial, para manter o acesso às rotinas operacionais (abertura de comandas, agendamentos e emissão de relatórios), o Assinante deverá selecionar e ativar um dos planos comerciais disponíveis.
+                Novos estabelecimentos cadastrados recebem automaticamente uma licença de teste VIP de <strong>15 (quinze) dias corridos</strong> para avaliação completa dos recursos da plataforma. Durante o período de trial, nenhuma cobrança é realizada e não há exigência de cadastro de cartão de crédito. Ao término do período de trial, para manter o acesso às rotinas operacionais (abertura de comandas, agendamentos e emissão de relatórios), o Assinante poderá selecionar e ativar um dos planos comerciais disponíveis.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">3. Planos Comerciais e Assinatura</h3>
@@ -66,7 +65,7 @@
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">4. Fichas de Anamnese e Respaldo Jurídico</h3>
             <p style="margin-bottom: 1.5rem;">
-                O LUMORA disponibiliza ferramentas de registro clínico e consentimento informado (anamnese digital, termos de teste de mecha, fotos de antes/depois e assinatura na tela touch). O Assinante reconhece que é o único responsável pela veracidade dos procedimentos descritos, pela conduta técnica dos seus profissionais e pela coleta das assinaturas de seus clientes finais. Os termos emitidos em PDF possuem valor probatório documental entre as partes contratantes do serviço estético.
+                O NEXI PRO disponibiliza ferramentas de registro clínico e consentimento informado (anamnese digital, termos de teste de mecha, fotos de antes/depois e assinatura na tela touch). O Assinante reconhece que é o único responsável pela veracidade dos procedimentos descritos, pela conduta técnica dos seus profissionais e pela coleta das assinaturas de seus clientes finais. Os termos emitidos em PDF possuem valor probatório documental entre as partes contratantes do serviço estético.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">5. Disponibilidade e Manutenção</h3>
@@ -76,7 +75,7 @@
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">6. Propriedade Intelectual</h3>
             <p style="margin-bottom: 1.5rem;">
-                O código-fonte, arquitetura, design visual, algoritmos e marcas da plataforma LUMORA STUDIO são de titularidade exclusiva de seus desenvolvedores e protegidos pela legislação de direitos autorais e propriedade de software. É vedada qualquer engenharia reversa ou reprodução não autorizada.
+                O código-fonte, arquitetura, design visual, algoritmos e marcas da plataforma NEXI PRO são de titularidade exclusiva de seus desenvolvedores e protegidos pela legislação de direitos autorais e propriedade de software. É vedada qualquer engenharia reversa ou reprodução não autorizada.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">7. Foro de Eleição</h3>
@@ -90,9 +89,9 @@
     <!-- RODAPÉ COMPACTO -->
     <footer class="lp-footer" style="padding: 2.5rem 1.5rem;">
         <div class="lp-footer-bottom" style="border: none; padding: 0;">
-            <div>© 2026 Lumora Studio SaaS. Todos os direitos reservados.</div>
+            <div>© 2026 NEXI PRO — Gestão Inteligente. Todos os direitos reservados.</div>
             <div style="display: flex; gap: 1.5rem;">
-                <a th:href="@{/privacidade}" style="color: var(--lp-gold-light); text-decoration: none;">Política de Privacidade & LGPD</a>
+                <a th:href="@{/privacidade}" style="color: #00E5FF; text-decoration: none;">Política de Privacidade & LGPD</a>
                 <a th:href="@{/}" style="color: #64748b; text-decoration: none;">Página Inicial</a>
             </div>
         </div>

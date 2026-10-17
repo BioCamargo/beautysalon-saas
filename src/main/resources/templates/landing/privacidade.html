@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} ?: 'Política de Privacidade & LGPD | Lumora Studio SaaS'">Política de Privacidade & LGPD | Lumora Studio SaaS</title>
+    <title th:text="${pageTitle} ?: 'Política de Privacidade & LGPD | NEXI PRO - Gestão Inteligente'">Política de Privacidade & LGPD | NEXI PRO - Gestão Inteligente</title>
     
+    <!-- Favicon Oficial NEXI PRO -->
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,13 +23,8 @@
     <!-- NAVBAR SIMPLIFICADA -->
     <header class="lp-navbar">
         <div class="lp-navbar-container">
-            <a th:href="@{/}" class="lp-brand">
-                <img th:src="@{/images/logo.jpg}" alt="Lumora Studio" class="lp-brand-logo"
-                     onerror="this.style.display='none'; document.getElementById('navBrandFallback').style.display='inline-flex';" />
-                <div id="navBrandFallback" style="display: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--lp-gold); color: var(--lp-gold);">
-                    <i class="bi bi-gem"></i>
-                </div>
-                <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
+            <a th:href="@{/}" class="lp-brand" style="text-decoration: none;">
+                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 38px; width: auto;" />
             </a>
 
             <div class="lp-nav-actions">
@@ -51,20 +50,20 @@
             
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">1. Compromisso com a Privacidade</h3>
             <p style="margin-bottom: 1.5rem;">
-                A plataforma <strong>LUMORA STUDIO</strong> valoriza a segurança, confidencialidade e integridade dos dados dos estúdios assinantes e dos clientes finais atendidos pelos estabelecimentos de beleza e estética. Este documento detalha como os dados pessoais são coletados, tratados, armazenados e protegidos em conformidade rigorosa com a <strong>Lei Geral de Proteção de Dados Pessoais (LGPD)</strong>.
+                A plataforma <strong>NEXI PRO</strong> valoriza a segurança, confidencialidade e integridade dos dados dos estabelecimentos assinantes e dos clientes finais atendidos pelos salões de beleza, barbearias e clínicas de estética. Este documento detalha como os dados pessoais são coletados, tratados, armazenados e protegidos em conformidade rigorosa com a <strong>Lei Geral de Proteção de Dados Pessoais (LGPD)</strong>.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">2. Papéis no Tratamento de Dados (Controlador vs. Operador)</h3>
             <p style="margin-bottom: 1.5rem;">
                 Para fins da legislação aplicável:
-                <br>• <strong>O Salão / Clínica Assinante atua como CONTROLADOR:</strong> É quem decide quais dados de clientes finais serão solicitados na ficha de anamnese e agendamento.
-                <br>• <strong>A plataforma LUMORA atua como OPERADORA:</strong> Fornece a infraestrutura técnica segura de software e banco de dados para processamento das rotinas a mando do Controlador.
+                <br>• <strong>O Salão / Barbearia / Clínica Assinante atua como CONTROLADOR:</strong> É quem decide quais dados de clientes finais serão solicitados na ficha de anamnese e agendamento.
+                <br>• <strong>A plataforma NEXI PRO atua como OPERADORA:</strong> Fornece a infraestrutura técnica segura de software e banco de dados para processamento das rotinas a mando do Controlador.
             </p>
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">3. Dados Coletados e Finalidade</h3>
             <p style="margin-bottom: 1.5rem;">
                 Tratamos apenas os dados estritamente necessários para a prestação dos serviços contratados:
-                <br>• <strong>Dados Cadastrais do Salão:</strong> Nome empresarial, CNPJ, e-mail, telefone do responsável e credenciais de acesso seguro.
+                <br>• <strong>Dados Cadastrais do Estabelecimento:</strong> Nome empresarial, CNPJ/CPF, e-mail, telefone do responsável e credenciais de acesso seguro.
                 <br>• <strong>Dados de Clientes Finais:</strong> Nome completo, telefone/WhatsApp para envio de confirmações e histórico de atendimentos e comandas.
                 <br>• <strong>Dados de Anamnese & Saúde (Dados Sensíveis):</strong> Alergias declaradas, histórico de químicas capilares, testes de sensibilidade prévios, fotos de evolução antes/depois e assinaturas touch digitais coletadas sob termo de consentimento explícito.
             </p>
@@ -86,7 +85,7 @@
 
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">7. Canal de Atendimento do DPO (Encarregado)</h3>
             <p style="margin-bottom: 0;">
-                Para dúvidas relativas a esta política ou para exercer os direitos previstos na LGPD, disponibilizamos o canal direto de privacidade pelo e-mail: <strong style="color: var(--lp-gold-light);">privacidade@lumora.com.br</strong>.
+                Para dúvidas relativas a esta política ou para exercer os direitos previstos na LGPD, disponibilizamos o canal direto de privacidade pelo e-mail: <strong style="color: #00E5FF;">privacidade@nexipro.com.br</strong>.
             </p>
 
         </div>
@@ -95,9 +94,9 @@
     <!-- RODAPÉ COMPACTO -->
     <footer class="lp-footer" style="padding: 2.5rem 1.5rem;">
         <div class="lp-footer-bottom" style="border: none; padding: 0;">
-            <div>© 2026 Lumora Studio SaaS. Todos os direitos reservados.</div>
+            <div>© 2026 NEXI PRO — Gestão Inteligente. Todos os direitos reservados.</div>
             <div style="display: flex; gap: 1.5rem;">
-                <a th:href="@{/termos}" style="color: var(--lp-gold-light); text-decoration: none;">Termos de Uso</a>
+                <a th:href="@{/termos}" style="color: #00E5FF; text-decoration: none;">Termos de Uso</a>
                 <a th:href="@{/}" style="color: #64748b; text-decoration: none;">Página Inicial</a>
             </div>
         </div>

@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle != null ? pageTitle : 'Lumora Studio | Software de Gestão e Agendamento para Salões e Clínicas'}">Lumora Studio SaaS</title>
-    <meta name="description" content="O sistema completo de gestão para salões de beleza, barbearias e clínicas de estética. Agendamento online 24/7, lembretes automáticos no WhatsApp, comanda, frente de caixa, anamnese digital e DRE contábil. Teste 7 dias grátis.">
+    <title th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Salões, Barbearias e Clínicas'}">NEXI PRO | Gestão Inteligente</title>
+    <meta name="description" content="O sistema definitivo de gestão para salões de beleza, barbearias e clínicas de estética. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 15 dias grátis.">
+
+    <!-- Favicon Oficial NEXI PRO -->
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,14 +28,8 @@
     <!-- 1. NAVBAR DE NAVEGAÇÃO -->
     <header class="lp-navbar">
         <div class="lp-navbar-container">
-            <a th:href="@{/}" class="lp-brand">
-                <div class="lp-brand-emblem">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M9 8V16H15" stroke="#f4e8c1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <span class="lp-brand-name">LUMORA<span>STUDIO</span></span>
+            <a th:href="@{/}" class="lp-brand" style="text-decoration: none;">
+                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 38px; width: auto;" />
             </a>
 
             <ul class="lp-nav-links">
@@ -94,7 +92,7 @@
                     <span class="lp-mockup-dot lp-dot-yellow"></span>
                     <span class="lp-mockup-dot lp-dot-green"></span>
                     <span class="lp-mockup-url">
-                        <i class="bi bi-lock-fill"></i> app.lumora.com.br/studio-vip/home
+                        <i class="bi bi-lock-fill"></i> app.nexipro.com.br/studio-vip/home
                     </span>
                 </div>
 
@@ -146,8 +144,8 @@
 
                         <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: center;">
                             <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Link Público para Clientes:</div>
-                            <div style="font-size: 0.75rem; color: var(--lp-gold); background: rgba(197,160,89,0.1); padding: 8px; border-radius: 6px; font-family: monospace; word-break: break-all;">
-                                app.lumora.com.br/studio-vip/agendar
+                            <div style="font-size: 0.75rem; color: #00E5FF; background: rgba(0,229,255,0.1); padding: 8px; border-radius: 6px; font-family: monospace; word-break: break-all;">
+                                app.nexipro.com.br/studio-vip/agendar
                             </div>
                             <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Pronto para colocar na Bio do Instagram</div>
                         </div>
@@ -202,7 +200,7 @@
         </div>
     </div>
 
-    <!-- 4. RECURSOS ESSENCIAIS DO LUMORA (GRID DE MÓDULOS) -->
+    <!-- 4. RECURSOS ESSENCIAIS DO NEXI PRO (GRID DE MÓDULOS) -->
     <section class="lp-section" id="recursos">
         <div class="lp-section-header">
             <span class="lp-section-tag">FUNCIONALIDADES COMPLETAS</span>
@@ -293,7 +291,7 @@
 
         <div class="lp-comparison-grid">
             <div class="lp-comp-card lp-comp-before">
-                <span class="lp-comp-badge">SEM O LUMORA (ROTINA CAÓTICA)</span>
+                <span class="lp-comp-badge">SEM O NEXI PRO (ROTINA CAÓTICA)</span>
                 <ul class="lp-comp-list">
                     <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas difíceis de atualizar no celular.</li>
                     <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a cadeira vazia e gerando prejuízo.</li>
@@ -304,7 +302,7 @@
             </div>
 
             <div class="lp-comp-card lp-comp-after">
-                <span class="lp-comp-badge">COM O LUMORA STUDIO (ROTINA AUTOMATIZADA)</span>
+                <span class="lp-comp-badge">COM O NEXI PRO (ROTINA AUTOMATIZADA)</span>
                 <ul class="lp-comp-list">
                     <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio do Instagram e WhatsApp.</li>
                     <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70% as faltas e no-shows.</li>
@@ -320,9 +318,9 @@
     <section class="lp-section" id="precos">
         <div class="lp-section-header">
             <span class="lp-section-tag">INVESTIMENTO TRANSPARENTE</span>
-            <h2 class="lp-section-title">Planos que cabem no bolso do seu estúdio</h2>
+            <h2 class="lp-section-title">Planos que cabem no bolso do seu estabelecimento</h2>
             <p class="lp-section-desc">
-                Comece com 7 dias grátis. Sem pegadinhas, sem fidelidade e sem necessidade de cartão agora.
+                Comece com 15 dias grátis de teste VIP. Sem pegadinhas, sem fidelidade e sem necessidade de cartão agora.
             </p>
         </div>
 
@@ -421,7 +419,7 @@
     <section class="lp-section" id="depoimentos" style="background: rgba(11, 15, 25, 0.4); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
         <div class="lp-section-header">
             <span class="lp-section-tag">QUEM USA RECOMENDA</span>
-            <h2 class="lp-section-title">O que dizem os donos de estúdios que usam o Lumora</h2>
+            <h2 class="lp-section-title">O que dizem os donos de estabelecimentos que usam o NEXI PRO</h2>
         </div>
 
         <div class="lp-testimonials-grid">
@@ -446,7 +444,7 @@
                     <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                 </div>
                 <p class="lp-test-text">
-                    "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o Lumora, o fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
+                    "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o NEXI PRO, o fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
                 </p>
                 <div class="lp-test-author">
                     <div class="lp-author-avatar">RF</div>
@@ -485,11 +483,11 @@
         <div class="lp-faq-container">
             <div class="lp-faq-item active">
                 <div class="lp-faq-question" onclick="toggleFaq(this)">
-                    <span>Como funciona o período de teste grátis de 7 dias?</span>
+                    <span>Como funciona o período de teste grátis de 15 dias?</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias, você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e clientes reais.
+                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 15 dias, você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e clientes reais.
                 </div>
             </div>
 
@@ -499,7 +497,7 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Não! O Lumora é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória.
+                    Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória.
                 </div>
             </div>
 
@@ -509,7 +507,7 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Assim que você cadastra seu salão, é gerado um link exclusivo como <code>app.lumora.com.br/seu-salao/agendar</code>. Basta colocar esse link na bio do Instagram ou fixar no WhatsApp para suas clientes agendarem sozinhas.
+                    Assim que você cadastra seu espaço, é gerado um link exclusivo como <code>app.nexipro.com.br/seu-espaco/agendar</code>. Basta colocar esse link na bio do Instagram ou fixar no WhatsApp para suas clientes agendarem sozinhas.
                 </div>
             </div>
 
@@ -519,7 +517,7 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Sim. O Lumora utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estúdio possui seus dados blindados com criptografia de ponta a ponta e alinhamento à Lei Geral de Proteção de Dados (LGPD).
+                    Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estabelecimento possui seus dados blindados com criptografia de ponta a ponta e alinhamento total à Lei Geral de Proteção de Dados (LGPD).
                 </div>
             </div>
 
@@ -557,10 +555,10 @@
         <div class="lp-footer-container">
             <div class="lp-footer-col">
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                    <span class="lp-brand-name" style="font-size: 1.25rem;">LUMORA<span>STUDIO</span></span>
+                    <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 34px; width: auto;" />
                 </div>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.7; max-width: 320px;">
-                    Plataforma inteligente de gestão, agendamento online, comanda, ficha técnica e anamnese para o mercado de beleza e estética.
+                    Plataforma inteligente de gestão, agendamento online, comanda, comissões automáticas e fidelização para estabelecimentos de beleza e bem-estar.
                 </p>
             </div>
 
@@ -600,7 +598,7 @@
 
         <div class="lp-footer-bottom">
             <div>
-                © 2026 Lumora Studio SaaS. Todos os direitos reservados.
+                © 2026 NEXI PRO — Gestão Inteligente. Todos os direitos reservados.
             </div>
             <div style="display: flex; gap: 1.5rem;">
                 <span><i class="bi bi-shield-check text-success"></i> Conexão Segura SSL</span>
@@ -614,10 +612,10 @@
         <div class="lp-modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(212, 175, 55, 0.15); color: var(--lp-gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 229, 255, 0.15); color: #00E5FF; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                         <i class="bi bi-shop"></i>
                     </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar meu Studio</h3>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar meu Estabelecimento</h3>
                 </div>
                 <button type="button" onclick="closeFindStudioModal()" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">
                     <i class="bi bi-x-lg"></i>
@@ -625,7 +623,7 @@
             </div>
 
             <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.25rem;">
-                Cada salão possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar seu estúdio:
+                Cada estabelecimento possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar seu estúdio ou barbearia:
             </p>
 
             <form onsubmit="handleFindStudio(event)">
@@ -639,7 +637,7 @@
                 </div>
 
                 <button type="submit" id="btnFindStudioSubmit" class="lp-btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
-                    <span>Localizar meu Studio</span>
+                    <span>Localizar meu Estabelecimento</span>
                     <i class="bi bi-search"></i>
                 </button>
             </form>
@@ -647,9 +645,9 @@
             <div id="findStudioResult" style="margin-top: 1.25rem; display: none;"></div>
 
             <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
-                <span style="font-size: 0.82rem; color: #64748b;">Ainda não tem conta no Lumora?</span><br>
-                <a th:href="@{/register}" style="font-size: 0.85rem; color: var(--lp-gold-light); font-weight: 700; text-decoration: none;">
-                    Criar meu Studio grátis (7 dias de teste) &rarr;
+                <span style="font-size: 0.82rem; color: #64748b;">Ainda não tem conta no NEXI PRO?</span><br>
+                <a th:href="@{/register}" style="font-size: 0.85rem; color: #00E5FF; font-weight: 700; text-decoration: none;">
+                    Cadastrar meu espaço grátis (15 dias de teste VIP) &rarr;
                 </a>
             </div>
         </div>

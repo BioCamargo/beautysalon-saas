@@ -50,14 +50,15 @@ uploads/
 docs/GUIA_GIT_FLUXO_BRANCHES.md
 docs/LOCAL_*.md
 docs/ROADMAP_PRODUTO_SAAS_VENDAVEL.md
-docs/CHECKLIST_VALIDACAO_LUMORA_VIP.md
+docs/CHECKLIST_VALIDACAO_NEXIPRO_VIP.md
 docs/checklist-*.html
 docs/code_review_report.md
 docs/RELATORIO_EXECUCAO_MELHORIAS.md
 docs/ui_ux_audit_report.md
 docs/RELATORIO_PUBLICACAO_OFICIAL_E_GTM_LOCAL.md
-docs/UX_LAWS_ANALISE_E_MELHORIAS_LUMORA.md
+docs/UX_LAWS_ANALISE_E_MELHORIAS_NEXIPRO.md
 docs/nexipro_brand_book_marketing.md
+docs/KIT_*.md
 docs/ANALISE_TECNICA_E_MELHORIAS.md
 docs/PLANO_15_DIAS_JAVA_BACKEND.md
 docs/EXPANSAO_MERCADO_JAVA_AVANCADO.md

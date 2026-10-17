@@ -47,7 +47,7 @@ class UserServiceImplTest {
         Long empresaId = 1L;
         Empresa empresa = new Empresa();
         empresa.setId(empresaId);
-        empresa.setNome("Studio Lumora");
+        empresa.setNome("NEXI PRO Studio");
 
         when(empresaRepository.findById(empresaId)).thenReturn(Optional.of(empresa));
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
@@ -71,7 +71,7 @@ class UserServiceImplTest {
         dto.setEmpresaId(empresaId);
         dto.setNome("Juliana Cabelereira");
         dto.setUsername("juliana");
-        dto.setEmail("juliana@lumora.com");
+        dto.setEmail("juliana@nexipro.com.br");
         dto.setPassword("senha123");
         dto.setTenantRole(TenantRole.PROFISSIONAL);
         dto.setPercentualComissao(new BigDecimal("40.0"));

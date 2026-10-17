@@ -48,7 +48,7 @@ services:
       - beautysalon-net
 
   # -------------------------------------------------------------
-  # Aplicação Principal: BeautySalon / LUMORA SaaS Backend
+  # Aplicação Principal: NEXI PRO SaaS Backend (Beauty & Salon Management)
   # -------------------------------------------------------------
   app:
     build:

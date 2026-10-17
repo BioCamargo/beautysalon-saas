@@ -1,25 +1,36 @@
 /* ==========================================================================
-   BEAUTY SALON & STUDIO - MODERN LUXURY DESIGN SYSTEM
-   Inspirado na identidade visual do LUMORA / Beauty Manager
+   NEXI PRO - MODERN LUXURY DESIGN SYSTEM
+   Identidade visual oficial NEXI PRO | Gestão Inteligente
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
 
 :root {
-    /* Paleta Principal - Dark Obsidian & Gold Studio */
+    /* Paleta Principal - NEXI PRO Design System */
     --sidebar-bg: #0b0f19;
     --sidebar-surface: #111827;
     --sidebar-border: #1e293b;
     --sidebar-hover: #1e293b;
-    --sidebar-active: #283548;
+    --sidebar-active: #162235;
     --sidebar-text: #cbd5e1;
     --sidebar-text-muted: #64748b;
 
-    /* Acentos de Luxo */
-    --accent-gold: #c5a059;
-    --accent-gold-hover: #b08d46;
-    --accent-gold-light: rgba(197, 160, 89, 0.12);
-    --accent-gold-glow: rgba(197, 160, 89, 0.25);
+    /* Acentos Oficiais NEXI PRO: Electric Cyan & Mint Neon */
+    --accent-cyan: #00d2ee;
+    --accent-cyan-hover: #00b4d8;
+    --accent-cyan-light: rgba(0, 210, 238, 0.12);
+    --accent-cyan-glow: rgba(0, 210, 238, 0.28);
+    
+    --accent-mint: #10b981;
+    --accent-mint-hover: #059669;
+    --accent-mint-light: rgba(16, 185, 129, 0.12);
+    --accent-mint-glow: rgba(16, 185, 129, 0.28);
+
+    /* Aliases para compatibilidade total com classes legadas */
+    --accent-gold: var(--accent-cyan);
+    --accent-gold-hover: var(--accent-cyan-hover);
+    --accent-gold-light: var(--accent-cyan-light);
+    --accent-gold-glow: var(--accent-cyan-glow);
     
     --accent-rose: #f43f5e;
     --accent-rose-light: rgba(244, 63, 94, 0.12);
@@ -706,16 +717,17 @@ a {
 }
 
 .btn-gold {
-    background: linear-gradient(135deg, var(--accent-gold) 0%, #b08d46 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #00d2ee 0%, #10b981 100%);
+    color: #070a12;
+    font-weight: 700;
     border: none;
-    box-shadow: 0 2px 8px rgba(197, 160, 89, 0.25);
+    box-shadow: 0 2px 10px rgba(0, 210, 238, 0.35);
 }
 
 .btn-gold:hover {
-    background: linear-gradient(135deg, #d4af37 0%, var(--accent-gold) 100%);
-    box-shadow: 0 4px 16px rgba(197, 160, 89, 0.4);
-    color: #ffffff;
+    background: linear-gradient(135deg, #00f0ff 0%, #059669 100%);
+    box-shadow: 0 4px 16px rgba(0, 210, 238, 0.5);
+    color: #04070d;
     transform: translateY(-1px);
 }
 
@@ -917,7 +929,7 @@ textarea.form-control-modern {
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, var(--accent-gold) 0%, #ecd599 50%, var(--accent-gold) 100%);
+    background: linear-gradient(90deg, #00d2ee 0%, #00f0ff 45%, #10b981 100%);
 }
 
 .auth-header {
@@ -1217,18 +1229,18 @@ textarea.form-control-modern {
 }
 
 /* ==========================================================================
-   LUMORA 2.0 - DESIGN SYSTEM EXPANSION (ANTI-POLUIÇÃO & LUXURY TOKENS)
+   NEXI PRO 2.0 - DESIGN SYSTEM EXPANSION (ANTI-POLUIÇÃO & LUXURY TOKENS)
    ========================================================================== */
 
 :root {
-    /* Superfícies & Bordas Nobres */
-    --gold-primary: #d4af37;
-    --gold-hover: #b8860b;
-    --gold-champagne: #f4e8c1;
-    --gold-gradient: linear-gradient(135deg, #f5e3ad 0%, #d4af37 50%, #b8860b 100%);
-    --gold-glow: rgba(212, 175, 55, 0.28);
+    /* Superfícies & Bordas Nobres - NEXI PRO */
+    --gold-primary: #00d2ee;
+    --gold-hover: #00b4d8;
+    --gold-champagne: #a5f3fc;
+    --gold-gradient: linear-gradient(135deg, #00d2ee 0%, #00f0ff 40%, #10b981 100%);
+    --gold-glow: rgba(0, 210, 238, 0.35);
     --bg-silk: #faf9f6;
-    --border-lux: rgba(212, 175, 55, 0.22);
+    --border-lux: rgba(0, 210, 238, 0.22);
     --border-subtle: #e2e8f0;
 }
 
@@ -1238,19 +1250,19 @@ textarea.form-control-modern {
     border: 1px solid var(--border-lux);
     border-radius: 16px;
     padding: 1.75rem;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 0 1px 1px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 0 1px 1px rgba(0, 210, 238, 0.08);
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .glass-card-lux:hover {
-    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.07), 0 0 1px 1px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.07), 0 0 1px 1px rgba(0, 210, 238, 0.25);
 }
 
-/* 2. BOTÃO PRIMÁRIO ASSINATURA OURO CHAMPANHE */
+/* 2. BOTÃO PRIMÁRIO ASSINATURA NEXI PRO (CYAN & MINT) */
 .btn-gold-action {
     background: var(--gold-gradient);
-    color: #0b0f19 !important;
-    font-weight: 700;
+    color: #070a12 !important;
+    font-weight: 800;
     font-size: 0.95rem;
     letter-spacing: 0.3px;
     border: none;
@@ -1260,7 +1272,7 @@ textarea.form-control-modern {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 15px var(--gold-glow);
+    box-shadow: 0 4px 18px var(--gold-glow);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
     text-decoration: none;
@@ -1268,8 +1280,8 @@ textarea.form-control-modern {
 
 .btn-gold-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
-    color: #000000 !important;
+    box-shadow: 0 8px 25px rgba(0, 210, 238, 0.55);
+    color: #04070d !important;
 }
 
 .btn-gold-action:active {

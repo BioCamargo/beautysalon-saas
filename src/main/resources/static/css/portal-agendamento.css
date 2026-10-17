@@ -1,17 +1,17 @@
 /* ==========================================================================
-   LUMORA 2.0 - PORTAL DE AGENDAMENTO MOBILE DO CLIENTE
-   Design inspirado no Boulevard / Fresha (Quiet Luxury & Alta Conversão)
+   NEXI PRO - PORTAL DE AGENDAMENTO MOBILE DO CLIENTE
+   Design Moderno & Alta Conversão (Electric Cyan & Emerald Tech)
    ========================================================================== */
 
 :root {
     --bg-obsidian: #0a0d14;
     --bg-card: #121722;
     --bg-card-hover: #192030;
-    --border-card: rgba(197, 160, 89, 0.22);
+    --border-card: rgba(0, 210, 238, 0.22);
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --gold-primary: #d4af37;
-    --gold-gradient: linear-gradient(135deg, #f7df99 0%, #d4af37 50%, #aa8214 100%);
-    --gold-glow: rgba(212, 175, 55, 0.25);
+    --gold-primary: #00d2ee;
+    --gold-gradient: linear-gradient(135deg, #00d2ee 0%, #00f0ff 40%, #10b981 100%);
+    --gold-glow: rgba(0, 210, 238, 0.35);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --success-color: #10b981;
@@ -25,8 +25,8 @@
 body {
     background-color: var(--bg-obsidian);
     background-image: 
-        radial-gradient(circle at 10% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+        radial-gradient(circle at 10% 15%, rgba(0, 210, 238, 0.09) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(16, 185, 129, 0.07) 0%, transparent 40%);
     background-attachment: fixed;
     color: var(--text-main);
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;

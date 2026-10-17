@@ -50,7 +50,7 @@ class EstoqueServiceTest {
     @BeforeEach
     void setUp() {
         TenantContext.setEmpresaId(EMPRESA_ID);
-        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("Lumora Studio").slug("lumora").build();
+        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("NEXI PRO Studio").slug("nexipro").build();
     }
 
     @AfterEach

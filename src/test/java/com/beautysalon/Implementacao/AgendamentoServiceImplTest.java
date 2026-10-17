@@ -72,7 +72,7 @@ class AgendamentoServiceImplTest {
     @BeforeEach
     void setUp() {
         TenantContext.setEmpresaId(EMPRESA_ID);
-        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("Lumora Studio").build();
+        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("NEXI PRO Studio").build();
         clienteMock = Cliente.builder().id(10L).nome("Camila").telefone("11999998888").empresa(empresaMock).build();
         servicoMock = Servico.builder().id(20L).nome("Corte").preco(new BigDecimal("90.00")).duracaoMinutos(45).empresa(empresaMock).build();
         profissionalMock = User.builder().id(30L).nome("Keilla").empresa(empresaMock).build();

@@ -33,10 +33,10 @@ public class AuthRestDTO {
             @Schema(example = "1")
             Long empresaId,
 
-            @Schema(example = "lumora")
+            @Schema(example = "nexipro")
             String empresaSlug,
 
-            @Schema(example = "Lumora Studio & Estética")
+            @Schema(example = "NEXI PRO Studio & Estética")
             String empresaNome
     ) {}
 }

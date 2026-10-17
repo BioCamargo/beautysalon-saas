@@ -15,12 +15,19 @@ import java.time.LocalDateTime;
 @Table(name = "empresas")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
 @EqualsAndHashCode(of = "id")
 public class Empresa {
+
+    public Empresa() {
+        this.taxaCartaoEstimada = BigDecimal.ZERO;
+        this.segmento = SegmentoEmpresa.SALAO_BELEZA;
+        this.plano = PlanoSaaS.STUDIO;
+        this.statusAssinatura = StatusAssinatura.TRIAL;
+        this.ativo = true;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +38,7 @@ public class Empresa {
 
     /**
      * Identificador único na URL: /meu-salao/clientes
-     * Deve ser lowercase, sem espaços, ex: "studio-lumora"
+     * Deve ser lowercase, sem espaços, ex: "studio-nexipro"
      */
     @Column(unique = true, nullable = false, length = 100)
     private String slug;

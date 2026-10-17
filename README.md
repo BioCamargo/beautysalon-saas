@@ -1,4 +1,4 @@
-# ✂️ BeautySalon / LUMORA - Sistema Completo de Gestão para Salão de Beleza, Estética & Barbearias (Multi-Tenant SaaS)
+# ✂️ NEXI PRO - Gestão Inteligente para Salão de Beleza, Estética & Barbearias (Multi-Tenant SaaS)
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17%20%2F%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Architecture-Clean%20%26%20Multi--Tenant-blueviolet?style=for-the-badge" alt="Architecture" />
 </p>
 
-O **BeautySalon** (LUMORA / Proj_Studio) é uma plataforma web empresarial completa desenvolvida com **Spring Boot 3.5**, projetada para otimizar os processos operacionais, financeiros e de fidelização de salões de beleza, clínicas de estética e barbearias com arquitetura **Multi-Tenant SaaS** (isolamento de dados por empresa via rota `/{slug}/`).
+O **NEXI PRO** é uma plataforma web empresarial completa desenvolvida com **Spring Boot 3.5**, projetada para otimizar os processos operacionais, financeiros e de fidelização de salões de beleza, clínicas de estética e barbearias com arquitetura **Multi-Tenant SaaS** (isolamento de dados por empresa via rota `/{slug}/`).
 
 ---
 
@@ -265,7 +265,7 @@ O servidor iniciará na porta **`8081`**. Acesse no navegador:
 
 ## 🔑 Contas e Dados Padrão
 
-* **Empresa de Demonstração (Tenant)**: `lumora` (URL: `http://localhost:8081/lumora/home`)
+* **Empresa de Demonstração (Tenant)**: `nexipro` (URL: `http://localhost:8081/nexipro/home`)
 * **Usuário Administrador**: `admin`
 * **Senha Inicial**: `admin123`
 * **Papel (Role)**: `OWNER` / `ADMIN`

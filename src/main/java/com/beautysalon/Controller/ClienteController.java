@@ -181,11 +181,11 @@ public class ClienteController {
         if ("csv".equalsIgnoreCase(formato)) {
             arquivoBytes = clienteImportacaoService.gerarModeloCsv();
             contentType = "text/csv; charset=UTF-8";
-            nomeArquivo = "modelo_importacao_clientes_lumora.csv";
+            nomeArquivo = "modelo_importacao_clientes_nexipro.csv";
         } else {
             arquivoBytes = clienteImportacaoService.gerarModeloXlsx();
             contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            nomeArquivo = "modelo_importacao_clientes_lumora.xlsx";
+            nomeArquivo = "modelo_importacao_clientes_nexipro.xlsx";
         }
 
         return ResponseEntity.ok()

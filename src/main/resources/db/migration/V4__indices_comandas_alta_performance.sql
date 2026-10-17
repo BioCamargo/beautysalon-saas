@@ -1,6 +1,6 @@
 -- ===================================================================
 -- Flyway Migration V4: Índices de Alta Performance para Consultas Financeiras
--- BeautySalon / LUMORA Multi-tenant SaaS
+-- NEXI PRO Multi-tenant SaaS
 -- ===================================================================
 
 -- 1. Índice Composto para consultas de Comandas por Período e Status (Dashboard e DRE)

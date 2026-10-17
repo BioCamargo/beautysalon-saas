@@ -1,6 +1,6 @@
 -- ===================================================================
 -- Flyway Migration V1: Initial Database Schema
--- BeautySalon / LUMORA Multi-tenant SaaS
+-- NEXI PRO Multi-tenant SaaS
 -- Todas as tabelas no plural e 100% alinhadas com as entidades JPA e AuditableEntity
 -- ===================================================================
 

@@ -1,4 +1,4 @@
-# 📡 Catálogo de Endpoints e Rotas - BeautySalon (LUMORA SaaS)
+# 📡 Catálogo de Endpoints e Rotas - BeautySalon (NEXI PRO SaaS)
 
 Este documento cataloga integralmente as **APIs RESTful (OpenAPI 3 / Swagger)** e as **Rotas Web (MVC/Thymeleaf)** do sistema **BeautySalon** (`Proj_Studio`), detalhando parâmetros, cabeçalhos, payloads JSON, permissões de acesso e contratos multi-tenant.
 
@@ -133,8 +133,8 @@ Erros ocorridos nas APIs REST são interceptados pelo `GlobalRestExceptionHandle
   "type": "about:blank",
   "title": "Recurso não encontrado",
   "status": 404,
-  "detail": "Cliente não localizado para o ID informado no tenant lumora",
-  "instance": "/api/v1/lumora/clientes/999",
+  "detail": "Cliente não localizado para o ID informado no tenant nexipro",
+  "instance": "/api/v1/nexipro/clientes/999",
   "timestamp": "2026-09-28T19:00:00"
 }
 ```

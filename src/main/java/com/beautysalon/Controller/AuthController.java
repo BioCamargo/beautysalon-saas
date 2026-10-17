@@ -45,10 +45,10 @@ public class AuthController {
                 model.addAttribute("pageTitle", "Login - " + emp.getNome());
             } else {
                 model.addAttribute("empresaSlug", slug);
-                model.addAttribute("pageTitle", "Login - Lumora");
+                model.addAttribute("pageTitle", "Login - NEXI PRO");
             }
         } else {
-            model.addAttribute("pageTitle", "Login - Lumora");
+            model.addAttribute("pageTitle", "Login - NEXI PRO");
         }
         model.addAttribute("contentPage", "auth/login");
         return "home/index";
@@ -67,7 +67,7 @@ public class AuthController {
         String username = (String) session.getAttribute("PENDING_TENANT_USERNAME");
         model.addAttribute("candidates", candidates);
         model.addAttribute("username", username);
-        model.addAttribute("pageTitle", "Selecione o Estabelecimento - Lumora");
+        model.addAttribute("pageTitle", "Selecione o Estabelecimento - NEXI PRO");
         model.addAttribute("contentPage", "auth/select-tenant");
         return "home/index";
     }
@@ -121,13 +121,13 @@ public class AuthController {
         session.removeAttribute("PENDING_TENANT_USERNAME");
 
         String slug = selected.getEmpresaSlug();
-        return "redirect:/" + (slug != null && !slug.isBlank() ? slug : "lumora") + "/home";
+        return "redirect:/" + (slug != null && !slug.isBlank() ? slug : "nexipro") + "/home";
     }
 
     @GetMapping({"/register", "/register-empresa"})
     public String showRegisterEmpresa(Model model) {
         model.addAttribute("contentPage", "auth/register");
-        model.addAttribute("pageTitle", "Cadastre seu Salão - Lumora SaaS");
+        model.addAttribute("pageTitle", "Cadastre seu Estabelecimento - NEXI PRO");
         model.addAttribute("empresaDTO", new RegisterEmpresaDTO());
         return "home/index";
     }

@@ -14,11 +14,10 @@
                             style="background-color: var(--accent-gold); color: #0b0f19; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;">PAINEL
                             OPERACIONAL</span>
                         <span class="text-white-50" style="font-size: 0.8rem;"
-                            th:text="${empresaNome != null ? empresaNome : 'BeautySalon & Estética'}">BeautySalon &
-                            Estética</span>
+                            th:text="${empresaNome != null ? empresaNome : 'NEXI PRO Estabelecimento'}">NEXI PRO Estabelecimento</span>
                         <span class="badge bg-warning text-dark" style="font-size: 0.72rem; font-weight: 700;"
                             th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() == 'TRIAL'}">
-                            <i class="bi bi-clock-history me-1"></i>Teste: <span th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 7} + ' dias'">7 dias</span>
+                            <i class="bi bi-clock-history me-1"></i>Teste: <span th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 15} + ' dias'">15 dias</span>
                         </span>
                     </div>
                     <h2 class="mb-1" style="font-family: var(--font-serif); font-size: 1.75rem; color: #ffffff;">
@@ -27,7 +26,7 @@
                             style="color: var(--accent-gold);">Operador</span>!
                     </h2>
                     <p class="mb-0 text-white-50" style="font-size: 0.92rem;">
-                        Bem-vindo ao sistema de gestão do seu Studio. Acompanhe atendimentos, equipe e faturamento em tempo real.
+                        Bem-vindo ao <strong>NEXI PRO</strong>. Acompanhe atendimentos, equipe e faturamento em tempo real no próximo nível do seu negócio.
                     </p>
                 </div>
 
@@ -162,7 +161,7 @@
                 if (totalProfissionais > 1) concluidos++;
                 
                 // Se o link já foi copiado anteriormente pelo usuário
-                const linkCopiado = localStorage.getItem('lumora_link_copiado_' + empresaSlug) === 'true';
+                const linkCopiado = localStorage.getItem('nexipro_link_copiado_' + empresaSlug) === 'true';
                 if (linkCopiado) {
                     concluidos++;
                     const s3Badge = document.getElementById('step3Badge');
@@ -178,7 +177,7 @@
                 if (text) text.innerText = percent + '% Concluído (' + concluidos + ' de 3)';
 
                 // Se o usuário já fechou o onboarding manualmente
-                const fechado = localStorage.getItem('lumora_onboarding_fechado_' + empresaSlug);
+                const fechado = localStorage.getItem('nexipro_onboarding_fechado_' + empresaSlug);
                 if (fechado === 'true' && percent === 100) {
                     const card = document.getElementById('onboardingCard');
                     if (card) card.style.display = 'none';
@@ -195,7 +194,7 @@
                     btn.className = 'btn btn-sm btn-success w-100 fw-bold';
                     btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Copiado com Sucesso!';
 
-                    localStorage.setItem('lumora_link_copiado_' + empresaSlug, 'true');
+                    localStorage.setItem('nexipro_link_copiado_' + empresaSlug, 'true');
                     calcularProgressoOnboarding();
 
                     setTimeout(() => {
@@ -212,7 +211,7 @@
             function fecharOnboarding() {
                 const card = document.getElementById('onboardingCard');
                 if (card) card.style.display = 'none';
-                localStorage.setItem('lumora_onboarding_fechado_' + empresaSlug, 'true');
+                localStorage.setItem('nexipro_onboarding_fechado_' + empresaSlug, 'true');
             }
 
             document.addEventListener('DOMContentLoaded', calcularProgressoOnboarding);

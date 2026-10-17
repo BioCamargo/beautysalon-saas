@@ -1,4 +1,4 @@
-# 💾 Documentação do Banco de Dados - BeautySalon (LUMORA Multi-Tenant)
+# 💾 Documentação do Banco de Dados - BeautySalon (NEXI PRO Multi-Tenant)
 
 Este documento detalha o modelo relacional de dados, o diagrama Entidade-Relacionamento (ER), o dicionário de dados e as estratégias de persistência e versionamento com **Flyway** do sistema **BeautySalon** (`Proj_Studio`).
 
@@ -73,7 +73,7 @@ erDiagram
 | :--- | :--- | :---: | :---: | :--- |
 | `id` | `BIGSERIAL` | `NOT NULL` | **PK** | Identificador único do tenant |
 | `nome` | `VARCHAR(255)` | `NOT NULL` | - | Razão Social ou Nome Fantasia |
-| `slug` | `VARCHAR(100)` | `NOT NULL` | **UK** | Identificador na URL (ex: `lumora`, `studio-vip`) |
+| `slug` | `VARCHAR(100)` | `NOT NULL` | **UK** | Identificador na URL (ex: `nexipro`, `studio-vip`) |
 | `cnpj` | `VARCHAR(20)` | `NULL` | **UK** | Cadastro Nacional da Pessoa Jurídica |
 | `telefone` | `VARCHAR(30)` | `NULL` | - | Telefone de contato institucional |
 | `email` | `VARCHAR(150)` | `NULL` | - | E-mail corporativo |

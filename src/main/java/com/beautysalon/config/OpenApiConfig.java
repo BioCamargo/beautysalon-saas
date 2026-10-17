@@ -18,7 +18,7 @@ public class OpenApiConfig {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
-                        .title("BeautySalon & LUMORA - API REST Backend")
+                        .title("NEXI PRO - API REST Backend")
                         .version("v1.0.0")
                         .description("Documentação interativa da API REST para Gestão de Salões de Beleza, Clínicas de Estética e Barbearias (Multi-Tenant com autenticação JWT).")
                         .contact(new Contact()

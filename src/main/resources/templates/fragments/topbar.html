@@ -13,10 +13,9 @@
             </button>
             <div>
                 <h1 class="topbar-title">
-                    <span th:text="${pageTitle} ?: 'Beauty Salon'">Dashboard</span>
+                    <span th:text="${pageTitle} ?: 'NEXI PRO'">Dashboard</span>
                 </h1>
-                <div class="topbar-subtitle" th:if="${subtitle != null}" th:text="${subtitle}">Sistema de Gestão do
-                    Estúdio</div>
+                <div class="topbar-subtitle" th:if="${subtitle != null}" th:text="${subtitle}">NEXI PRO — Gestão Inteligente</div>
             </div>
         </div>
 
@@ -30,7 +29,7 @@
                      alt="Logo" 
                      style="height: 22px; width: 22px; object-fit: contain; border-radius: 4px;" />
                 <i th:if="${empresaLogo == null or empresaLogo.isEmpty()}" class="bi bi-shop text-muted"></i>
-                <span th:text="${empresaNome}">Studio Lumora VIP</span>
+                <span th:text="${empresaNome}">NEXI PRO VIP</span>
             </div>
 
             <!-- BADGE DE STATUS DE ASSINATURA / TRIAL -->
@@ -82,11 +81,11 @@
                             <i class="bi bi-gem text-warning fs-4"></i>
                             <div>
                                 <h5 class="modal-title mb-0" id="modalPlanosSaaSLabel"
-                                    style="font-family: var(--font-serif); font-weight: 700;">Planos & Assinatura Lumora
+                                    style="font-family: var(--font-sans); font-weight: 700;">Planos & Assinatura NEXI PRO
                                 </h5>
                                 <div style="font-size: 0.8rem; color: #94a3b8;"
-                                    th:text="'Estúdio: ' + (${empresaNome} ?: 'Seu Estúdio') + ' • ' + (${empresaDiasRestantesTrial} ?: 7) + ' dias restantes de teste'">
-                                    Estúdio Lumora</div>
+                                    th:text="'Estabelecimento: ' + (${empresaNome} ?: 'Seu Estabelecimento') + ' • ' + (${empresaDiasRestantesTrial} ?: 15) + ' dias restantes de teste'">
+                                    Estabelecimento NEXI PRO</div>
                             </div>
                         </div>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
@@ -123,7 +122,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Anamnese digital
                                             touch</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
                                         <i class="bi bi-whatsapp me-1 text-success"></i> Ativar Solo
@@ -157,7 +156,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Ficha técnica &
                                             estoque</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-warning btn-sm rounded-pill mt-auto fw-bold text-dark"
                                         style="background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%); border: none;">
@@ -190,7 +189,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Suporte
                                             prioritário VIP</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'lumora') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
                                         <i class="bi bi-whatsapp me-1 text-success"></i> Ativar VIP

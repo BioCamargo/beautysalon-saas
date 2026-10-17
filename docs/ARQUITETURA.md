@@ -1,4 +1,4 @@
-# 🏛️ Documento de Arquitetura de Software - BeautySalon (LUMORA SaaS)
+# 🏛️ Documento de Arquitetura de Software - BeautySalon (NEXI PRO SaaS)
 
 Este documento descreve a arquitetura técnica, os padrões de projeto, a estrutura de camadas, o isolamento multi-tenant e o ciclo de vida das requisições do sistema **BeautySalon** (`Proj_Studio`).
 
