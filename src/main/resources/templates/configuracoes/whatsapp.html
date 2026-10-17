@@ -181,16 +181,35 @@
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label small fw-bold">URL da API (Endpoint):</label>
-                                            <input type="url" name="apiUrl" th:value="${config.apiUrl}" class="form-control" placeholder="Ex: http://localhost:8080 ou https://sua-api.com" />
+                                            <input type="url" name="apiUrl" id="inputApiUrl" th:value="${config.apiUrl}" class="form-control" placeholder="Ex: http://localhost:8080 ou https://sua-api.com" />
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label small fw-bold">Nome da Instância:</label>
-                                            <input type="text" name="instanceName" th:value="${config.instanceName}" class="form-control" placeholder="Ex: studio-principal" />
+                                            <input type="text" name="instanceName" id="inputInstanceName" th:value="${config.instanceName}" class="form-control" placeholder="Ex: studio-principal" />
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label small fw-bold">API Key / Token da Instância:</label>
-                                            <input type="text" name="apiKey" th:value="${config.apiKey}" class="form-control" placeholder="Chave de segurança da API" />
+                                            <input type="text" name="apiKey" id="inputApiKey" th:value="${config.apiKey}" class="form-control" placeholder="Chave de segurança da API (Ex: nexipro123)" />
                                         </div>
+                                    </div>
+
+                                    <!-- AÇÕES RÁPIDAS DA INSTÂNCIA -->
+                                    <div class="mt-4 p-3 bg-light rounded-3 border">
+                                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                            <div>
+                                                <strong class="d-block text-dark"><i class="bi bi-shield-check text-success me-1"></i>Pareamento & Webhook Interativo</strong>
+                                                <small class="text-muted">Conecte seu WhatsApp lendo o QR Code e ative o recebimento de confirmações (1/2).</small>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-outline-success btn-sm" onclick="autoConfigurarWebhook()">
+                                                    <i class="bi bi-link-45deg"></i> Sincronizar Webhook
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalQrCode()">
+                                                    <i class="bi bi-qr-code-scan"></i> Conectar via QR Code
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="statusWebhookFeedback" class="mt-2 small fw-bold" style="display: none;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -393,8 +412,44 @@
     </div>
 </div>
 
+<!-- MODAL QR CODE -->
+<div class="modal fade" id="modalQrCode" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-qr-code text-primary me-2"></i>Parear WhatsApp Web</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="pararPollingQr()"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div id="qrLoading" class="my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="text-muted small mt-2">Conectando à Evolution API e gerando QR Code...</p>
+                </div>
+                <div id="qrContainer" style="display: none;">
+                    <img id="imgQrCode" src="" alt="QR Code WhatsApp" class="img-fluid rounded border p-2 bg-white shadow-sm" style="max-width: 260px;" />
+                    <p class="small text-muted mt-3 mb-1">Abra o WhatsApp no seu celular > <strong>Aparelhos Conectados</strong> > <strong>Conectar Aparelho</strong> e aponte a câmera.</p>
+                </div>
+                <div id="qrConnected" style="display: none;" class="my-4">
+                    <i class="bi bi-check-circle-fill text-success display-3"></i>
+                    <h5 class="fw-bold mt-2 text-success">WhatsApp Conectado!</h5>
+                    <p class="text-muted small mb-0">Sua instância está online e pronta para disparar automações e receber respostas dos clientes.</p>
+                </div>
+                <div id="qrError" style="display: none;" class="alert alert-danger my-3 small text-start"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0 justify-content-between">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="buscarQrCode()">
+                    <i class="bi bi-arrow-clockwise"></i> Atualizar QR Code
+                </button>
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal" onclick="pararPollingQr()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<script th:inline="javascript">
     function toggleProviderFields() {
         const isMeta = document.getElementById('provMeta').checked;
         const metaSection = document.getElementById('metaFieldsSection');
@@ -431,8 +486,8 @@
 
     function restaurarPadrao(tipo) {
         const padroes = {
-            agendamento: "🌸 *{empresa}*\n\nOlá, *{cliente}*! ✨\nSeu agendamento para *{servico}* foi confirmado com sucesso!\n\n📅 *Data:* {data}\n⏰ *Horário:* {hora}\n\nCaso precise remarcar, entre em contato conosco. Estamos te esperando! 💕",
-            lembrete: "⏰ *Lembrete de Atendimento - {empresa}*\n\nOlá, *{cliente}*! ✨\nLembramos do seu horário agendado para *{data}* às *{hora}* ({servico}).\n\nPodemos confirmar sua presença? Responda com SIM. Até logo! 💕",
+            agendamento: "🌸 *{empresa}*\n\nOlá, *{cliente}*! ✨\nSeu agendamento para *{servico}* foi confirmado com sucesso!\n\n📅 *Data:* {data}\n⏰ *Horário:* {hora}\n\n👉 *Por favor, responda:*\n*1* para Confirmar Presença\n*2* para Remarcar/Cancelar\n\nEstamos te esperando! 💕",
+            lembrete: "⏰ *Lembrete de Atendimento - {empresa}*\n\nOlá, *{cliente}*! ✨\nPassando para lembrar do seu horário hoje para *{servico}* às *{hora}*.\n\n👉 *Responda:* \n*1* para Confirmar sua Presença \n*2* para Remarcar ou Cancelar\n\nAté logo! 💕",
             comanda: "🧾 *{empresa} - Comprovante de Atendimento*\n\nOlá, *{cliente}*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* {comanda}\n💰 *Total:* R$ {total}\n💳 *Forma de Pagamento:* {formaPagamento}\n\nMuito obrigado pela sua visita! Volte sempre! ✨",
             aniversario: "🎂 *Parabéns, {cliente}!* 🎉\n\nA equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"
         };
@@ -441,6 +496,93 @@
         if (textarea && padroes[tipo]) {
             textarea.value = padroes[tipo];
         }
+    }
+
+    let pollingInterval = null;
+
+    function abrirModalQrCode() {
+        const modal = new bootstrap.Modal(document.getElementById('modalQrCode'));
+        modal.show();
+        buscarQrCode();
+        if (!pollingInterval) {
+            pollingInterval = setInterval(buscarQrCode, 4000);
+        }
+    }
+
+    function pararPollingQr() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    }
+
+    function buscarQrCode() {
+        const slug = /*[[${empresaSlug}]]*/ 'nexipro';
+        fetch(`/${slug}/configuracoes/whatsapp/qrcode`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('qrLoading').style.display = 'none';
+                if (data.sucesso) {
+                    if (data.status === 'CONNECTED') {
+                        document.getElementById('qrContainer').style.display = 'none';
+                        document.getElementById('qrError').style.display = 'none';
+                        document.getElementById('qrConnected').style.display = 'block';
+                        pararPollingQr();
+                    } else if (data.qrcode) {
+                        document.getElementById('qrConnected').style.display = 'none';
+                        document.getElementById('qrError').style.display = 'none';
+                        document.getElementById('qrContainer').style.display = 'block';
+                        let src = data.qrcode;
+                        if (!src.startsWith('data:image')) {
+                            src = 'data:image/png;base64,' + src;
+                        }
+                        document.getElementById('imgQrCode').src = src;
+                    }
+                } else {
+                    document.getElementById('qrContainer').style.display = 'none';
+                    document.getElementById('qrConnected').style.display = 'none';
+                    const errBox = document.getElementById('qrError');
+                    errBox.style.display = 'block';
+                    errBox.innerText = data.mensagem || 'Não foi possível carregar o QR Code.';
+                }
+            })
+            .catch(err => {
+                document.getElementById('qrLoading').style.display = 'none';
+                const errBox = document.getElementById('qrError');
+                errBox.style.display = 'block';
+                errBox.innerText = 'Erro na comunicação: ' + err;
+            });
+    }
+
+    function autoConfigurarWebhook() {
+        const slug = /*[[${empresaSlug}]]*/ 'nexipro';
+        const feedback = document.getElementById('statusWebhookFeedback');
+        feedback.style.display = 'block';
+        feedback.className = 'mt-2 small text-primary';
+        feedback.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Registrando webhook na Evolution API...';
+
+        const token = document.querySelector('input[name="_csrf"]')?.value;
+
+        fetch(`/${slug}/configuracoes/whatsapp/webhook/auto-config`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': token || ''
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.sucesso) {
+                feedback.className = 'mt-2 small text-success';
+                feedback.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Webhook ativado com sucesso! Endpoint: <code>${data.webhookUrl}</code>`;
+            } else {
+                feedback.className = 'mt-2 small text-danger';
+                feedback.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.mensagem}`;
+            }
+        })
+        .catch(err => {
+            feedback.className = 'mt-2 small text-danger';
+            feedback.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> Erro: ${err}`;
+        });
     }
 </script>
 

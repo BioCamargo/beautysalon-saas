@@ -52,7 +52,7 @@ public class WhatsAppConfigController {
                     .orElseThrow(() -> new IllegalStateException("Nenhuma configuração do WhatsApp encontrada."));
 
             String empresaNome = com.beautysalon.tenant.TenantContext.getNome() != null 
-                    ? com.beautysalon.tenant.TenantContext.getNome() : "Studio Lumora";
+                    ? com.beautysalon.tenant.TenantContext.getNome() : "NEXI PRO Studio";
             String dataHoje = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String horaAtual = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -91,5 +91,44 @@ public class WhatsAppConfigController {
             redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao testar envio: " + e.getMessage());
         }
         return "redirect:/" + slug + "/configuracoes/whatsapp";
+    }
+
+    /**
+     * Endpoint AJAX para obter o QR Code em tempo real da Evolution API para pareamento via WhatsApp Web.
+     */
+    @GetMapping("/qrcode")
+    @ResponseBody
+    public java.util.Map<String, Object> obterQrCode(@PathVariable String slug) {
+        WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual().orElse(null);
+        if (config == null) {
+            return java.util.Map.of("sucesso", false, "mensagem", "Nenhuma configuração encontrada.");
+        }
+        return whatsAppService.obterQrCodeInstancia(config);
+    }
+
+    /**
+     * Auto-registra o webhook do NEXI PRO na Evolution API.
+     */
+    @PostMapping("/webhook/auto-config")
+    @ResponseBody
+    public java.util.Map<String, Object> autoConfigurarWebhook(@PathVariable String slug,
+                                                               jakarta.servlet.http.HttpServletRequest request) {
+        WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual().orElse(null);
+        if (config == null) {
+            return java.util.Map.of("sucesso", false, "mensagem", "Nenhuma configuração encontrada.");
+        }
+
+        String scheme = request.getScheme();
+        String host = request.getServerName();
+        int port = request.getServerPort();
+        String portPart = (port == 80 || port == 443) ? "" : ":" + port;
+        String webhookUrl = scheme + "://" + host + portPart + "/api/v1/webhooks/whatsapp";
+
+        boolean configurado = whatsAppService.configurarWebhook(config, webhookUrl);
+        return java.util.Map.of(
+                "sucesso", configurado,
+                "webhookUrl", webhookUrl,
+                "mensagem", configurado ? "Webhook configurado com sucesso na Evolution API!" : "Não foi possível registrar o webhook automaticamente."
+        );
     }
 }

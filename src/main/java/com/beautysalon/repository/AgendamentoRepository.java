@@ -35,4 +35,15 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     long countByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio,
             java.time.LocalDateTime fim);
+
+    @EntityGraph(attributePaths = { "empresa", "cliente", "servicos", "profissional" })
+    List<Agendamento> findByStatusAndLembreteEnviadoFalseAndDataHoraBetween(String status, java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+
+    @EntityGraph(attributePaths = { "empresa", "cliente", "servicos", "profissional" })
+    @Query("SELECT a FROM Agendamento a WHERE a.empresa.id = :empresaId AND a.dataHora >= :aPartirDe AND a.status IN ('AGENDADO', 'CONFIRMADO') ORDER BY a.dataHora ASC")
+    List<Agendamento> findProximosAgendamentosPorEmpresa(@Param("empresaId") Long empresaId, @Param("aPartirDe") java.time.LocalDateTime aPartirDe);
+
+    @EntityGraph(attributePaths = { "empresa", "cliente", "servicos", "profissional" })
+    @Query("SELECT a FROM Agendamento a WHERE a.dataHora >= :aPartirDe AND a.status IN ('AGENDADO', 'CONFIRMADO') ORDER BY a.dataHora ASC")
+    List<Agendamento> findProximosAgendamentosGlobais(@Param("aPartirDe") java.time.LocalDateTime aPartirDe);
 }

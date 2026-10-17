@@ -239,6 +239,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         dto.setId(a.getId());
         dto.setDataHora(a.getDataHora());
         dto.setStatus(a.getStatus());
+        dto.setLembreteEnviado(a.isLembreteEnviado());
         dto.setObservacoes(a.getObservacoes());
 
         if (a.getCliente() != null) {

@@ -87,7 +87,8 @@ public class SecurityConfig {
                                 "/api/v1/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/v1/webhooks/**"
                         ).permitAll()
 
                         // 2. REGRAS POR PAPEL DO TENANT (OWNER / ADMIN)

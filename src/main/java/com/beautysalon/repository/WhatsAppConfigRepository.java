@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface WhatsAppConfigRepository extends JpaRepository<WhatsAppConfig, Long> {
     Optional<WhatsAppConfig> findByEmpresaId(Long empresaId);
+    Optional<WhatsAppConfig> findByInstanceName(String instanceName);
 }

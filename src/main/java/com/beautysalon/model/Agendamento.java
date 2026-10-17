@@ -46,7 +46,14 @@ public class Agendamento extends AuditableEntity {
     private User profissional; // Profissional que atenderá
 
     @Builder.Default
-    private String status = "AGENDADO"; // AGENDADO, EM_ATENDIMENTO, CONCLUIDO, CANCELADO, NAO_COMPARECEU
+    private String status = "AGENDADO"; // AGENDADO, CONFIRMADO, EM_ATENDIMENTO, CONCLUIDO, CANCELADO, NAO_COMPARECEU
+
+    @Builder.Default
+    @Column(name = "lembrete_enviado")
+    private boolean lembreteEnviado = false;
+
+    @Column(name = "lembrete_enviado_em")
+    private LocalDateTime lembreteEnviadoEm;
 
     private String observacoes;
 

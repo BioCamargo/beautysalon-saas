@@ -42,6 +42,10 @@ public class AgendamentoDTO
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
+    private boolean lembreteEnviado;
+    public boolean isLembreteEnviado() { return lembreteEnviado; }
+    public void setLembreteEnviado(boolean lembreteEnviado) { this.lembreteEnviado = lembreteEnviado; }
+
     // Getters e Setters
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
