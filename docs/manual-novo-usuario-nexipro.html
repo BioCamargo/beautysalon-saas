@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual do Usuário — NEXI PRO SaaS</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 12mm 15mm 15mm 15mm;
+      @bottom-right {
+        content: counter(page);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 8pt;
+        color: #64748b;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 9.5pt;
+    }
+
+    /* CAPA EXECUTIVA */
+    .cover-page {
+      page-break-after: always;
+      height: 96vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 30px;
+      background: linear-gradient(145deg, #090d16 0%, #0f172a 60%, #1e1b4b 100%);
+      color: #ffffff;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-page::before {
+      content: "";
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 210, 238, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .cover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #00D2EE, #00F5A0);
+      color: #041019;
+      font-weight: 800;
+      font-size: 7.5pt;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+
+    .cover-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 18pt;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .cover-body {
+      margin-top: auto;
+      margin-bottom: auto;
+      z-index: 1;
+    }
+
+    .cover-title-tag {
+      color: #00D2EE;
+      font-size: 11pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      color: #94a3b8;
+      max-width: 520px;
+      line-height: 1.5;
+    }
+
+    .cover-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8.5pt;
+      color: #94a3b8;
+      z-index: 1;
+    }
+
+    /* PÁGINAS DE CONTEÚDO */
+    .page {
+      page-break-after: always;
+      padding: 10px 0;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    .chapter-header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .chapter-num {
+      font-size: 8.5pt;
+      font-weight: 800;
+      color: #0284c7;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .chapter-title {
+      font-size: 17pt;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 16px 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+      text-align: justify;
+    }
+
+    /* BOXES DE DESTAQUE */
+    .callout {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #0284c7;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-size: 9pt;
+    }
+
+    .callout.tip {
+      border-left-color: #10b981;
+      background: #f0fdf4;
+      color: #14532d;
+    }
+
+    .callout.warning {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+      color: #78350f;
+    }
+
+    .callout.vip {
+      border-left-color: #8b5cf6;
+      background: #faf5ff;
+      color: #581c87;
+    }
+
+    /* PASSO A PASSO ILUSTRADO */
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .step-card {
+      display: flex;
+      gap: 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9pt;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 9.5pt;
+      margin-bottom: 2px;
+    }
+
+    .step-desc {
+      font-size: 8.8pt;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    /* TABELAS */
+    table.guide-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 8.5pt;
+    }
+
+    table.guide-table th {
+      background: #0f172a;
+      color: #ffffff;
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 700;
+      border: 1px solid #0f172a;
+    }
+
+    table.guide-table td {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+
+    table.guide-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    /* GRID DE CARDS */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .feature-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      background: #ffffff;
+    }
+
+    .feature-box-title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 9pt;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .feature-box-desc {
+      font-size: 8.3pt;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .tag-shortcut {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 8pt;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CAPA -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <div class="cover-badge">Guia Oficial de Implantação</div>
+      <div class="cover-brand">NEXI PRO</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-title-tag">Manual do Usuário & Equipe</div>
+      <div class="cover-title">Guia Definitivo de Primeiros Passos</div>
+      <div class="cover-subtitle">
+        O passo a passo prático para configurar seu salão, ativar o agendamento online no WhatsApp, blindar seu caixa e multiplicar seus lucros em 24 horas.
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div><strong>NEXI PRO SaaS</strong> — Tecnologia de Luxo para Gestão da Beleza</div>
+      <div>Versão 2026.1 • Plano VIP</div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 1: BOAS-VINDAS & ONBOARDING EM 10 MINUTOS -->
+  <div class="page">
+    <div class="chapter-header">
+      <div>
+        <div class="chapter-num">Capítulo 1</div>
+        <div class="chapter-title">Boas-Vindas & Configuração em 10 Minutos</div>
+      </div>
+      <div style="font-size: 8pt; color: #64748b;">NEXI PRO Studio</div>
+    </div>
+
+    <p>
+      Parabéns por escolher o <strong>NEXI PRO</strong>! Você acaba de dar um salto definitivo na gestão do seu estabelecimento. Este manual foi estruturado para que você ou sua equipe coloquem a plataforma para rodar em <strong>menos de 10 minutos</strong>, sem necessidade de conhecimento técnico.
+    </p>
+
+    <div class="callout tip">
+      💡 <strong>Dica de Ouro:</strong> O NEXI PRO é 100% em nuvem e funciona no computador do balcão, tablet ou diretamente no smartphone dos seus colaboradores sem ocupar memória do aparelho.
+    </div>
+
+    <h3>⚡ O Checklist de Lançamento Inicial (Faça em Ordem):</h3>
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <div class="step-title">Personalize os Dados do Salão & Identidade Visual</div>
+          <div class="step-desc">
+            Acesse <strong>Configurações &gt; Dados da Empresa</strong>. Preencha o nome do seu estabelecimento, telefone de atendimento, insira a URL da sua logo ou faça o upload da imagem da sua marca. Isso personalizará os comprovantes e a tela do cliente.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="step-title">Cadastre sua Chave Pix para Recebimento Automático</div>
+          <div class="step-desc">
+            Na mesma tela, informe a <strong>Chave Pix do Salão</strong> (CNPJ, celular, e-mail ou aleatória) e a <strong>Cidade</strong> da conta. O sistema gera automaticamente QR Codes dinâmicos padrão Banco Central (BACEN) no balcão e no portal online.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <div class="step-title">Conecte o Robô de WhatsApp</div>
+          <div class="step-desc">
+            Vá em <strong>Configurações &gt; WhatsApp &amp; Robô</strong>. Conecte sua instância escaneando o QR Code (Evolution/Z-API) ou inserindo o Token Oficial da Meta. Ative as mensagens de confirmação e lembretes automáticos.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <div class="step-title">Cadastre sua Equipe e Serviços Principais</div>
+          <div class="step-desc">
+            Cadastre seus profissionais definindo a cor de cada um na agenda e a taxa de comissão. Em seguida, cadastre seus serviços com preço e duração estimada para bloqueio automático de horários.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2: O PORTAL DE AGENDAMENTO & MARKETING DE BALCÃO -->
+  <div class="page">
+    <div class="chapter-header">
+      <div>
+        <div class="chapter-num">Capítulo 2</div>
+        <div class="chapter-title">Autoatendimento Online & Display de Balcão</div>
+      </div>
+      <div style="font-size: 8pt; color: #64748b;">Captação 24/7</div>
+    </div>
+
+    <p>
+      O agendamento pelo WhatsApp consome em média <strong>4 horas por dia</strong> da recepção. Com o NEXI PRO, seus clientes agendam sozinhos em menos de 30 segundos, direto pelo celular.
+    </p>
+
+    <h3>🔗 Seu Link Oficial Curto de Agendamento:</h3>
+    <div class="callout vip">
+      🌟 <strong>Seu Link Curto:</strong> <span class="tag-shortcut">https://seusalao.nexipro.com.br/p/seu-slug</span><br>
+      Coloque este link na <strong>Bio do Instagram</strong>, no botão do <strong>Google Meu Negócio</strong> e no perfil comercial do WhatsApp. Ao ser compartilhado, ele renderiza uma prévia com a logo e o nome do seu salão.
+    </div>
+
+    <h3>🏷️ O Display de Balcão Acrílico A5 com QR Code:</h3>
+    <p>
+      Em <strong>Divulgação / QR Code Balcão</strong> (<span class="tag-shortcut">/{slug}/divulgacao</span>), você tem acesso à arte oficial pronta para impressão em papel couchê ou porta-retratos acrílico A5 (148 x 210 mm).
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-box">
+        <div class="feature-box-title">📲 Como o Cliente Usa no Salão</div>
+        <div class="feature-box-desc">
+          Enquanto aguarda no lavatório ou recepção, o cliente aponta a câmera do celular para o display do balcão e já garante o retorno do próximo mês sozinho.
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-box-title">🖨️ Como Imprimir com Perfeição</div>
+        <div class="feature-box-desc">
+          Basta clicar em <strong>"Imprimir Display de Balcão A5"</strong> na tela. O sistema oculta a barra lateral e formata o tamanho ideal sem bordas indesejadas.
+        </div>
+      </div>
+    </div>
+
+    <h3>🤖 O Robô Interativo de WhatsApp (Redução de 80% no No-Show):</h3>
+    <table class="guide-table">
+      <thead>
+        <tr>
+          <th>Gatilho do Robô</th>
+          <th>Mensagem Enviada</th>
+          <th>Resposta do Cliente</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Agendamento Realizado</strong></td>
+          <td>Envia mensagem instantânea com data, hora, serviço e instruções.</td>
+          <td>O cliente sabe que o horário está garantido.</td>
+        </tr>
+        <tr>
+          <td><strong>Lembrete 2h Antes</strong></td>
+          <td>"Digite 1 para Confirmar sua Presença ou 2 para Remarcar."</td>
+          <td>Se responder <strong>1</strong>: o agendamento vira <strong>CONFIRMADO</strong> na agenda.<br>Se responder <strong>2</strong>: cancela e libera o horário para outro cliente.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PÁGINA 3: OPERAÇÃO DE FRENTE DE CAIXA (PDV) & COMANDAS -->
+  <div class="page">
+    <div class="chapter-header">
+      <div>
+        <div class="chapter-num">Capítulo 3</div>
+        <div class="chapter-title">Frente de Caixa (PDV), Comandas & Fechamento</div>
+      </div>
+      <div style="font-size: 8pt; color: #64748b;">Blindagem Financeira</div>
+    </div>
+
+    <p>
+      O coração financeiro do seu salão opera em três etapas simples e à prova de falhas:
+    </p>
+
+    <h3>1. Abertura do Caixa Diário</h3>
+    <p>
+      No início do expediente, o operador acessa <strong>Financeiro &gt; Abrir Caixa</strong> e informa o <strong>Fundo de Troco Inicial</strong> (ex: R$ 100,00 em moedas/cédulas). Todas as entradas do dia serão amarradas a este caixa.
+    </p>
+
+    <h3>2. Lançamento e Pagamento de Comandas</h3>
+    <div class="feature-grid">
+      <div class="feature-box">
+        <div class="feature-box-title">💳 Split de Pagamentos Fracionados</div>
+        <div class="feature-box-desc">
+          O cliente fez R$ 150 de mechas e quer pagar R$ 50 no Pix e R$ 100 no Crédito? Use o formulário de parcelas! O sistema abate o saldo restante em tempo real até zerar a dívida.
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-box-title">⚡ Chips Rápidos (Speed POS)</div>
+        <div class="feature-box-desc">
+          Toque direto nos botões <em>PIX, Crédito, Débito ou Dinheiro</em> para preenchimento imediato sem precisar de digitação manual na hora do rush.
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-box-title">📦 Baixa Automática de Estoque</div>
+        <div class="feature-box-desc">
+          Ao fechar a comanda, produtos de revenda saem do estoque e os insumos de bancada (ex: coloração) sofrem baixa técnica pela ficha do serviço.
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-box-title">🛡️ Proteção Anti-Duplo Clique</div>
+        <div class="feature-box-desc">
+          Ao clicar em receber, o botão desativa na hora com aviso de processando, impedindo lançamentos duplicados por clique acidental.
+        </div>
+      </div>
+    </div>
+
+    <h3>3. Fechamento Cego de Caixa (Zero Divergência de Centavos)</h3>
+    <div class="callout warning">
+      ⚠️ <strong>Como Funciona a Conferência Cega:</strong><br>
+      Ao encerrar o dia, o operador <strong>NÃO</strong> vê o saldo total na tela. Ele simplesmente conta as cédulas físicas da gaveta e digita o valor apurado. O sistema compara o valor físico com o saldo esperado e registra automaticamente sobras ou faltas para auditoria.
+    </div>
+
+    <h3>4. Rateio Automático de Comissões</h3>
+    <p>
+      Esqueça as planilhas manuais e brigas de fim de mês. Cada serviço executado calcula a porcentagem exata do profissional. No fim do período, acesse <strong>Relatórios &gt; Comissões</strong> e clique em <strong>"Enviar Extrato WhatsApp"</strong> para prestar contas ao profissional com 1 clique.
+    </p>
+  </div>
+
+  <!-- PÁGINA 4: FAQ & SUPORTE EXECUTIVO -->
+  <div class="page">
+    <div class="chapter-header">
+      <div>
+        <div class="chapter-num">Capítulo 4</div>
+        <div class="chapter-title">Perguntas Frequentes & Suporte VIP</div>
+      </div>
+      <div style="font-size: 8pt; color: #64748b;">Central de Ajuda</div>
+    </div>
+
+    <h3>❓ Dúvidas Mais Comuns dos Assinantes:</h3>
+
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-number">?</div>
+        <div class="step-content">
+          <div class="step-title">E se dois profissionais tiverem o mesmo nome de usuário?</div>
+          <div class="step-desc">
+            Cada estabelecimento possui um <strong>slug exclusivo</strong> (ex: <span class="tag-shortcut">/studio-vip/login</span>). Se o usuário fizer login na tela genérica e pertencer a dois salões, o sistema abre o <strong>Seletor Multi-Tenant</strong> para ele escolher qual salão quer gerenciar.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">?</div>
+        <div class="step-content">
+          <div class="step-title">Como o profissional acessa apenas a agenda dele?</div>
+          <div class="step-desc">
+            Basta cadastrar o usuário dele com o papel <strong>ROLE_PROFISSIONAL</strong>. Ele terá acesso para visualizar seus agendamentos e o módulo <strong>Meus Ganhos</strong>, ficando impedido de ver despesas, caixa e relatórios estratégicos do salão.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">?</div>
+        <div class="step-content">
+          <div class="step-title">Como emitir o comprovante térmico de comanda (58mm / 80mm)?</div>
+          <div class="step-desc">
+            Na tela da comanda paga, clique no botão <strong>"Imprimir Comprovante"</strong> ou use <span class="tag-shortcut">Ctrl + P</span>. O sistema aciona o layout de mini-impressora térmica perfeitamente formatado.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">?</div>
+        <div class="step-content">
+          <div class="step-title">Como cadastrar folgas ou horário de almoço dos barbeiros/cabeleireiros?</div>
+          <div class="step-desc">
+            Acesse <strong>Equipe &gt; Selecionar Profissional &gt; Ausências &amp; Folgas</strong>. Registre o dia e horário. O portal de agendamento online bloqueia automaticamente esses horários para o cliente.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip" style="margin-top: 24px; text-align: center; padding: 18px;">
+      <h4 style="font-size: 11pt; color: #0f172a; margin-bottom: 6px;">Precisa de Ajuda ou Implantação Assistida?</h4>
+      <p style="text-align: center; font-size: 9pt; margin-bottom: 0;">
+        Fale diretamente com o time de suporte executivo do <strong>NEXI PRO</strong>.<br>
+        WhatsApp Oficial: <strong>(11) 99999-8888</strong> • E-mail: <strong>suporte@nexipro.com.br</strong>
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>
