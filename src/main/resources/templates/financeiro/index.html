@@ -71,13 +71,17 @@
             </div>
 
             <!-- CARD PARA ABRIR CAIXA SE ESTIVER FECHADO -->
-            <div class="content-card mb-4 border-warning" th:if="${caixaAberto == null}">
-                <div class="p-4 text-center">
-                    <i class="bi bi-lock text-warning" style="font-size: 3rem;"></i>
-                    <h4 class="mt-2">O Caixa do dia está fechado</h4>
-                    <p class="text-muted">Abra o caixa informando o fundo de troco inicial para começar a registrar comandas e atendimentos.</p>
-                    <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#modalAbrirCaixa">
-                        <i class="bi bi-unlock-fill"></i> Abrir Caixa Agora
+            <div class="content-card mb-4" th:if="${caixaAberto == null}">
+                <div class="empty-state-lux my-2">
+                    <div class="empty-state-icon" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">
+                        <i class="bi bi-safe2"></i>
+                    </div>
+                    <h3 class="empty-state-title">Caixa Diário Pronto para Abertura</h3>
+                    <p class="empty-state-desc">
+                        Defina o fundo de troco inicial para habilitar a recepção de atendimentos, movimentações financeiras e fechamento de comandas do dia.
+                    </p>
+                    <button class="btn btn-gold px-4 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalAbrirCaixa">
+                        <i class="bi bi-unlock-fill me-1"></i> Abrir Caixa com Fundo de Troco
                     </button>
                 </div>
             </div>
@@ -120,7 +124,20 @@
                             </td>
                         </tr>
                         <tr th:if="${comandasAbertas == null or #lists.isEmpty(comandasAbertas)}">
-                            <td colspan="6" class="text-center py-4 text-muted">Nenhuma comanda aberta no momento.</td>
+                            <td colspan="6" class="p-0 border-0">
+                                <div class="empty-state-lux m-3">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-receipt-cutoff"></i>
+                                    </div>
+                                    <h3 class="empty-state-title">Nenhuma comanda aberta no momento</h3>
+                                    <p class="empty-state-desc">
+                                        Abra uma nova comanda para registrar serviços, venda de produtos ou consumir itens diretamente no salão.
+                                    </p>
+                                    <button class="btn btn-gold btn-sm px-3 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalNovaComanda">
+                                        <i class="bi bi-plus-lg me-1"></i> Abrir Comanda Rápida
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

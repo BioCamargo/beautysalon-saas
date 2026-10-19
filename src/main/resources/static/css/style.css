@@ -1450,42 +1450,58 @@ textarea.form-control-modern {
     }
 }
 
-/* 6. EMPTY STATE ELEGANTE (Anti-Poluição) */
+/* 6. EMPTY STATE ELEGANTE (Anti-Poluição & Alto Padrão NEXI PRO) */
 .empty-state-lux {
     padding: 3.5rem 2rem;
     text-align: center;
-    background: #ffffff;
-    border: 1px dashed var(--border-lux);
-    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px dashed rgba(0, 210, 238, 0.28);
+    border-radius: 20px;
     margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.empty-state-lux:hover {
+    border-color: rgba(0, 210, 238, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 210, 238, 0.08);
 }
 
 .empty-state-icon {
-    width: 64px;
-    height: 64px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: rgba(212, 175, 55, 0.1);
-    color: var(--accent-gold);
+    background: rgba(0, 210, 238, 0.12);
+    color: var(--accent-cyan);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
+    font-size: 2rem;
     margin-bottom: 1.25rem;
+    border: 1px solid rgba(0, 210, 238, 0.3);
+    animation: luxIconFloat 4s ease-in-out infinite;
+}
+
+@keyframes luxIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
 
 .empty-state-title {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-main);
     margin-bottom: 0.5rem;
+    font-family: var(--font-sans);
 }
 
 .empty-state-desc {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: var(--text-secondary);
-    max-width: 440px;
+    max-width: 480px;
     margin: 0 auto 1.5rem auto;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* MODAL GLOBAL DE CONFIRMAÇÃO LUXO */

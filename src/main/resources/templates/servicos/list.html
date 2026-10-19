@@ -100,12 +100,19 @@
                             </td>
                         </tr>
                         <tr th:if="${servicos == null or #lists.isEmpty(servicos)}">
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="bi bi-scissors" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
-                                Nenhum serviço cadastrado no catálogo.<br>
-                                <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
-                                    <i class="bi bi-plus-lg"></i> Cadastrar Primeiro Serviço
-                                </a>
+                            <td colspan="5" class="p-0 border-0">
+                                <div class="empty-state-lux m-3">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-scissors"></i>
+                                    </div>
+                                    <h3 class="empty-state-title">Seu menu de serviços e catálogo</h3>
+                                    <p class="empty-state-desc">
+                                        Cadastre procedimentos, duração, comissões de profissionais e insumos para compor seu menu e liberar agendamentos online.
+                                    </p>
+                                    <a th:href="@{/{slug}/servicos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                        <i class="bi bi-plus-lg me-1"></i> Cadastrar Primeiro Serviço
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

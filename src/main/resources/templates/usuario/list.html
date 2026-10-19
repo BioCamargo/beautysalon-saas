@@ -98,12 +98,19 @@
                             </td>
                         </tr>
                         <tr th:if="${usuarios == null or #lists.isEmpty(usuarios)}">
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                <i class="bi bi-people" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
-                                Nenhum usuário encontrado.<br>
-                                <a th:href="@{/{slug}/usuarios/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
-                                    <i class="bi bi-person-plus"></i> Cadastrar Usuário
-                                </a>
+                            <td colspan="4" class="p-0 border-0">
+                                <div class="empty-state-lux m-3">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <h3 class="empty-state-title">Sua equipe de profissionais e atendentes</h3>
+                                    <p class="empty-state-desc">
+                                        Adicione cabeleireiros, manicures, esteticistas ou recepcionistas para definir comissões, gerenciar horários de agenda e conceder acessos individuais.
+                                    </p>
+                                    <a th:href="@{/{slug}/usuarios/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                        <i class="bi bi-person-plus-fill me-1"></i> Cadastrar Profissional / Usuário
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

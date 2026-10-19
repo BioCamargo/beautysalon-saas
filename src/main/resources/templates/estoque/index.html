@@ -153,8 +153,19 @@
                             </td>
                         </tr>
                         <tr th:if="${produtos == null or #lists.isEmpty(produtos)}">
-                            <td colspan="8" class="text-center py-4 text-muted">
-                                Nenhum produto cadastrado no momento.
+                            <td colspan="8" class="p-0 border-0">
+                                <div class="empty-state-lux m-3">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-box-seam"></i>
+                                    </div>
+                                    <h3 class="empty-state-title">Controle inteligente de insumos e revenda</h3>
+                                    <p class="empty-state-desc">
+                                        Cadastre produtos para venda direta no PDV ou controle o gasto de insumos profissionais por serviço.
+                                    </p>
+                                    <a th:href="@{/{slug}/estoque/produtos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                        <i class="bi bi-plus-lg me-1"></i> Cadastrar Primeiro Produto
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

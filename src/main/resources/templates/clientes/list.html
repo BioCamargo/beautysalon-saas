@@ -149,12 +149,24 @@
                             </td>
                         </tr>
                         <tr th:if="${clientes == null or #lists.isEmpty(clientes)}">
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                <i class="bi bi-person-x" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
-                                Nenhum cliente encontrado com os critérios de busca.<br>
-                                <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
-                                    <i class="bi bi-person-plus"></i> Cadastrar Novo Cliente
-                                </a>
+                            <td colspan="4" class="p-0 border-0">
+                                <div class="empty-state-lux m-3">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-person-heart"></i>
+                                    </div>
+                                    <h3 class="empty-state-title">Sua base de clientes começa aqui</h3>
+                                    <p class="empty-state-desc">
+                                        Cadastre suas clientes ou importe uma planilha do Excel para ativar histórico de atendimentos, WhatsApp em 1 clique e fidelização inteligente.
+                                    </p>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <a th:href="@{/{slug}/clientes/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                            <i class="bi bi-person-plus-fill me-1"></i> Cadastrar Primeira Cliente
+                                        </a>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalImportarClientes">
+                                            <i class="bi bi-file-earmark-excel text-success me-1"></i> Importar Planilha
+                                        </button>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         </tbody>

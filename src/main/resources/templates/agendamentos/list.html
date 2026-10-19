@@ -173,12 +173,24 @@
                                 </td>
                             </tr>
                             <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
-                                <td colspan="7" class="text-center py-5 text-muted">
-                                    <i class="bi bi-calendar-x" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
-                                    Nenhum agendamento encontrado no momento.<br>
-                                    <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm mt-3">
-                                        <i class="bi bi-plus-lg"></i> Criar o primeiro agendamento
-                                    </a>
+                                <td colspan="7" class="p-0 border-0">
+                                    <div class="empty-state-lux m-3">
+                                        <div class="empty-state-icon">
+                                            <i class="bi bi-calendar2-heart"></i>
+                                        </div>
+                                        <h3 class="empty-state-title">Sua agenda está pronta para os atendimentos</h3>
+                                        <p class="empty-state-desc">
+                                            Nenhum agendamento marcado para esta data. Crie um novo atendimento interno ou receba novos agendamentos pelo seu Portal Online do Studio.
+                                        </p>
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                                <i class="bi bi-calendar-plus-fill me-1"></i> Novo Agendamento
+                                            </a>
+                                            <a th:href="@{/p/{slug}(slug=${empresaSlug})}" target="_blank" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold">
+                                                <i class="bi bi-globe me-1"></i> Abrir Portal Online
+                                            </a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
