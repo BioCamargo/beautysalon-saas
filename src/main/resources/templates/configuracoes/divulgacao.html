@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Divulgação & QR Code | ' + ${empresaNome} ?: 'NEXI PRO'">Divulgação & QR Code</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+    <!-- CSS Base -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- QR Code Generator Lib -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <style>
+        .divulgacao-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 992px) {
+            .divulgacao-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* DISPLAY DE BALCÃO DE LUXO */
+        .display-balcao-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2.25rem;
+            text-align: center;
+            border: 2px solid rgba(0, 210, 238, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .display-balcao-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #00D2EE, #10B981, #D4AF37);
+        }
+
+        .display-logo-circle {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            margin: 0 auto 1.25rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0B0E14 0%, #1e293b 100%);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .display-logo-circle img {
+            max-width: 50px;
+            max-height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .display-salao-nome {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #0b0f19;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .display-salao-tag {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #0284c7;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .display-qr-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: inline-block;
+            margin: 0 auto 1.5rem auto;
+            border: 1px dashed rgba(0, 210, 238, 0.4);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+
+        #qrcodeCanvas img, #qrcodeCanvas canvas {
+            margin: 0 auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .display-cta-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .display-cta-desc {
+            font-size: 0.88rem;
+            color: #64748b;
+            max-width: 340px;
+            margin: 0 auto 1.5rem auto;
+            line-height: 1.5;
+        }
+
+        .display-footer-tag {
+            font-size: 0.72rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 600;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+        }
+
+        /* PLAYBOOK CARDS */
+        .playbook-step-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .playbook-step-card:hover {
+            border-color: #00D2EE;
+            box-shadow: 0 4px 12px rgba(0, 210, 238, 0.08);
+            transform: translateX(3px);
+        }
+
+        .playbook-step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 210, 238, 0.12);
+            color: #0284c7;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* CSS DE IMPRESSÃO (EXCLUSIVO PARA O DISPLAY) */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .no-print, .app-sidebar, .app-topbar, .btn, .breadcrumb-custom, .alert, header {
+                display: none !important;
+            }
+            .app-main, .page-content, .container-fluid, .content-card {
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+            }
+            .divulgacao-grid {
+                display: block !important;
+            }
+            .left-column {
+                display: none !important;
+            }
+            .right-column {
+                width: 100% !important;
+                max-width: 500px !important;
+                margin: 2rem auto !important;
+            }
+            .display-balcao-card {
+                border: 2px solid #000000 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                margin: 0 auto !important;
+                padding: 3rem 2rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR FRAGMENT -->
+    <div th:replace="~{fragments/sidebar :: sidebar('divulgacao')}"></div>
+
+    <div class="app-main">
+        <!-- TOPBAR FRAGMENT -->
+        <header th:replace="~{fragments/topbar :: topbar('Divulgação & QR Code', 'Display de Balcão e Link da Bio para Agendamentos')}"></header>
+
+        <main class="page-content">
+            <div class="container-fluid">
+
+                <div class="divulgacao-grid">
+                    <!-- COLUNA ESQUERDA: LINKS, COPIAR & GATILHOS -->
+                    <div class="left-column no-print">
+
+                        <!-- CARD 1: LINK DA BIO DO INSTAGRAM & WHATSAPP -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                                <h2 class="card-title-custom">
+                                    <i class="bi bi-instagram text-danger"></i>
+                                    <span>Link da Bio do Instagram</span>
+                                </h2>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <i class="bi bi-lightning-charge-fill me-1"></i> 24h Ativo
+                                </span>
+                            </div>
+
+                            <p class="text-muted small mb-3">
+                                Coloque este link na bio do perfil do Instagram do seu salão. As clientes clicam e agendam horários sozinhas em 30 segundos, sem você perder tempo no WhatsApp.
+                            </p>
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-light border-end-0 text-muted">
+                                    <i class="bi bi-link-45deg fs-5"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-0 fw-semibold" id="inputLinkBio" th:value="${linkBio}" readonly style="background-color: #f8fafc; color: #0284c7;">
+                                <button class="btn btn-gold fw-bold px-3" type="button" onclick="copiarLinkBio()">
+                                    <i class="bi bi-clipboard-check me-1"></i> Copiar Link
+                                </button>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a th:href="${linkAgendar}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> Testar Portal do Cliente
+                                </a>
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="compartilharNoWhatsApp()">
+                                    <i class="bi bi-whatsapp me-1"></i> Divulgar no WhatsApp
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: PLAYBOOK DE GUERRILHA (COMO LOTAR A AGENDA) -->
+                        <div class="content-card">
+                            <div class="card-header-custom">
+                                <h3 class="card-title-custom">
+                                    <i class="bi bi-rocket-takeoff-fill text-warning"></i>
+                                    <span>Playbook de Guerrilha: 3 Passos para Lotar sua Agenda</span>
+                                </h3>
+                            </div>
+
+                            <div class="playbook-step-card">
+                                <div class="playbook-step-num">1</div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">Imprima o Display e Cole nos Espelhos</h6>
+                                    <p class="text-muted small mb-0">
+                                        Enquanto faz escova ou manicure, a cliente olha o espelho. Ao escanear o QR Code, ela já agenda a volta da próxima semana antes mesmo de pagar a conta!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="playbook-step-card">
+                                <div class="playbook-step-num">2</div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">Coloque o Link na Bio do Instagram</h6>
+                                    <p class="text-muted small mb-0">
+                                        No perfil do Instagram, adicione: <em>"✨ Agende seu horário em 30 segundos pelo link abaixo ⬇️"</em> apontando para o seu link exclusivo.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="playbook-step-card">
+                                <div class="playbook-step-num">3</div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark">Divulgue no Status do WhatsApp toda Segunda</h6>
+                                    <p class="text-muted small mb-0">
+                                        Poste uma foto bonita de um trabalho realizado e avise: <em>"Horários da semana abertos! Garanta sua vaga com 1 toque no link."</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- COLUNA DIREITA: DISPLAY DE BALCÃO COM QR CODE & BOTÕES DE IMPRESSÃO -->
+                    <div class="right-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2 no-print">
+                            <span class="text-muted small fw-semibold">Pré-visualização do Display</span>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="baixarQrCodePng()">
+                                    <i class="bi bi-download me-1"></i> Baixar PNG
+                                </button>
+                                <button type="button" class="btn btn-gold btn-sm fw-bold" onclick="window.print()">
+                                    <i class="bi bi-printer-fill me-1"></i> Imprimir Placa A5
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- O CARTÃO / DISPLAY DE BALCÃO -->
+                        <div class="display-balcao-card" id="displayBalcaoPrint">
+                            <!-- LOGO OU ÍCONE DO SALÃO -->
+                            <div class="display-logo-circle">
+                                <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" th:src="${empresaLogo}" alt="Logo Salão">
+                                <i th:if="${empresaLogo == null or empresaLogo.isEmpty()}" class="bi bi-scissors text-warning fs-3"></i>
+                            </div>
+
+                            <!-- NOME DO SALÃO -->
+                            <h2 class="display-salao-nome" th:text="${empresaNome} ?: 'Studio de Beleza'">NEXI PRO Studio</h2>
+                            <div class="display-salao-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'ESTÚDIO DE BELEZA & BEM-ESTAR'}">BELEZA & ESTÉTICA</div>
+
+                            <!-- CONTAINER DO QR CODE -->
+                            <div class="display-qr-box">
+                                <div id="qrcodeCanvas"></div>
+                            </div>
+
+                            <!-- INSTRUÇÃO DE IMPACTO -->
+                            <h3 class="display-cta-title">Agende seu Próximo Atendimento</h3>
+                            <p class="display-cta-desc">
+                                Aponte a câmera do seu celular para o QR Code acima para consultar procedimentos, valores e escolher o melhor dia e horário.
+                            </p>
+
+                            <!-- SELO DE QUALIDADE -->
+                            <div class="display-footer-tag">
+                                <i class="bi bi-shield-check text-success me-1"></i> Agendamento Online Seguro • NEXI PRO
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-3 text-muted small no-print">
+                            <i class="bi bi-info-circle me-1"></i> Dica: Imprima em papel fotográfico Couché 250g para colocar em totem ou display de acrílico.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- SCRIPTS & BOOTSTRAP -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const linkBioUrl = /*[[${linkBio}]]*/ 'http://localhost:8081/p/nexipro';
+    const empresaNome = /*[[${empresaNome}]]*/ 'NEXI PRO Studio';
+    const empresaSlug = /*[[${empresaSlug}]]*/ 'nexipro';
+
+    // 1. Gera o QR Code com alta resolução
+    document.addEventListener("DOMContentLoaded", function() {
+        const qrContainer = document.getElementById("qrcodeCanvas");
+        if (qrContainer) {
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: linkBioUrl,
+                width: 190,
+                height: 190,
+                colorDark : "#0b0f19",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+    });
+
+    // 2. Copiar Link com Feedback Toast
+    function copiarLinkBio() {
+        const input = document.getElementById("inputLinkBio");
+        if (input) {
+            navigator.clipboard.writeText(input.value).then(() => {
+                if (typeof showLuxToast === 'function') {
+                    showLuxToast('Sucesso', 'Link copiado para a área de transferência!', 'success');
+                } else {
+                    alert('Link copiado com sucesso: ' + input.value);
+                }
+            }).catch(() => {
+                input.select();
+                document.execCommand('copy');
+                alert('Link copiado: ' + input.value);
+            });
+        }
+    }
+
+    // 3. Compartilhar no WhatsApp com mensagem pronta
+    function compartilharNoWhatsApp() {
+        const msg = `🌸 *Olá!*\n\nAgora você pode agendar seu próximo horário no *${empresaNome}* de forma 100% online, escolhendo o profissional e horário com toda comodidade:\n\n👉 ${linkBioUrl}\n\nEsperamos te ver em breve! ✨`;
+        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+    }
+
+    // 4. Baixar QR Code como imagem PNG
+    function baixarQrCodePng() {
+        const qrImg = document.querySelector("#qrcodeCanvas img");
+        const qrCanvas = document.querySelector("#qrcodeCanvas canvas");
+
+        let downloadUrl = "";
+        if (qrImg && qrImg.src) {
+            downloadUrl = qrImg.src;
+        } else if (qrCanvas) {
+            downloadUrl = qrCanvas.toDataURL("image/png");
+        }
+
+        if (downloadUrl) {
+            const link = document.createElement("a");
+            link.download = `qrcode-agendamento-${empresaSlug}.png`;
+            link.href = downloadUrl;
+            link.click();
+            if (typeof showLuxToast === 'function') {
+                showLuxToast('Download Iniciado', 'QR Code baixado em alta resolução.', 'success');
+            }
+        } else {
+            alert('Aguarde o carregamento do QR Code.');
+        }
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>
