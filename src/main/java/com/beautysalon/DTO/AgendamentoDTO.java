@@ -65,4 +65,9 @@ public class AgendamentoDTO
     public void setClienteNome(String clienteNome) { this.clienteNome = clienteNome; }
     public String getClienteTelefone() { return clienteTelefone; }
     public void setClienteTelefone(String clienteTelefone) { this.clienteTelefone = clienteTelefone; }
+
+    public String getClienteTelefoneLimpo() {
+        if (clienteTelefone == null) return "";
+        return clienteTelefone.replaceAll("[^0-9]", "");
+    }
 }

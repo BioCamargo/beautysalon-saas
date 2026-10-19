@@ -21,6 +21,17 @@ public interface ComandaItemRepository extends JpaRepository<ComandaItem, Long> 
                                                       @Param("inicio") LocalDateTime inicio,
                                                       @Param("fim") LocalDateTime fim);
 
+    @Query("SELECT i FROM ComandaItem i " +
+           "JOIN FETCH i.comanda c " +
+           "LEFT JOIN FETCH c.cliente cl " +
+           "WHERE c.empresa.id = :empresaId AND i.profissional.id = :profissionalId " +
+           "AND c.status = 'PAGA' AND c.dataFechamento BETWEEN :inicio AND :fim " +
+           "ORDER BY c.dataFechamento DESC")
+    List<ComandaItem> findItensComComandaEClientePorPeriodo(@Param("empresaId") Long empresaId,
+                                                           @Param("profissionalId") Long profissionalId,
+                                                           @Param("inicio") LocalDateTime inicio,
+                                                           @Param("fim") LocalDateTime fim);
+
     @Query("SELECT COALESCE(SUM(i.valorComissao), 0) FROM ComandaItem i WHERE i.comanda.empresa.id = :empresaId AND i.profissional.id = :profissionalId AND i.comanda.status = 'PAGA' AND i.comanda.dataFechamento BETWEEN :inicio AND :fim")
     BigDecimal sumComissaoProfissional(@Param("empresaId") Long empresaId,
                                        @Param("profissionalId") Long profissionalId,

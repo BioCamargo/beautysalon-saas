@@ -102,6 +102,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/*",
                                 "/*/home/**",
+                                "/*/meus-ganhos/**",
                                 "/*/clientes/**",
                                 "/*/agendamentos/**",
                                 "/*/servicos/**",

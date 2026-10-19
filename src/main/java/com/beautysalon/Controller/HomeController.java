@@ -91,9 +91,17 @@ public class HomeController {
         java.time.LocalDateTime hojeInicio = java.time.LocalDate.now().atStartOfDay();
         java.time.LocalDateTime hojeFim = java.time.LocalDate.now().atTime(java.time.LocalTime.MAX);
 
+        long totalServicos = servicoRepository.countByEmpresaId(empresaId);
+        long totalProfissionais = userRepository.countByEmpresaId(empresaId);
+        long totalAgendamentosGeral = agendamentoRepository.countByEmpresaId(empresaId);
+
         model.addAttribute("totalClientes", clienteRepository.countByEmpresaId(empresaId));
-        model.addAttribute("totalServicos", servicoRepository.countByEmpresaId(empresaId));
-        model.addAttribute("totalProfissionais", userRepository.countByEmpresaId(empresaId));
+        model.addAttribute("totalServicos", totalServicos);
+        model.addAttribute("totalProfissionais", totalProfissionais);
+        model.addAttribute("totalAgendamentosGeral", totalAgendamentosGeral);
+        model.addAttribute("hasServicos", totalServicos > 0);
+        model.addAttribute("hasProfissionais", totalProfissionais > 1);
+        model.addAttribute("hasAgendamentos", totalAgendamentosGeral > 0);
         model.addAttribute("agendamentosHoje", agendamentoRepository.countByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));
         model.addAttribute("listaAgendamentosHoje", agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));
         model.addAttribute("valorParadoEstoque", estoqueService.calcularValorParadoEmEstoque());

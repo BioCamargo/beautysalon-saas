@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Meus Ganhos | NEXI PRO'">Meus Ganhos | NEXI PRO</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Fonts & NEXI PRO Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .kpi-card-gain {
+            background: linear-gradient(135deg, #0B0E14 0%, #161B26 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .kpi-card-gain:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 210, 238, 0.3);
+        }
+        .gain-val-neon {
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .filter-pill {
+            padding: 0.4rem 0.95rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .filter-pill.active {
+            background: #00D2EE;
+            color: #0B0E14;
+            box-shadow: 0 0 15px rgba(0, 210, 238, 0.4);
+        }
+        .filter-pill:not(.active) {
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .filter-pill:not(.active):hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('meus-ganhos')}"></div>
+
+    <!-- MAIN AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Meus Ganhos & Comissões', 'Consulta individual de atendimentos e extrato de repasses')}"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="page-content">
+
+            <!-- BANNER DO PROFISSIONAL (PERFIL & CHAVE PIX) -->
+            <div class="content-card mb-4" style="background: linear-gradient(135deg, #0B0E14 0%, #161B26 100%); border-radius: 16px; border: 1px solid rgba(0, 210, 238, 0.25);">
+                <div class="p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 54px; height: 54px; border-radius: 16px; background: rgba(0, 210, 238, 0.15); border: 1px solid rgba(0, 210, 238, 0.3); display: flex; align-items: center; justify-content: center; color: #00D2EE; font-size: 1.6rem;">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <h4 class="mb-0 fw-bold text-white" th:text="${profissionalAlvo.nome} ?: ${profissionalAlvo.username}">Profissional</h4>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.18); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.72rem;"
+                                      th:text="${profissionalAlvo.especialidade} ?: 'Especialista Parceiro'">Especialista</span>
+                                <span class="badge bg-secondary" style="font-size: 0.72rem;"
+                                      th:text="'Comissão Padrão: ' + ${profissionalAlvo.percentualComissao != null ? profissionalAlvo.percentualComissao : 0} + '%'">Comissão: 0%</span>
+                            </div>
+                            <div class="text-white-50 small mt-1">
+                                <i class="bi bi-shield-check text-info me-1"></i>
+                                <span>Ambiente seguro — Lei do Salão-Parceiro (Lei 13.352/2016)</span>
+                                <span th:if="${profissionalAlvo.chavePix != null and !#strings.isEmpty(profissionalAlvo.chavePix)}" class="ms-3 text-white">
+                                    <i class="bi bi-qr-code text-warning me-1"></i> Pix: <code class="text-warning" th:text="${profissionalAlvo.chavePix}">chave</code>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SE FOR ADMIN/OWNER: SELETOR DE PROFISSIONAL DA EQUIPE -->
+                    <div th:if="${isAdminOuOwner}" class="d-flex align-items-center gap-2">
+                        <form th:action="@{/{slug}/meus-ganhos(slug=${empresaSlug})}" method="get" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="filtroPeriodo" th:value="${filtroPeriodo}"/>
+                            <label class="text-white-50 small mb-0 d-none d-lg-inline">Consultar:</label>
+                            <select name="profissionalId" class="form-select form-select-sm" onchange="this.form.submit()" 
+                                    style="background: #11151F; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; min-width: 190px;">
+                                <option th:each="p : ${listaEquipe}" 
+                                        th:value="${p.id}" 
+                                        th:text="${p.nome} ?: ${p.username}" 
+                                        th:selected="${p.id == profissionalAlvo.id}">Profissional</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARDS DE METRICAS (GANHOS) -->
+            <div class="row g-3 mb-4">
+                <!-- HOJE -->
+                <div class="col-6 col-lg-3">
+                    <div class="kpi-card-gain">
+                        <div class="text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Ganhos Hoje</div>
+                        <div class="gain-val-neon text-white my-1" style="color: #10B981 !important;">
+                            R$ <span th:text="${#numbers.formatDecimal(ganhosHoje, 1, 2, 'COMMA')}">0,00</span>
+                        </div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem;">
+                            <i class="bi bi-clock-history text-success"></i> Fechado no caixa hoje
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ÚLTIMOS 7 DIAS -->
+                <div class="col-6 col-lg-3">
+                    <div class="kpi-card-gain">
+                        <div class="text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Últimos 7 Dias</div>
+                        <div class="gain-val-neon text-white my-1" style="color: #00D2EE !important;">
+                            R$ <span th:text="${#numbers.formatDecimal(ganhosSemana, 1, 2, 'COMMA')}">0,00</span>
+                        </div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem;">
+                            <i class="bi bi-calendar-week text-info"></i> Produção da semana
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MÊS ATUAL -->
+                <div class="col-6 col-lg-3">
+                    <div class="kpi-card-gain">
+                        <div class="text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Mês Atual</div>
+                        <div class="gain-val-neon text-white my-1" style="color: #F59E0B !important;">
+                            R$ <span th:text="${#numbers.formatDecimal(ganhosMes, 1, 2, 'COMMA')}">0,00</span>
+                        </div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem;">
+                            <i class="bi bi-trophy text-warning"></i> Acumulado do mês
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ATENDIMENTOS NO PERÍODO -->
+                <div class="col-6 col-lg-3">
+                    <div class="kpi-card-gain">
+                        <div class="text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Procedimentos (Período)</div>
+                        <div class="gain-val-neon text-white my-1">
+                            <span th:text="${totalAtendimentosPeriodo}">0</span>
+                        </div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem;">
+                            Média/item: R$ <span th:text="${#numbers.formatDecimal(ticketMedioComissao, 1, 2, 'COMMA')}">0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD PRINCIPAL: EXTRATO DETALHADO -->
+            <div class="content-card">
+                <div class="card-header-custom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-receipt text-warning"></i>
+                            <span>Extrato de Procedimentos & Comissões</span>
+                        </h2>
+                        <small class="text-muted">Total a receber no período selecionado: <strong class="text-success">R$ <span th:text="${#numbers.formatDecimal(ganhosPeriodo, 1, 2, 'COMMA')}">0,00</span></strong></small>
+                    </div>
+
+                    <!-- FILTROS DE PERÍODO -->
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a th:href="@{/{slug}/meus-ganhos(slug=${empresaSlug}, filtroPeriodo='hoje', profissionalId=${profissionalAlvo.id})}" 
+                           class="filter-pill" th:classappend="${filtroPeriodo == 'hoje'} ? 'active' : ''">
+                            <i class="bi bi-clock"></i> Hoje
+                        </a>
+                        <a th:href="@{/{slug}/meus-ganhos(slug=${empresaSlug}, filtroPeriodo='7dias', profissionalId=${profissionalAlvo.id})}" 
+                           class="filter-pill" th:classappend="${filtroPeriodo == '7dias'} ? 'active' : ''">
+                            <i class="bi bi-calendar7"></i> 7 Dias
+                        </a>
+                        <a th:href="@{/{slug}/meus-ganhos(slug=${empresaSlug}, filtroPeriodo='mes', profissionalId=${profissionalAlvo.id})}" 
+                           class="filter-pill" th:classappend="${filtroPeriodo == 'mes'} ? 'active' : ''">
+                            <i class="bi bi-calendar-month"></i> Mês Atual
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()" title="Imprimir Extrato">
+                            <i class="bi bi-printer"></i> Imprimir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABELA DE ITENS EXECUTADOS -->
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                        <tr>
+                            <th>Data / Horário</th>
+                            <th>Comanda</th>
+                            <th>Cliente</th>
+                            <th>Procedimento / Item</th>
+                            <th style="text-align: right;">Valor Cobrado</th>
+                            <th style="text-align: center;">% Comissão</th>
+                            <th style="text-align: right;">Sua Comissão Líquida</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${itensPeriodo}">
+                            <td>
+                                <i class="bi bi-calendar-check text-muted me-1"></i>
+                                <span th:text="${item.comanda != null and item.comanda.dataFechamento != null ? #temporals.format(item.comanda.dataFechamento, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 14:00</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-dark border" th:text="'#' + ${item.comanda != null ? item.comanda.id : '-'}">#1</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold" th:text="${item.comanda != null and item.comanda.cliente != null ? item.comanda.cliente.nome : 'Cliente Balcão'}">Cliente</div>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${item.tipo == 'SERVICO'} ? 'bg-info bg-opacity-10 text-info border border-info border-opacity-25' : 'bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25'"
+                                      style="font-size: 0.72rem; margin-right: 0.35rem;" th:text="${item.tipo}">SERVICO</span>
+                                <strong th:text="${item.descricaoItem}">Corte Feminino</strong>
+                            </td>
+                            <td style="text-align: right;" class="text-muted">
+                                R$ <span th:text="${#numbers.formatDecimal(item.valorTotal, 1, 2, 'COMMA')}">0,00</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="badge bg-secondary" style="font-size: 0.78rem;" th:text="${item.percentualComissao != null ? item.percentualComissao : 0} + '%'">40%</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <strong style="color: #10B981; font-size: 1.05rem;">
+                                    R$ <span th:text="${#numbers.formatDecimal(item.valorComissao, 1, 2, 'COMMA')}">0,00</span>
+                                </strong>
+                            </td>
+                        </tr>
+                        <tr th:if="${itensPeriodo == null or #lists.isEmpty(itensPeriodo)}">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-wallet2" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+                                Nenhum atendimento comissionado registrado no período selecionado.<br>
+                                <small>Assim que as comandas forem fechadas no caixa, suas comissões aparecerão aqui em tempo real.</small>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot th:if="${itensPeriodo != null and !#lists.isEmpty(itensPeriodo)}">
+                        <tr style="background: rgba(255, 255, 255, 0.03); font-weight: 700;">
+                            <td colspan="4" class="text-end text-uppercase" style="font-size: 0.85rem;">Total Geral do Período:</td>
+                            <td style="text-align: right;" class="text-muted">
+                                R$ <span th:text="${#numbers.formatDecimal(faturamentoTotalGerado, 1, 2, 'COMMA')}">0,00</span>
+                            </td>
+                            <td></td>
+                            <td style="text-align: right;">
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 1rem; padding: 0.45rem 0.85rem;">
+                                    R$ <span th:text="${#numbers.formatDecimal(ganhosPeriodo, 1, 2, 'COMMA')}">0,00</span>
+                                </span>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- BOOTSTRAP 5 JS BUNDLE -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

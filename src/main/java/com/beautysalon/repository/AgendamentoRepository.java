@@ -33,6 +33,8 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("inicio") java.time.LocalDateTime inicio,
             @Param("fim") java.time.LocalDateTime fim);
 
+    long countByEmpresaId(Long empresaId);
+
     long countByEmpresaIdAndDataHoraBetween(Long empresaId, java.time.LocalDateTime inicio,
             java.time.LocalDateTime fim);
 
