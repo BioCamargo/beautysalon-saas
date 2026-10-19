@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Assinatura & Planos | NEXI PRO'">Assinatura & Planos | NEXI PRO</title>
+
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        .subscription-hero-card {
+            background: linear-gradient(135deg, #0b0f19 0%, #1e293b 100%);
+            border: 1px solid rgba(197, 160, 89, 0.35);
+            border-radius: 20px;
+            padding: 2rem;
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscription-hero-card::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(0, 210, 238, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .plan-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        .plan-card.featured {
+            border: 2px solid #00D2EE;
+            background: linear-gradient(180deg, #ffffff 0%, #f0fdff 100%);
+            box-shadow: 0 10px 30px rgba(0, 210, 238, 0.12);
+        }
+
+        .plan-badge-popular {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #00D2EE 0%, #0099b8 100%);
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 4px 14px;
+            border-radius: 999px;
+            box-shadow: 0 4px 10px rgba(0, 210, 238, 0.3);
+        }
+
+        .plan-badge-current {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid #10b981;
+            font-weight: 700;
+            font-size: 0.78rem;
+            padding: 4px 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .plan-price {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            margin: 1rem 0;
+        }
+
+        .plan-price small {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .plan-features-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0 2rem;
+            flex-grow: 1;
+        }
+
+        .plan-features-list li {
+            font-size: 0.88rem;
+            color: #475569;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .plan-features-list li i {
+            color: #10b981;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .gateway-settings-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar('assinatura')}"></div>
+
+    <!-- MAIN APP AREA -->
+    <div class="app-main">
+        <!-- TOPBAR -->
+        <div th:replace="~{fragments/topbar :: topbar('Gestão da Assinatura & Planos', 'Controle o plano do seu estúdio, faturas e renovações do SaaS')}"></div>
+
+        <main class="page-content">
+            <div class="container-fluid px-0">
+
+                <!-- FEEDBACK FLASH ALERTS -->
+                <div th:if="${sucesso}" class="alert alert-success alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm" role="alert" style="background: rgba(16, 185, 129, 0.15); color: #065f46; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                    <span th:text="${sucesso}">Operação realizada com sucesso!</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show rounded-4 mb-4 border-0 shadow-sm" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+                    <span th:text="${erro}">Erro ao processar alteração.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- HERO STATUS OVERVIEW CARD -->
+                <div class="subscription-hero-card">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge" th:classappend="${empresa.statusAssinatura != null ? empresa.statusAssinatura.classeBadge : 'bg-primary'}"
+                                      style="font-size: 0.85rem; padding: 6px 14px; border-radius: 999px;"
+                                      th:text="${empresa.statusAssinatura != null ? empresa.statusAssinatura.descricao : 'Plano Trial'}">
+                                    Trial Ativo
+                                </span>
+                                <span class="plan-badge-current" th:if="${empresa.plano != null}">
+                                    <i class="bi bi-gem"></i>
+                                    <span th:text="${empresa.plano.nomeExibicao}">Plano Studio</span>
+                                </span>
+                            </div>
+
+                            <h2 class="fw-bold mb-2 text-white" th:text="${empresa.nome} ?: 'Seu Estabelecimento'">NEXI PRO Studio</h2>
+                            
+                            <!-- Cenário 1: Período de Testes Ativo -->
+                            <p class="text-light opacity-75 mb-3" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'TRIAL'}">
+                                Seu estúdio está aproveitando o teste grátis com todos os recursos liberados. 
+                                Restam <strong class="text-warning" th:text="${empresa.diasRestantesTrial} + ' dias'">7 dias</strong> de gratuidade.
+                            </p>
+
+                            <!-- Cenário 2: Assinatura Ativa Regular -->
+                            <p class="text-light opacity-75 mb-3" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'ATIVA'}">
+                                Sua assinatura está em dia! Acesso total liberado para agendamentos online, frente de caixa e WhatsApp.
+                                <span th:if="${empresa.dataFimAssinatura != null}">
+                                    Próxima renovação em <strong class="text-info" th:text="${#temporals.format(empresa.dataFimAssinatura, 'dd/MM/yyyy')}">25/11/2026</strong>.
+                                </span>
+                            </p>
+
+                            <!-- Cenário 3: Fatura em Atraso (Inadimplente) -->
+                            <p class="text-warning mb-3" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'INADIMPLENTE'}">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                Identificamos uma fatura pendente. Regularize sua mensalidade para manter a grade de agendamentos online ativa.
+                            </p>
+                        </div>
+
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <!-- Botão de Fatura Direta Asaas -->
+                            <a th:if="${empresa.linkFaturaAtual != null and !empresa.linkFaturaAtual.isBlank()}" 
+                               th:href="${empresa.linkFaturaAtual}" target="_blank"
+                               class="btn btn-warning btn-lg fw-bold px-4 py-3 rounded-pill shadow-lg d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-qr-code-scan"></i>
+                                <span>Pagar Fatura (Pix / Cartão)</span>
+                            </a>
+                            <button th:if="${empresa.linkFaturaAtual == null or empresa.linkFaturaAtual.isBlank()}"
+                                    type="button" class="btn btn-outline-light btn-lg fw-bold px-4 py-3 rounded-pill"
+                                    data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS">
+                                <i class="bi bi-arrow-repeat me-1"></i> Escolher Novo Plano
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MATRIZ DE PLANOS -->
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold text-dark">Planos Feitos para Escalar seu Negócio</h3>
+                    <p class="text-muted">Sem fidelidade forçada. Cancele ou mude de plano a qualquer momento.</p>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <!-- 1. PLANO SOLO -->
+                    <div class="col-lg-4">
+                        <div class="plan-card" th:classappend="${empresa.plano != null and empresa.plano.name() == 'STARTER'} ? 'featured' : ''">
+                            <span class="plan-badge-current mb-3 align-self-start" th:if="${empresa.plano != null and empresa.plano.name() == 'STARTER'}">
+                                <i class="bi bi-check-circle-fill"></i> Seu Plano Atual
+                            </span>
+                            <h4 class="fw-bold mb-1 text-dark">Plano Solo</h4>
+                            <p class="text-muted small mb-0">Para profissionais autônomos e barbearias individuais</p>
+
+                            <div class="plan-price">
+                                R$ 59 <small>/mês</small>
+                            </div>
+
+                            <ul class="plan-features-list">
+                                <li><i class="bi bi-check-circle-fill"></i> 1 Profissional Ativo</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Agendamento Online 24/7</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Frente de Caixa (PDV) Rápido</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Controle de Clientes & Histórico</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Extrato de Comissões</li>
+                            </ul>
+
+                            <form th:action="@{/{slug}/assinatura/alterar-plano(slug=${empresaSlug})}" method="post">
+                                <input type="hidden" name="novoPlano" value="STARTER"/>
+                                <button type="submit" class="btn btn-outline-dark w-100 py-2 rounded-pill fw-bold"
+                                        th:disabled="${empresa.plano != null and empresa.plano.name() == 'STARTER'}">
+                                    <span th:text="${empresa.plano != null and empresa.plano.name() == 'STARTER'} ? 'Plano Ativo' : 'Escolher Solo'">Escolher Solo</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 2. PLANO STUDIO (MAIS POPULAR) -->
+                    <div class="col-lg-4">
+                        <div class="plan-card featured">
+                            <span class="plan-badge-popular">Mais Popular</span>
+                            <span class="plan-badge-current mb-3 align-self-start mt-2" th:if="${empresa.plano != null and empresa.plano.name() == 'STUDIO'}">
+                                <i class="bi bi-check-circle-fill"></i> Seu Plano Atual
+                            </span>
+                            <h4 class="fw-bold mb-1 text-dark mt-2">Plano Studio</h4>
+                            <p class="text-muted small mb-0">Para salões, esmalterias e barbearias em expansão</p>
+
+                            <div class="plan-price" style="color: #0099b8;">
+                                R$ 129 <small>/mês</small>
+                            </div>
+
+                            <ul class="plan-features-list">
+                                <li><i class="bi bi-check-circle-fill"></i> <strong>Até 5 Profissionais Parceiros</strong></li>
+                                <li><i class="bi bi-check-circle-fill"></i> <strong>Automação WhatsApp & Lembretes</strong></li>
+                                <li><i class="bi bi-check-circle-fill"></i> Baixa Automática de Estoque</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Anamnese Digital com Assinatura</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Split de Pagamentos & Sangria</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Meta Pixel & Google Ads Tracking</li>
+                            </ul>
+
+                            <form th:action="@{/{slug}/assinatura/alterar-plano(slug=${empresaSlug})}" method="post">
+                                <input type="hidden" name="novoPlano" value="STUDIO"/>
+                                <button type="submit" class="btn w-100 py-2 rounded-pill fw-bold text-white shadow-sm"
+                                        style="background: linear-gradient(135deg, #00D2EE 0%, #0099b8 100%);"
+                                        th:disabled="${empresa.plano != null and empresa.plano.name() == 'STUDIO'}">
+                                    <span th:text="${empresa.plano != null and empresa.plano.name() == 'STUDIO'} ? 'Plano Ativo' : 'Migrar para Studio'">Migrar para Studio</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 3. PLANO VIP -->
+                    <div class="col-lg-4">
+                        <div class="plan-card" th:classappend="${empresa.plano != null and empresa.plano.name() == 'VIP'} ? 'featured' : ''">
+                            <span class="plan-badge-current mb-3 align-self-start" th:if="${empresa.plano != null and empresa.plano.name() == 'VIP'}">
+                                <i class="bi bi-check-circle-fill"></i> Seu Plano Atual
+                            </span>
+                            <h4 class="fw-bold mb-1 text-dark">Plano VIP</h4>
+                            <p class="text-muted small mb-0">Para grandes centros de beleza, redes e clínicas de estética</p>
+
+                            <div class="plan-price">
+                                R$ 229 <small>/mês</small>
+                            </div>
+
+                            <ul class="plan-features-list">
+                                <li><i class="bi bi-check-circle-fill"></i> <strong>Profissionais Ilimitados</strong></li>
+                                <li><i class="bi bi-check-circle-fill"></i> DRE Contábil com Margem Real</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Algoritmo Inteligente Anti-Churn</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Diagnóstico de Ociosidade na Grade</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Suporte VIP Prioritário 24/7</li>
+                            </ul>
+
+                            <form th:action="@{/{slug}/assinatura/alterar-plano(slug=${empresaSlug})}" method="post">
+                                <input type="hidden" name="novoPlano" value="VIP"/>
+                                <button type="submit" class="btn btn-dark w-100 py-2 rounded-pill fw-bold"
+                                        th:disabled="${empresa.plano != null and empresa.plano.name() == 'VIP'}">
+                                    <span th:text="${empresa.plano != null and empresa.plano.name() == 'VIP'} ? 'Plano Ativo' : 'Fazer Upgrade para VIP'">Fazer Upgrade para VIP</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD DE IDENTIFICADORES DO GATEWAY (ASAAS) -->
+                <div class="gateway-settings-card">
+                    <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+                        <i class="bi bi-sliders2 text-primary fs-4"></i>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">Identificadores de Cobrança do Gateway</h5>
+                            <small class="text-muted">Parâmetros de sincronização automática com o Asaas</small>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/{slug}/assinatura/atualizar-gateway(slug=${empresaSlug})}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Asaas Customer ID</label>
+                                <input type="text" name="asaasCustomerId" class="form-control" th:value="${empresa.asaasCustomerId}" placeholder="Ex: cus_000005230940"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Asaas Subscription ID</label>
+                                <input type="text" name="asaasSubscriptionId" class="form-control" th:value="${empresa.asaasSubscriptionId}" placeholder="Ex: sub_000005230940"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Link da Fatura Atual</label>
+                                <input type="url" name="linkFaturaAtual" class="form-control" th:value="${empresa.linkFaturaAtual}" placeholder="https://www.asaas.com/i/..."/>
+                            </div>
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3">
+                                    <i class="bi bi-save me-1"></i> Salvar Identificadores
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

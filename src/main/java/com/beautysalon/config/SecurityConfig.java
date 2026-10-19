@@ -97,7 +97,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/*/usuarios/**",
                                 "/*/relatorios/**",
-                                "/*/configuracoes/**"
+                                "/*/configuracoes/**",
+                                "/*/assinatura",
+                                "/*/assinatura/**"
                         ).hasAnyRole("OWNER", "ADMIN")
 
                         // 3. PÁGINAS PROTEGIDAS DO TENANT

@@ -115,6 +115,13 @@
                 <i class="bi bi-gear-fill text-primary"></i>
                 <span>Dados da Empresa & Pix</span>
             </a>
+
+            <a th:href="@{/{slug}/assinatura(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
+                th:classappend="${activePage == 'assinatura'} ? 'active' : ''"
+                sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
+                <i class="bi bi-gem text-warning"></i>
+                <span>Assinatura & Planos</span>
+            </a>
         </nav>
 
 
