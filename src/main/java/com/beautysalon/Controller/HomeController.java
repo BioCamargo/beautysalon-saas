@@ -78,7 +78,7 @@ public class HomeController {
         return "landing/privacidade";
     }
 
-    @GetMapping("/agendamento/{slug}")
+    @GetMapping({"/agendamento/{slug}", "/p/{slug}"})
     public String redirectAgendamentoPublico(@PathVariable String slug) {
         return "redirect:/" + slug + "/agendar";
     }

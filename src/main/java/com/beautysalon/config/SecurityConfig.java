@@ -86,6 +86,7 @@ public class SecurityConfig {
                                 "/*/agendar",
                                 "/*/agendar/**",
                                 "/agendamento/**",
+                                "/p/**",
                                 "/api/v1/*/agendar/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
