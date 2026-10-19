@@ -173,6 +173,8 @@ public class TenantInterceptor implements HandlerInterceptor {
                  "select-tenant",
                  "termos", "privacidade",
                  "css", "js", "images", "uploads", "favicon.ico",
+                 "manifest.json", "service-worker.js", "robots.txt",
+                 "swagger-ui", "swagger-ui.html", "v3",
                  "api", "actuator", "error", "p", "agendamento", "" -> true;
             default -> false;
         };

@@ -25,6 +25,12 @@
     <meta name="apple-mobile-web-app-title" content="NEXI PRO">
     <link rel="apple-touch-icon" href="/images/nexipro-icon-official.png">
 
+    <!-- OPEN GRAPH / SOCIAL SHARING CARDS (WHATSAPP, INSTAGRAM, FACEBOOK) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" th:content="${empresa != null ? empresa.nome + ' | Agendamento Online' : 'NEXI PRO | Agendamento Online'}">
+    <meta property="og:description" th:content="${empresa != null ? 'Agende seu horário online no ' + empresa.nome + ' em segundos com confirmação no WhatsApp.' : 'Agendamento online rápido e prático.'}">
+    <meta property="og:image" th:content="${empresa != null and empresa.logoUrl != null and !#strings.isEmpty(empresa.logoUrl) ? empresa.logoUrl : '/images/nexipro-logo.svg'}">
+
     <!-- META PIXEL TRACKING (DEV-08) -->
     <th:block th:if="${empresa != null and empresa.metaPixelId != null and !#strings.isEmpty(empresa.metaPixelId)}">
         <script>

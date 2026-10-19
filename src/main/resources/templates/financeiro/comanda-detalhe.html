@@ -628,6 +628,20 @@
                     });
                 });
             }
+
+            // Proteção contra duplo clique e idempotência visual no fechamento de comanda
+            const formFechar = document.getElementById('formFecharComanda');
+            if (formFechar) {
+                formFechar.addEventListener('submit', function (e) {
+                    const btn = this.querySelector('button[type="submit"]');
+                    if (btn && !btn.disabled) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processando Pagamento...';
+                        btn.style.opacity = '0.75';
+                        btn.style.cursor = 'not-allowed';
+                    }
+                });
+            }
         });
 
         function copiarPixPayload() {
