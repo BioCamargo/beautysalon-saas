@@ -79,6 +79,8 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/uploads/**",
                                 "/favicon.ico",
+                                "/manifest.json",
+                                "/service-worker.js",
                                 "/error",
                                 "/api/auth/**",
                                 "/*/agendar",

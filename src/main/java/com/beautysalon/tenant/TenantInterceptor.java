@@ -101,6 +101,13 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setTrialAtivo(empresa.isTrialAtivo());
         TenantContext.setLogoUrl(empresa.getLogoUrl());
 
+        // DEV-05: Atualiza MDC com contexto do tenant e usuário resolvidos
+        org.slf4j.MDC.put(TenantLoggingFilter.MDC_KEY_TENANT, slug);
+        org.slf4j.MDC.put(TenantLoggingFilter.MDC_KEY_EMPRESA_ID, String.valueOf(empresa.getId()));
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            org.slf4j.MDC.put(TenantLoggingFilter.MDC_KEY_USUARIO, auth.getName());
+        }
+
         log.debug("Tenant definido: {} (id={}, nome={}, segmento={}, plano={}, status={})", 
                 slug, empresa.getId(), empresa.getNome(), empresa.getSegmento(), empresa.getPlano(), empresa.getStatusAssinatura());
         return true;
@@ -135,7 +142,9 @@ public class TenantInterceptor implements HandlerInterceptor {
                                 @NonNull HttpServletResponse response,
                                 @NonNull Object handler,
                                 @Nullable Exception ex) {
-        // CRÍTICO: limpa o ThreadLocal após cada request
+        // CRÍTICO: limpa o ThreadLocal e o MDC do tenant após cada request
+        org.slf4j.MDC.remove(TenantLoggingFilter.MDC_KEY_TENANT);
+        org.slf4j.MDC.remove(TenantLoggingFilter.MDC_KEY_EMPRESA_ID);
         TenantContext.clear();
     }
 

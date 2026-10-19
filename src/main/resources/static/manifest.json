@@ -1,0 +1,31 @@
+{
+  "name": "NEXI PRO - Gestão Inteligente",
+  "short_name": "NEXI PRO",
+  "description": "Gestão Inteligente & Alta Performance para Salões, Barbearias e Clínicas de Estética",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B0E14",
+  "theme_color": "#00D2EE",
+  "icons": [
+    {
+      "src": "/images/nexipro-icon-official.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/nexipro-icon-official.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/nexipro-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
