@@ -239,11 +239,11 @@
                                 </div>
                             </div>
 
-                            <!-- PLANO NEXI PRO SAAS -->
+                            <!-- PLANO NEXI PRO SAAS & BILLING (DEV-07) -->
                             <div class="settings-card">
                                 <div class="settings-card-header">
                                     <i class="bi bi-gem text-primary"></i>
-                                    <h4>Plano de Assinatura Atual</h4>
+                                    <h4>Plano de Assinatura & Faturamento</h4>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -251,7 +251,17 @@
                                         <div class="fw-bold fs-5 text-dark" th:text="${empresa.plano.nomeExibicao}">Plano Premium VIP</div>
                                         <div class="text-muted small" th:text="${empresa.plano.descricao}">Equipe ilimitada, DRE contábil e anti-churn</div>
                                     </div>
-                                    <span class="plan-badge-vip">VIP 👑</span>
+                                    <span class="badge" th:classappend="${empresa.statusAssinatura.classeBadge}" th:text="${empresa.statusAssinatura.descricao}">Ativo</span>
+                                </div>
+
+                                <div th:if="${empresa.statusAssinatura.name() == 'INADIMPLENTE'}" class="alert alert-danger py-2 px-3 small mb-3">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Fatura em atraso. Regularize para evitar bloqueio operacional.
+                                </div>
+
+                                <div th:if="${empresa.linkFaturaAtual != null and !#strings.isEmpty(empresa.linkFaturaAtual)}" class="mb-3">
+                                    <a th:href="${empresa.linkFaturaAtual}" target="_blank" class="btn btn-sm btn-outline-primary w-100 fw-bold">
+                                        <i class="bi bi-receipt me-1"></i> Ver Fatura Atual / 2ª Via
+                                    </a>
                                 </div>
 
                                 <ul class="list-unstyled small mb-3 text-secondary">
@@ -264,6 +274,41 @@
 
                                 <div class="p-2 bg-light rounded text-center small text-muted">
                                     Identificador Único (Slug): <strong th:text="${empresa.slug}">studio-nexipro</strong>
+                                </div>
+                            </div>
+
+                            <!-- MARKETING TRACKING & TRÁFEGO PAGO (DEV-08) -->
+                            <div class="settings-card">
+                                <div class="settings-card-header">
+                                    <i class="bi bi-graph-up-arrow text-info"></i>
+                                    <h4>Rastreamento de Tráfego & Marketing</h4>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Meta Pixel ID (Instagram & Facebook Ads)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-meta text-primary"></i></span>
+                                        <input type="text" name="metaPixelId" class="form-control" th:value="${empresa.metaPixelId}" placeholder="Ex: 123456789012345">
+                                    </div>
+                                    <small class="text-muted">Rastreia automaticamente visualizações e conversão de agendamentos (evento <code>Schedule</code>) nos anúncios do Instagram.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Google Ads Conversion ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-google text-danger"></i></span>
+                                        <input type="text" name="googleAdsId" class="form-control" th:value="${empresa.googleAdsId}" placeholder="Ex: AW-123456789">
+                                    </div>
+                                    <small class="text-muted">Identificador de conversão para campanhas de busca no Google e Maps.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Google Analytics 4 (GA4)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-bar-chart-line text-warning"></i></span>
+                                        <input type="text" name="googleAnalyticsId" class="form-control" th:value="${empresa.googleAnalyticsId}" placeholder="Ex: G-XXXXXXXXXX">
+                                    </div>
+                                    <small class="text-muted">Métricas de acesso e engajamento no portal público de agendamento.</small>
                                 </div>
                             </div>
 

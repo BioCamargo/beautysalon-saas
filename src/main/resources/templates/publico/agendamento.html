@@ -24,6 +24,38 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NEXI PRO">
     <link rel="apple-touch-icon" href="/images/nexipro-icon-official.png">
+
+    <!-- META PIXEL TRACKING (DEV-08) -->
+    <th:block th:if="${empresa != null and empresa.metaPixelId != null and !#strings.isEmpty(empresa.metaPixelId)}">
+        <script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '[[${empresa.metaPixelId}]]');
+            fbq('track', 'PageView');
+        </script>
+    </th:block>
+
+    <!-- GOOGLE TAG / GA4 & ADS (DEV-08) -->
+    <th:block th:if="${empresa != null and ((empresa.googleAnalyticsId != null and !#strings.isEmpty(empresa.googleAnalyticsId)) or (empresa.googleAdsId != null and !#strings.isEmpty(empresa.googleAdsId)))}">
+        <script async th:src="'https://www.googletagmanager.com/gtag/js?id=' + ${empresa.googleAnalyticsId ?: empresa.googleAdsId}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            /*[# th:if="${empresa.googleAnalyticsId != null and !#strings.isEmpty(empresa.googleAnalyticsId)}"]*/
+            gtag('config', '[[${empresa.googleAnalyticsId}]]');
+            /*[/]*/
+            /*[# th:if="${empresa.googleAdsId != null and !#strings.isEmpty(empresa.googleAdsId)}"]*/
+            gtag('config', '[[${empresa.googleAdsId}]]');
+            /*[/]*/
+        </script>
+    </th:block>
 </head>
 <body>
 
@@ -437,7 +469,21 @@
                 if (selected < now) {
                     e.preventDefault();
                     alert('Este horário já passou. Por favor, escolha um horário futuro.');
+                    return;
                 }
+            }
+
+            // Tracking InitiateCheckout se Meta Pixel configurado
+            try {
+                if (window.fbq) {
+                    const servicoTxt = document.getElementById('resumoServico') ? document.getElementById('resumoServico').innerText : 'Agendamento';
+                    window.fbq('track', 'InitiateCheckout', {
+                        content_name: servicoTxt,
+                        currency: 'BRL'
+                    });
+                }
+            } catch (errTracking) {
+                console.warn('Erro ao disparar InitiateCheckout:', errTracking);
             }
         });
     }

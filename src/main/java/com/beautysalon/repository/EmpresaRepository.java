@@ -11,5 +11,9 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 
     Optional<Empresa> findByEmail(String email);
 
+    Optional<Empresa> findByAsaasCustomerId(String asaasCustomerId);
+
+    Optional<Empresa> findByAsaasSubscriptionId(String asaasSubscriptionId);
+
     boolean existsBySlug(String slug);
 }

@@ -10,6 +10,7 @@ public enum StatusAssinatura {
 
     TRIAL("Período de Testes (7 dias)", "badge-warning", true),
     ATIVA("Assinatura Regular Ativa", "badge-success", true),
+    INADIMPLENTE("Fatura em Atraso", "badge-danger", false),
     EXPIRADA("Assinatura Expirada", "badge-danger", false),
     CANCELADA("Assinatura Cancelada", "badge-secondary", false);
 

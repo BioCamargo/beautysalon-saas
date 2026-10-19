@@ -20,6 +20,9 @@ public final class TenantContext {
     private static final ThreadLocal<String> CURRENT_EMPRESA_LOGO_URL = new ThreadLocal<>();
     private static final ThreadLocal<Long> CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> CURRENT_EMPRESA_TRIAL_ATIVO = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_EMPRESA_META_PIXEL_ID = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_EMPRESA_GOOGLE_ADS_ID = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID = new ThreadLocal<>();
 
     private TenantContext() {}
 
@@ -118,6 +121,30 @@ public final class TenantContext {
         CURRENT_EMPRESA_SEGMENTO.set(segmento);
     }
 
+    public static void setMetaPixelId(String metaPixelId) {
+        CURRENT_EMPRESA_META_PIXEL_ID.set(metaPixelId);
+    }
+
+    public static String getMetaPixelId() {
+        return CURRENT_EMPRESA_META_PIXEL_ID.get();
+    }
+
+    public static void setGoogleAdsId(String googleAdsId) {
+        CURRENT_EMPRESA_GOOGLE_ADS_ID.set(googleAdsId);
+    }
+
+    public static String getGoogleAdsId() {
+        return CURRENT_EMPRESA_GOOGLE_ADS_ID.get();
+    }
+
+    public static void setGoogleAnalyticsId(String googleAnalyticsId) {
+        CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID.set(googleAnalyticsId);
+    }
+
+    public static String getGoogleAnalyticsId() {
+        return CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID.get();
+    }
+
     /**
      * SEMPRE deve ser chamado ao fim de cada request para evitar memory leaks.
      */
@@ -131,5 +158,8 @@ public final class TenantContext {
         CURRENT_EMPRESA_STATUS_ASSINATURA.remove();
         CURRENT_EMPRESA_DIAS_RESTANTES_TRIAL.remove();
         CURRENT_EMPRESA_TRIAL_ATIVO.remove();
+        CURRENT_EMPRESA_META_PIXEL_ID.remove();
+        CURRENT_EMPRESA_GOOGLE_ADS_ID.remove();
+        CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID.remove();
     }
 }

@@ -254,6 +254,48 @@
             color: var(--gold-primary);
         }
     </style>
+
+    <!-- META PIXEL TRACKING (DEV-08) -->
+    <th:block th:if="${empresa != null and empresa.metaPixelId != null and !#strings.isEmpty(empresa.metaPixelId)}">
+        <script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '[[${empresa.metaPixelId}]]');
+            fbq('track', 'PageView');
+            fbq('track', 'Schedule', {
+                content_name: '[[${servicoNome ?: 'Agendamento'}]]',
+                currency: 'BRL',
+                value: Number('[[${servicoPreco ?: 0}]]')
+            });
+        </script>
+    </th:block>
+
+    <!-- GOOGLE TAG / GA4 & ADS (DEV-08) -->
+    <th:block th:if="${empresa != null and ((empresa.googleAnalyticsId != null and !#strings.isEmpty(empresa.googleAnalyticsId)) or (empresa.googleAdsId != null and !#strings.isEmpty(empresa.googleAdsId)))}">
+        <script async th:src="'https://www.googletagmanager.com/gtag/js?id=' + ${empresa.googleAnalyticsId ?: empresa.googleAdsId}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            /*[# th:if="${empresa.googleAnalyticsId != null and !#strings.isEmpty(empresa.googleAnalyticsId)}"]*/
+            gtag('config', '[[${empresa.googleAnalyticsId}]]');
+            /*[/]*/
+            /*[# th:if="${empresa.googleAdsId != null and !#strings.isEmpty(empresa.googleAdsId)}"]*/
+            gtag('config', '[[${empresa.googleAdsId}]]');
+            gtag('event', 'conversion', {
+                'send_to': '[[${empresa.googleAdsId}]]',
+                'value': Number('[[${servicoPreco ?: 0}]]'),
+                'currency': 'BRL'
+            });
+            /*[/]*/
+        </script>
+    </th:block>
 </head>
 <body>
 

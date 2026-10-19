@@ -100,6 +100,9 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setDiasRestantesTrial(empresa.getDiasRestantesTrial());
         TenantContext.setTrialAtivo(empresa.isTrialAtivo());
         TenantContext.setLogoUrl(empresa.getLogoUrl());
+        TenantContext.setMetaPixelId(empresa.getMetaPixelId());
+        TenantContext.setGoogleAdsId(empresa.getGoogleAdsId());
+        TenantContext.setGoogleAnalyticsId(empresa.getGoogleAnalyticsId());
 
         // DEV-05: Atualiza MDC com contexto do tenant e usuário resolvidos
         org.slf4j.MDC.put(TenantLoggingFilter.MDC_KEY_TENANT, slug);
@@ -133,6 +136,9 @@ public class TenantInterceptor implements HandlerInterceptor {
                 modelAndView.addObject("empresaStatusAssinatura", TenantContext.getStatusAssinatura());
                 modelAndView.addObject("empresaDiasRestantesTrial", TenantContext.getDiasRestantesTrial());
                 modelAndView.addObject("empresaTrialAtivo", TenantContext.isTrialAtivo());
+                modelAndView.addObject("empresaMetaPixelId", TenantContext.getMetaPixelId());
+                modelAndView.addObject("empresaGoogleAdsId", TenantContext.getGoogleAdsId());
+                modelAndView.addObject("empresaGoogleAnalyticsId", TenantContext.getGoogleAnalyticsId());
             }
         }
     }

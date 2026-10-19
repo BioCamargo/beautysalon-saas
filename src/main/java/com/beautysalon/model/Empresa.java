@@ -81,6 +81,24 @@ public class Empresa {
     @Column(name = "data_fim_assinatura")
     private LocalDateTime dataFimAssinatura;
 
+    @Column(name = "asaas_customer_id", length = 50)
+    private String asaasCustomerId;
+
+    @Column(name = "asaas_subscription_id", length = 50)
+    private String asaasSubscriptionId;
+
+    @Column(name = "link_fatura_atual")
+    private String linkFaturaAtual;
+
+    @Column(name = "meta_pixel_id", length = 50)
+    private String metaPixelId;
+
+    @Column(name = "google_ads_id", length = 50)
+    private String googleAdsId;
+
+    @Column(name = "google_analytics_id", length = 50)
+    private String googleAnalyticsId;
+
     @Builder.Default
     private boolean ativo = true;
 

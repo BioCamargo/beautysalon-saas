@@ -63,6 +63,10 @@ public class EmpresaConfigController {
                 empresa.setSegmento(formEmpresa.getSegmento());
             }
 
+            empresa.setMetaPixelId(formEmpresa.getMetaPixelId());
+            empresa.setGoogleAdsId(formEmpresa.getGoogleAdsId());
+            empresa.setGoogleAnalyticsId(formEmpresa.getGoogleAnalyticsId());
+
             // Atualiza a taxa média estimada de cartão para provisionamento da DRE
             if (formEmpresa.getTaxaCartaoEstimada() != null) {
                 empresa.setTaxaCartaoEstimada(formEmpresa.getTaxaCartaoEstimada());
