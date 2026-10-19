@@ -250,12 +250,17 @@
                                 </button>
                             </div>
 
+                            <div th:if="${isLocalhost}" class="alert alert-info py-2 px-3 mb-3 rounded-3" style="font-size: 0.83rem;">
+                                <i class="bi bi-info-circle-fill me-1 text-primary"></i>
+                                <strong>Por que o link não ficou azul no WhatsApp?</strong> O WhatsApp só reconhece domínios com terminação pública (como <code>.com.br</code> ou <code>.com</code>). O endereço <code>localhost</code> é local e o WhatsApp trata como texto por segurança. Ao clicar em <strong>"Divulgar no WhatsApp"</strong>, nós usamos automaticamente o domínio oficial da plataforma para ficar 100% azul e clicável!
+                            </div>
+
                             <div class="d-flex gap-2 flex-wrap">
                                 <a th:href="${linkAgendar}" target="_blank" class="btn btn-outline-secondary btn-sm">
                                     <i class="bi bi-box-arrow-up-right me-1"></i> Testar Portal do Cliente
                                 </a>
-                                <button type="button" class="btn btn-outline-success btn-sm" onclick="compartilharNoWhatsApp()">
-                                    <i class="bi bi-whatsapp me-1"></i> Divulgar no WhatsApp
+                                <button type="button" class="btn btn-success btn-sm fw-bold px-3" onclick="compartilharNoWhatsApp(true)">
+                                    <i class="bi bi-whatsapp me-1"></i> Compartilhar no WhatsApp (Link Clicável)
                                 </button>
                             </div>
                         </div>
@@ -362,6 +367,8 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const linkBioUrl = /*[[${linkBio}]]*/ 'http://localhost:8081/p/nexipro';
+    const linkBioProducao = /*[[${linkBioProducao}]]*/ 'https://app.nexipro.com.br/p/nexipro';
+    const isLocalhost = /*[[${isLocalhost}]]*/ true;
     const empresaNome = /*[[${empresaNome}]]*/ 'NEXI PRO Studio';
     const empresaSlug = /*[[${empresaSlug}]]*/ 'nexipro';
 
@@ -400,8 +407,11 @@
     }
 
     // 3. Compartilhar no WhatsApp com mensagem pronta
-    function compartilharNoWhatsApp() {
-        const msg = `🌸 *Olá!*\n\nAgora você pode agendar seu próximo horário no *${empresaNome}* de forma 100% online, escolhendo o profissional e horário com toda comodidade:\n\n👉 ${linkBioUrl}\n\nEsperamos te ver em breve! ✨`;
+    function compartilharNoWhatsApp(usarProducao) {
+        // WhatsApp só ativa hiperlink clicável (azul) para domínios públicos válidos (ex: .com.br).
+        // Se estiver em localhost ou solicitado usarProducao, enviamos o domínio oficial para ficar clicável.
+        const urlFinal = (usarProducao || isLocalhost) ? linkBioProducao : linkBioUrl;
+        const msg = `🌸 *Olá!*\n\nAgora você pode agendar seu próximo horário no *${empresaNome}* de forma 100% online, escolhendo o profissional e horário com toda comodidade:\n\n👉 ${urlFinal}\n\nEsperamos te ver em breve! ✨`;
         const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
     }

@@ -33,10 +33,15 @@ public class DivulgacaoController {
 
         String linkBio = baseUrl + "/p/" + slug;
         String linkAgendar = baseUrl + "/" + slug + "/agendar";
+        boolean isLocalhost = "localhost".equalsIgnoreCase(request.getServerName()) 
+                || "127.0.0.1".equals(request.getServerName());
+        String linkBioProducao = "https://app.nexipro.com.br/p/" + slug;
 
         model.addAttribute("empresa", empresa);
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("linkBio", linkBio);
+        model.addAttribute("linkBioProducao", linkBioProducao);
+        model.addAttribute("isLocalhost", isLocalhost);
         model.addAttribute("linkAgendar", linkAgendar);
         model.addAttribute("pageTitle", "Divulgação & QR Code de Balcão");
         model.addAttribute("subtitle", "Gere materiais com QR Code para balcão, espelhos e link da bio do Instagram");
