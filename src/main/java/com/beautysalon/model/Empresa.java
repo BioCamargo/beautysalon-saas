@@ -133,4 +133,51 @@ public class Empresa {
         if (statusAssinatura == StatusAssinatura.ATIVA) return true;
         return isTrialAtivo();
     }
+
+    /**
+     * Retorna se a empresa está com fatura em atraso.
+     */
+    public boolean isInadimplente() {
+        return statusAssinatura == StatusAssinatura.INADIMPLENTE;
+    }
+
+    /**
+     * Retorna se o bloqueio suave está ativo.
+     * Ativo quando:
+     * 1. Status CANCELADA ou EXPIRADA
+     * 2. Ou status INADIMPLENTE com vencimento da assinatura há mais de 3 dias de tolerância
+     * 3. Ou TRIAL expirado (sem dias restantes)
+     */
+    public boolean isBloqueioSuaveAtivo() {
+        if (!ativo) return true;
+        if (statusAssinatura == StatusAssinatura.CANCELADA || statusAssinatura == StatusAssinatura.EXPIRADA) {
+            return true;
+        }
+        if (statusAssinatura == StatusAssinatura.TRIAL) {
+            return !isTrialAtivo();
+        }
+        if (statusAssinatura == StatusAssinatura.INADIMPLENTE) {
+            if (dataFimAssinatura == null) return true;
+            return dataFimAssinatura.plusDays(3).isBefore(LocalDateTime.now());
+        }
+        return false;
+    }
+
+    /**
+     * Retorna se a empresa está em período de tolerância/carência por inadimplência (até 3 dias).
+     */
+    public boolean isToleranciaInadimplenteAtiva() {
+        return statusAssinatura == StatusAssinatura.INADIMPLENTE && !isBloqueioSuaveAtivo();
+    }
+
+    /**
+     * Retorna a quantidade de dias restantes de tolerância por inadimplência.
+     */
+    public long getDiasRestantesTolerancia() {
+        if (statusAssinatura != StatusAssinatura.INADIMPLENTE || dataFimAssinatura == null) return 0;
+        LocalDateTime limite = dataFimAssinatura.plusDays(3);
+        long horas = java.time.Duration.between(LocalDateTime.now(), limite).toHours();
+        if (horas <= 0) return 0;
+        return (horas + 23) / 24;
+    }
 }

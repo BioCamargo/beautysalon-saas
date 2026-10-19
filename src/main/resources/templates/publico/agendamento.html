@@ -96,12 +96,27 @@
     </header>
 
     <!-- MENSAGEM DE ERRO (FLASH) -->
-    <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show rounded-4 mb-3 border-0 shadow-sm" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">
+    <div th:if="${erro != null or error != null}" class="alert alert-danger alert-dismissible fade show rounded-4 mb-3 border-0 shadow-sm" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-exclamation-octagon-fill fs-5"></i>
-            <span th:text="${erro}">Erro ao agendar horário.</span>
+            <span th:text="${erro ?: error}">Erro ao agendar horário.</span>
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- AVISO DE AGENDAMENTO TEMPORARIAMENTE PAUSADO (BLOQUEIO SUAVE) -->
+    <div th:if="${bloqueioSuave}" class="alert rounded-4 mb-4 border-0 shadow-sm p-4 text-center" 
+         style="background: linear-gradient(135deg, #1c1106 0%, #2a1503 100%); border: 1px solid #f59e0b !important; color: #fde68a;">
+        <i class="bi bi-clock-history fs-2 d-block mb-2 text-warning"></i>
+        <h5 style="color: #fff; font-weight: 700; margin-bottom: 0.3rem;">Agendamentos Online em Pausa Técnica</h5>
+        <p style="font-size: 0.9rem; margin-bottom: 0.9rem; color: #fcd34d;">
+            O agendamento automático deste estabelecimento está temporariamente pausado. Por favor, entre em contato diretamente pelo WhatsApp do estúdio para marcar seu horário.
+        </p>
+        <a th:if="${empresa != null and empresa.telefone != null and !empresa.telefone.isBlank()}" 
+           th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(empresa.telefone, '(', ''), ')', ''), '-', ''), ' ', '')}" 
+           target="_blank" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-sm">
+            <i class="bi bi-whatsapp me-1"></i> Falar com a Recepção no WhatsApp
+        </a>
     </div>
 
     <!-- FORMULÁRIO PRINCIPAL -->
@@ -286,9 +301,11 @@
                     <div class="bottom-bar-service" id="resumoServicoNome">Selecione um serviço</div>
                     <div class="bottom-bar-price" id="resumoServicoPreco">R$ 0,00</div>
                 </div>
-                <button type="submit" id="btnConfirmarAgendamento" class="btn-confirm-action">
-                    <span>Confirmar Horário</span>
-                    <i class="bi bi-arrow-right"></i>
+                <button type="submit" id="btnConfirmarAgendamento" class="btn-confirm-action" 
+                        th:disabled="${bloqueioSuave}"
+                        th:style="${bloqueioSuave} ? 'opacity: 0.5; cursor: not-allowed;' : ''">
+                    <span th:text="${bloqueioSuave} ? 'Agendamento Pausado' : 'Confirmar Horário'">Confirmar Horário</span>
+                    <i th:class="${bloqueioSuave} ? 'bi bi-lock-fill' : 'bi bi-arrow-right'"></i>
                 </button>
             </div>
         </div>

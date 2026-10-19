@@ -41,6 +41,56 @@
             <div th:replace="~{fragments/topbar :: topbar(${pageTitle} ?: 'NEXI PRO', ${pageSubtitle} ?: null)}">
             </div>
 
+            <!-- BANNER DE AVISO DE ASSINATURA / INADIMPLÊNCIA / BLOQUEIO SUAVE -->
+            <!-- 1. Bloqueio Suave Ativo (Modo Somente Leitura) -->
+            <div th:if="${empresaBloqueioSuaveAtivo}" 
+                 style="background: linear-gradient(90deg, #450a0a 0%, #1c0505 100%); border-bottom: 2px solid #ef4444; padding: 0.85rem 1.5rem; color: #fecaca; display: flex; align-items: center; justify-content: space-between; gap: 1rem; z-index: 99; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="bi bi-shield-lock-fill" style="font-size: 1.4rem; color: #ef4444;"></i>
+                    <div>
+                        <strong style="color: #ffffff; font-size: 0.95rem;">Acesso em Modo Somente-Leitura:</strong>
+                        <span style="font-size: 0.88rem; color: #fca5a5;">Sua assinatura expirou ou possui pendências financeiras. Novos agendamentos e comandas estão temporariamente pausados.</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <a th:if="${empresaLinkFatura != null and !#strings.isEmpty(empresaLinkFatura)}" 
+                       th:href="${empresaLinkFatura}" target="_blank"
+                       class="btn btn-sm" style="background: #ef4444; color: #fff; font-weight: 700; border-radius: 8px; padding: 0.4rem 1rem;">
+                        <i class="bi bi-credit-card-fill me-1"></i> Pagar Fatura Agora
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
+                            style="border-radius: 8px; font-weight: 600;">
+                        Ver Planos
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Tolerância Ativa / Inadimplente em Carência (3 dias) -->
+            <div th:if="${empresaToleranciaInadimplenteAtiva}" 
+                 style="background: linear-gradient(90deg, #451a03 0%, #1c0f05 100%); border-bottom: 2px solid #f59e0b; padding: 0.85rem 1.5rem; color: #fef3c7; display: flex; align-items: center; justify-content: space-between; gap: 1rem; z-index: 99; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.4rem; color: #f59e0b;"></i>
+                    <div>
+                        <strong style="color: #ffffff; font-size: 0.95rem;">Fatura em Atraso:</strong>
+                        <span style="font-size: 0.88rem; color: #fde68a;">
+                            Restam <strong th:text="${empresaDiasRestantesTolerancia != null ? empresaDiasRestantesTolerancia : 3}">3</strong> dias de tolerância antes do bloqueio de novos agendamentos. Regularize sua mensalidade.
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <a th:if="${empresaLinkFatura != null and !#strings.isEmpty(empresaLinkFatura)}" 
+                       th:href="${empresaLinkFatura}" target="_blank"
+                       class="btn btn-sm" style="background: #f59e0b; color: #000; font-weight: 700; border-radius: 8px; padding: 0.4rem 1rem;">
+                        <i class="bi bi-credit-card-fill me-1"></i> Pagar Fatura
+                    </a>
+                    <button th:if="${empresaLinkFatura == null or #strings.isEmpty(empresaLinkFatura)}" 
+                            type="button" class="btn btn-sm" style="background: #f59e0b; color: #000; font-weight: 700; border-radius: 8px; padding: 0.4rem 1rem;" 
+                            data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS">
+                        Regularizar Agora
+                    </button>
+                </div>
+            </div>
+
             <!-- MAIN PAGE CONTENT FRAGMENT -->
             <main class="page-content" th:fragment="main(content)">
                 <div th:replace="${content}"></div>

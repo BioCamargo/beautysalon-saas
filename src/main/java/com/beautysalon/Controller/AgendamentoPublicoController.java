@@ -54,6 +54,7 @@ public class AgendamentoPublicoController {
         Empresa empresa = empresaRepository.findById(empresaId).orElse(null);
 
         model.addAttribute("empresa", empresa);
+        model.addAttribute("bloqueioSuave", empresa != null && empresa.isBloqueioSuaveAtivo());
         model.addAttribute("servicos", servicoService.listarTodos());
         model.addAttribute("profissionais", profissionalService.listarProfissionaisAtivos());
         model.addAttribute("empresaSlug", slug);
@@ -77,6 +78,11 @@ public class AgendamentoPublicoController {
             Long empresaId = TenantContext.getEmpresaId();
             Empresa empresa = empresaRepository.findById(empresaId)
                     .orElseThrow(() -> new IllegalStateException("Empresa não encontrada"));
+
+            if (empresa.isBloqueioSuaveAtivo()) {
+                redirectAttributes.addFlashAttribute("error", "O agendamento online deste estabelecimento está temporariamente pausado. Entre em contato diretamente pelo WhatsApp.");
+                return "redirect:/" + slug + "/agendar";
+            }
 
             // 1. Localiza ou cria o cliente com base no telefone
             String telLimpo = clienteTelefone.replaceAll("[^0-9]", "");

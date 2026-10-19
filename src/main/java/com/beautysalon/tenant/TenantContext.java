@@ -23,6 +23,11 @@ public final class TenantContext {
     private static final ThreadLocal<String> CURRENT_EMPRESA_META_PIXEL_ID = new ThreadLocal<>();
     private static final ThreadLocal<String> CURRENT_EMPRESA_GOOGLE_ADS_ID = new ThreadLocal<>();
     private static final ThreadLocal<String> CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_EMPRESA_LINK_FATURA_ATUAL = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> CURRENT_EMPRESA_INADIMPLENTE = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> CURRENT_EMPRESA_BLOQUEIO_SUAVE_ATIVO = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> CURRENT_EMPRESA_TOLERANCIA_INADIMPLENTE_ATIVA = new ThreadLocal<>();
+    private static final ThreadLocal<Long> CURRENT_EMPRESA_DIAS_RESTANTES_TOLERANCIA = new ThreadLocal<>();
 
     private TenantContext() {}
 
@@ -145,6 +150,50 @@ public final class TenantContext {
         return CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID.get();
     }
 
+    public static void setLinkFaturaAtual(String linkFaturaAtual) {
+        CURRENT_EMPRESA_LINK_FATURA_ATUAL.set(linkFaturaAtual);
+    }
+
+    public static String getLinkFaturaAtual() {
+        return CURRENT_EMPRESA_LINK_FATURA_ATUAL.get();
+    }
+
+    public static void setInadimplente(Boolean inadimplente) {
+        CURRENT_EMPRESA_INADIMPLENTE.set(inadimplente);
+    }
+
+    public static Boolean isInadimplente() {
+        Boolean b = CURRENT_EMPRESA_INADIMPLENTE.get();
+        return b != null ? b : false;
+    }
+
+    public static void setBloqueioSuaveAtivo(Boolean bloqueioSuaveAtivo) {
+        CURRENT_EMPRESA_BLOQUEIO_SUAVE_ATIVO.set(bloqueioSuaveAtivo);
+    }
+
+    public static Boolean isBloqueioSuaveAtivo() {
+        Boolean b = CURRENT_EMPRESA_BLOQUEIO_SUAVE_ATIVO.get();
+        return b != null ? b : false;
+    }
+
+    public static void setToleranciaInadimplenteAtiva(Boolean toleranciaAtiva) {
+        CURRENT_EMPRESA_TOLERANCIA_INADIMPLENTE_ATIVA.set(toleranciaAtiva);
+    }
+
+    public static Boolean isToleranciaInadimplenteAtiva() {
+        Boolean b = CURRENT_EMPRESA_TOLERANCIA_INADIMPLENTE_ATIVA.get();
+        return b != null ? b : false;
+    }
+
+    public static void setDiasRestantesTolerancia(Long dias) {
+        CURRENT_EMPRESA_DIAS_RESTANTES_TOLERANCIA.set(dias);
+    }
+
+    public static Long getDiasRestantesTolerancia() {
+        Long d = CURRENT_EMPRESA_DIAS_RESTANTES_TOLERANCIA.get();
+        return d != null ? d : 0L;
+    }
+
     /**
      * SEMPRE deve ser chamado ao fim de cada request para evitar memory leaks.
      */
@@ -161,5 +210,10 @@ public final class TenantContext {
         CURRENT_EMPRESA_META_PIXEL_ID.remove();
         CURRENT_EMPRESA_GOOGLE_ADS_ID.remove();
         CURRENT_EMPRESA_GOOGLE_ANALYTICS_ID.remove();
+        CURRENT_EMPRESA_LINK_FATURA_ATUAL.remove();
+        CURRENT_EMPRESA_INADIMPLENTE.remove();
+        CURRENT_EMPRESA_BLOQUEIO_SUAVE_ATIVO.remove();
+        CURRENT_EMPRESA_TOLERANCIA_INADIMPLENTE_ATIVA.remove();
+        CURRENT_EMPRESA_DIAS_RESTANTES_TOLERANCIA.remove();
     }
 }

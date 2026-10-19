@@ -103,6 +103,11 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.setMetaPixelId(empresa.getMetaPixelId());
         TenantContext.setGoogleAdsId(empresa.getGoogleAdsId());
         TenantContext.setGoogleAnalyticsId(empresa.getGoogleAnalyticsId());
+        TenantContext.setLinkFaturaAtual(empresa.getLinkFaturaAtual());
+        TenantContext.setInadimplente(empresa.isInadimplente());
+        TenantContext.setBloqueioSuaveAtivo(empresa.isBloqueioSuaveAtivo());
+        TenantContext.setToleranciaInadimplenteAtiva(empresa.isToleranciaInadimplenteAtiva());
+        TenantContext.setDiasRestantesTolerancia(empresa.getDiasRestantesTolerancia());
 
         // DEV-05: Atualiza MDC com contexto do tenant e usuário resolvidos
         org.slf4j.MDC.put(TenantLoggingFilter.MDC_KEY_TENANT, slug);
@@ -139,6 +144,11 @@ public class TenantInterceptor implements HandlerInterceptor {
                 modelAndView.addObject("empresaMetaPixelId", TenantContext.getMetaPixelId());
                 modelAndView.addObject("empresaGoogleAdsId", TenantContext.getGoogleAdsId());
                 modelAndView.addObject("empresaGoogleAnalyticsId", TenantContext.getGoogleAnalyticsId());
+                modelAndView.addObject("empresaLinkFatura", TenantContext.getLinkFaturaAtual());
+                modelAndView.addObject("empresaIsInadimplente", TenantContext.isInadimplente());
+                modelAndView.addObject("empresaBloqueioSuaveAtivo", TenantContext.isBloqueioSuaveAtivo());
+                modelAndView.addObject("empresaToleranciaInadimplenteAtiva", TenantContext.isToleranciaInadimplenteAtiva());
+                modelAndView.addObject("empresaDiasRestantesTolerancia", TenantContext.getDiasRestantesTolerancia());
             }
         }
     }

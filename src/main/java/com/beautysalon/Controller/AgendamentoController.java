@@ -85,6 +85,15 @@ public class AgendamentoController {
                          @Valid @ModelAttribute("agendamento") AgendamentoDTO agendamentoDTO,
                          BindingResult result,
                          Model model) {
+        if (com.beautysalon.tenant.TenantContext.isBloqueioSuaveAtivo()) {
+            model.addAttribute("error", "Acesso em Modo Somente-Leitura: A assinatura do estúdio expirou ou possui pendências financeiras. A criação de novos agendamentos está temporariamente pausada.");
+            model.addAttribute("clientes", clienteService.listarTodos());
+            model.addAttribute("servicos", servicoService.listarTodos());
+            model.addAttribute("profissionais", userRepository.findAllByEmpresaIdAndAtivoTrue(com.beautysalon.tenant.TenantContext.getEmpresaId()));
+            model.addAttribute("empresaSlug", slug);
+            return "agendamentos/form";
+        }
+
         if (result.hasErrors()) {
             model.addAttribute("clientes", clienteService.listarTodos());
             model.addAttribute("servicos", servicoService.listarTodos());

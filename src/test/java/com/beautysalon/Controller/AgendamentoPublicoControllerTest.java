@@ -69,6 +69,8 @@ class AgendamentoPublicoControllerTest {
         empresaMock.setNome("Studio VIP");
         empresaMock.setSlug(SLUG);
         empresaMock.setAtivo(true);
+        empresaMock.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.ATIVA);
+        empresaMock.setDataFimAssinatura(LocalDateTime.now().plusDays(30));
     }
 
     @AfterEach
@@ -134,6 +136,32 @@ class AgendamentoPublicoControllerTest {
         assertEquals(true, redirectAttributes.getFlashAttributes().get("sucesso"));
         assertEquals("Maria Silva", redirectAttributes.getFlashAttributes().get("clienteNome"));
         assertEquals("Corte & Escova", redirectAttributes.getFlashAttributes().get("servicoNome"));
+    }
+
+    @Test
+    @DisplayName("Deve bloquear confirmação de agendamento público se empresa estiver em bloqueio suave")
+    void deveBloquearAgendamentoPublicoSeBloqueioSuaveAtivo() {
+        empresaMock.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.CANCELADA);
+        when(empresaRepository.findById(EMPRESA_ID)).thenReturn(Optional.of(empresaMock));
+
+        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+
+        String view = controller.confirmarAgendamento(
+                SLUG,
+                "Maria Silva",
+                "11999998888",
+                "maria@exemplo.com",
+                5L,
+                2L,
+                LocalDate.now().plusDays(1),
+                "14:00",
+                null,
+                redirectAttributes
+        );
+
+        assertEquals("redirect:/studio-vip/agendar", view);
+        verify(agendamentoService, never()).salvar(any());
+        assertTrue(redirectAttributes.getFlashAttributes().containsKey("error"));
     }
 
     @Test
