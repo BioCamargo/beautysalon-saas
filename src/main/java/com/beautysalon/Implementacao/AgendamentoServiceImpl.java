@@ -78,6 +78,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Servico servico = servicoRepository.findByIdAndEmpresaId(dto.getServicoId(), empresaId)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado nesta empresa"));
 
+        // Validação estrita: Não permitir agendar no passado
+        if (dto.getDataHora() != null && dto.getDataHora().isBefore(java.time.LocalDateTime.now().minusMinutes(2))) {
+            throw new RuntimeException("Não é permitido agendar em uma data ou horário que já passou.");
+        }
+
         Agendamento agendamento = new Agendamento();
         agendamento.setEmpresa(empresa);
         agendamento.setDataHora(dto.getDataHora());
@@ -137,6 +142,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Servico servico = servicoRepository.findByIdAndEmpresaId(dto.getServicoId(), empresaId)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado nesta empresa"));
 
+        // Se estiver alterando a data/hora para um horário diferente do que já estava, não pode mover para o passado
+        if (dto.getDataHora() != null && !dto.getDataHora().isEqual(existente.getDataHora()) 
+                && dto.getDataHora().isBefore(java.time.LocalDateTime.now().minusMinutes(2))) {
+            throw new RuntimeException("Não é permitido agendar em uma data ou horário que já passou.");
+        }
+
         if (dto.getProfissionalId() != null) {
             validarConflitoHorario(empresaId, dto.getProfissionalId(), dto.getDataHora(), servico, id);
             existente.setProfissional(userRepository.findByIdAndEmpresaId(dto.getProfissionalId(), empresaId).orElse(null));
@@ -156,6 +167,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     private void validarConflitoHorario(Long empresaId, Long profissionalId, java.time.LocalDateTime novoInicio, Servico servico, Long agendamentoIdIgnorar) {
+        if (novoInicio.isBefore(java.time.LocalDateTime.now().minusMinutes(2))) {
+            throw new RuntimeException("Não é permitido agendar em uma data ou horário que já passou.");
+        }
+
         int duracaoMin = (servico.getDuracaoMinutos() != null && servico.getDuracaoMinutos() > 0) ? servico.getDuracaoMinutos() : 30;
         java.time.LocalDateTime novoFim = novoInicio.plusMinutes(duracaoMin);
 

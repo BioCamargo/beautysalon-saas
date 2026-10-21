@@ -68,6 +68,7 @@ public class AgendamentoPublicoController {
             @RequestParam String clienteNome,
             @RequestParam String clienteTelefone,
             @RequestParam(required = false) String clienteEmail,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataNascimento,
             @RequestParam Long servicoId,
             @RequestParam(required = false) Long profissionalId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
@@ -84,23 +85,37 @@ public class AgendamentoPublicoController {
                 return "redirect:/" + slug + "/agendar";
             }
 
-            // 1. Localiza ou cria o cliente com base no telefone
+            LocalTime hora = LocalTime.parse(horario);
+            LocalDateTime dataHora = LocalDateTime.of(data, hora);
+
+            // Validação de segurança: Não permitir agendamento no passado
+            if (dataHora.isBefore(LocalDateTime.now().minusMinutes(2))) {
+                redirectAttributes.addFlashAttribute("erro", "Não é permitido agendar em uma data ou horário que já passou. Por favor, escolha um horário futuro.");
+                return "redirect:/" + slug + "/agendar";
+            }
+
+            // 1. Localiza ou cria o cliente com base no telefone e grava aniversário
             String telLimpo = clienteTelefone.replaceAll("[^0-9]", "");
             Cliente cliente = clienteRepository.findFirstByTelefoneAndEmpresaId(clienteTelefone, empresaId)
                     .or(() -> clienteRepository.findFirstByTelefoneAndEmpresaId(telLimpo, empresaId))
+                    .map(existente -> {
+                        if (dataNascimento != null && existente.getDataNascimento() == null) {
+                            existente.setDataNascimento(dataNascimento);
+                            clienteRepository.save(existente);
+                        }
+                        return existente;
+                    })
                     .orElseGet(() -> {
                         Cliente novo = new Cliente();
                         novo.setNome(clienteNome);
                         novo.setTelefone(clienteTelefone);
                         novo.setEmail(clienteEmail != null && !clienteEmail.isBlank() ? clienteEmail : null);
+                        novo.setDataNascimento(dataNascimento);
                         novo.setEmpresa(empresa);
                         return clienteRepository.save(novo);
                     });
 
             // 2. Monta o DTO de agendamento
-            LocalTime hora = LocalTime.parse(horario);
-            LocalDateTime dataHora = LocalDateTime.of(data, hora);
-
             AgendamentoDTO dto = new AgendamentoDTO();
             dto.setClienteId(cliente.getId());
             dto.setProfissionalId(profissionalId);
@@ -155,25 +170,74 @@ public class AgendamentoPublicoController {
     public List<String> obterHorariosOcupados(@PathVariable String slug,
             @RequestParam(required = false) Long profissionalId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
-        List<com.beautysalon.model.Agendamento> agendamentos = agendamentoService.listarTodos().stream()
+        java.util.Set<String> horasOcupadas = new java.util.LinkedHashSet<>();
+        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+
+        // 1. Horários já ocupados por outros agendamentos
+        List<com.beautysalon.DTO.AgendamentoDTO> agendamentos = agendamentoService.listarTodos().stream()
                 .filter(a -> a.getDataHora() != null && a.getDataHora().toLocalDate().isEqual(data))
                 .filter(a -> !"CANCELADO".equalsIgnoreCase(a.getStatus())
                         && !"NAO_COMPARECEU".equalsIgnoreCase(a.getStatus()))
                 .filter(a -> profissionalId == null
                         || (a.getProfissionalId() != null && a.getProfissionalId().equals(profissionalId)))
-                .map(dto -> {
-                    com.beautysalon.model.Agendamento ag = new com.beautysalon.model.Agendamento();
-                    ag.setDataHora(dto.getDataHora());
-                    return ag;
-                })
                 .toList();
 
-        List<String> horasOcupadas = new ArrayList<>();
-        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
-        for (com.beautysalon.model.Agendamento a : agendamentos) {
+        for (var a : agendamentos) {
             horasOcupadas.add(a.getDataHora().format(fmt));
         }
-        return horasOcupadas;
+
+        // Grade padrão de horários oferecidos no portal
+        List<LocalTime> slotsGrade = List.of(
+                LocalTime.of(8, 0), LocalTime.of(8, 30),
+                LocalTime.of(9, 0), LocalTime.of(9, 30),
+                LocalTime.of(10, 0), LocalTime.of(10, 30),
+                LocalTime.of(11, 0), LocalTime.of(11, 30),
+                LocalTime.of(13, 0), LocalTime.of(13, 30),
+                LocalTime.of(14, 0), LocalTime.of(14, 30),
+                LocalTime.of(15, 0), LocalTime.of(15, 30),
+                LocalTime.of(16, 0), LocalTime.of(16, 30),
+                LocalTime.of(17, 0), LocalTime.of(17, 30),
+                LocalTime.of(18, 0), LocalTime.of(18, 30),
+                LocalTime.of(19, 0), LocalTime.of(19, 30),
+                LocalTime.of(20, 0), LocalTime.of(20, 30)
+        );
+
+        // 2. Bloqueio de Ausências, Folgas e Férias do Profissional selecionado
+        if (profissionalId != null) {
+            var ausencias = profissionalService.listarAusenciasPorProfissional(profissionalId);
+            for (var aus : ausencias) {
+                boolean coincide = false;
+                if (aus.getDataEspecifica() != null && aus.getDataEspecifica().isEqual(data)) {
+                    coincide = true;
+                } else if (aus.getDiaSemanaRecorrente() != null && aus.getDiaSemanaRecorrente() == data.getDayOfWeek()) {
+                    coincide = true;
+                }
+
+                if (coincide) {
+                    LocalTime ausIni = aus.getHoraInicio() != null ? aus.getHoraInicio() : LocalTime.of(0, 0);
+                    LocalTime ausFim = aus.getHoraFim() != null ? aus.getHoraFim() : LocalTime.of(23, 59);
+
+                    for (LocalTime slot : slotsGrade) {
+                        LocalTime slotFim = slot.plusMinutes(30);
+                        if (slot.isBefore(ausFim) && slotFim.isAfter(ausIni)) {
+                            horasOcupadas.add(slot.format(fmt));
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Se a data for HOJE, bloqueia qualquer horário que já passou
+        if (data.isEqual(LocalDate.now())) {
+            LocalTime agora = LocalTime.now();
+            for (LocalTime slot : slotsGrade) {
+                if (slot.isBefore(agora)) {
+                    horasOcupadas.add(slot.format(fmt));
+                }
+            }
+        }
+
+        return new ArrayList<>(horasOcupadas);
     }
 
     @GetMapping("/sucesso")

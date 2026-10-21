@@ -197,7 +197,9 @@
             </div>
 
             <!-- CARROSSEL DE PROFISSIONAIS -->
-            <label class="form-label text-muted small fw-semibold mb-2">Com quem deseja ser atendida(o)?</label>
+            <label class="form-label text-light fw-bold mb-2" style="color: #f8fafc !important; font-size: 0.95rem;">
+                <i class="bi bi-person-heart text-info me-1"></i> Com quem deseja ser atendida(o)?
+            </label>
             <div class="prof-scroll-container">
                 <!-- Opção Qualquer Profissional -->
                 <div class="prof-pill-card selected" data-id="" onclick="selecionarProfissional(this)">
@@ -221,7 +223,9 @@
 
             <!-- SELEÇÃO DA DATA -->
             <div class="mb-3">
-                <label class="form-label text-muted small fw-semibold mb-2">Qual o melhor dia?</label>
+                <label class="form-label text-light fw-bold mb-2" style="color: #f8fafc !important; font-size: 0.95rem;">
+                    <i class="bi bi-calendar2-week text-warning me-1"></i> Qual o melhor dia?
+                </label>
                 <div class="position-relative">
                     <input type="date" id="dataAgendamento" name="data" class="date-picker-custom" required 
                            th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" />
@@ -231,16 +235,18 @@
             <!-- GRADE INTELIGENTE DE HORÁRIOS -->
             <div>
                 <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label class="form-label text-muted small fw-semibold mb-0">Horários disponíveis:</label>
-                    <span class="small text-muted" id="statusCarregamentoHorarios" style="font-size: 0.75rem;">
-                        <i class="bi bi-check-circle text-success me-1"></i>Atualizado
+                    <label class="form-label text-light fw-bold mb-0" style="color: #f8fafc !important; font-size: 0.95rem;">
+                        <i class="bi bi-clock-history text-success me-1"></i> Horários disponíveis:
+                    </label>
+                    <span class="small" id="statusCarregamentoHorarios" style="font-size: 0.78rem; color: #a5f3fc;">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>Atualizado
                     </span>
                 </div>
 
                 <div class="time-slots-grid" id="horariosContainer">
                     <button type="button" class="time-slot-chip" data-time="08:00">08:00</button>
                     <button type="button" class="time-slot-chip" data-time="08:30">08:30</button>
-                    <button type="button" class="time-slot-chip selected" data-time="09:00">09:00</button>
+                    <button type="button" class="time-slot-chip" data-time="09:00">09:00</button>
                     <button type="button" class="time-slot-chip" data-time="09:30">09:30</button>
                     <button type="button" class="time-slot-chip" data-time="10:00">10:00</button>
                     <button type="button" class="time-slot-chip" data-time="10:30">10:30</button>
@@ -279,23 +285,31 @@
             </div>
 
             <div class="form-floating-custom">
-                <label>Seu Nome Completo *</label>
+                <label style="color: #f8fafc !important; font-weight: 600; font-size: 0.88rem;">Seu Nome Completo *</label>
                 <input type="text" name="clienteNome" class="form-input-luxury" placeholder="Ex: Fernanda Lima" required />
             </div>
 
             <div class="form-floating-custom">
-                <label>Seu WhatsApp / Celular *</label>
+                <label style="color: #f8fafc !important; font-weight: 600; font-size: 0.88rem;">Seu WhatsApp / Celular *</label>
                 <input type="tel" id="inputTelefone" name="clienteTelefone" class="form-input-luxury" 
                        placeholder="(11) 98765-4321" maxlength="15" required oninput="mascaraTelefone(this)" />
             </div>
 
+            <!-- CAMPO DATA DE ANIVERSÁRIO -->
             <div class="form-floating-custom">
-                <label>E-mail de confirmação (opcional)</label>
+                <label style="color: #f8fafc !important; font-weight: 600; font-size: 0.88rem;">
+                    <i class="bi bi-gift text-warning me-1"></i> Data de Aniversário (opcional — para receber mimos & descontos! 🎂)
+                </label>
+                <input type="date" name="dataNascimento" class="form-input-luxury" />
+            </div>
+
+            <div class="form-floating-custom">
+                <label style="color: #f8fafc !important; font-weight: 600; font-size: 0.88rem;">E-mail de confirmação (opcional)</label>
                 <input type="email" name="clienteEmail" class="form-input-luxury" placeholder="fernanda@email.com" />
             </div>
 
             <div class="form-floating-custom mb-0">
-                <label>Observações ou preferências especiais (opcional)</label>
+                <label style="color: #f8fafc !important; font-weight: 600; font-size: 0.88rem;">Observações ou preferências especiais (opcional)</label>
                 <textarea name="observacoes" class="form-input-luxury" rows="2" placeholder="Ex: Prefiro atendimento sem secador muito quente..."></textarea>
             </div>
         </section>

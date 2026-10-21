@@ -13,6 +13,7 @@
     
     <!-- FullCalendar CDN (v6 já injeta os estilos automaticamente via JS) -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales-all.global.min.js"></script>
 
 
     <!-- Fonts & Style -->
@@ -225,6 +226,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:inline="javascript">
+    const EMPRESA_SLUG = /*[[${empresaSlug}]]*/ '';
     let calendarInstance = null;
 
     function showTableView() {
@@ -244,15 +246,23 @@
         document.getElementById('btnViewTable').classList.remove('active', 'btn-primary');
         document.getElementById('btnViewTable').classList.add('btn-secondary');
 
-        if (!calendarInstance) {
-            initFullCalendar();
-        } else {
-            calendarInstance.render();
-        }
+        setTimeout(() => {
+            if (!calendarInstance) {
+                initFullCalendar();
+            } else {
+                calendarInstance.render();
+                calendarInstance.updateSize();
+            }
+        }, 50);
     }
 
     function initFullCalendar() {
         const calendarEl = document.getElementById('fullCalendarAgendamentos');
+        if (!calendarEl) return;
+        if (typeof FullCalendar === 'undefined') {
+            calendarEl.innerHTML = '<div class="alert alert-warning text-center my-4"><i class="bi bi-exclamation-triangle me-2"></i>Não foi possível carregar a biblioteca de calendário. Verifique a conexão com a internet.</div>';
+            return;
+        }
         
         const events = [];
         const rows = document.querySelectorAll('#agendamentosTable tbody tr');
@@ -393,12 +403,12 @@
             formAtender.style.display = 'none';
         } else {
             formAtender.style.display = 'inline-block';
-            formAtender.action = `/${/*[[${empresaSlug}]]*/ ''}/agendamentos/${props.id}/iniciar-comanda`;
+            formAtender.action = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id + '/iniciar-comanda';
         }
 
         // Link Editar
         const btnEdit = document.getElementById('modalCalBtnEdit');
-        btnEdit.href = `/${/*[[${empresaSlug}]]*/ ''}/agendamentos/${props.id}`;
+        btnEdit.href = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id;
 
         const modal = new bootstrap.Modal(modalEl);
         modal.show();

@@ -94,6 +94,71 @@ public class WhatsAppConfigController {
     }
 
     /**
+     * Pareamento instantâneo em 1 clique (Modo Demonstração / Novo Estabelecimento).
+     */
+    @PostMapping("/conectar-demo")
+    public String conectarDemo(@PathVariable String slug,
+                               @RequestParam(required = false) String telefone,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual()
+                    .orElseThrow(() -> new IllegalStateException("Configuração do WhatsApp não encontrada."));
+
+            String numero = (telefone != null && !telefone.isBlank()) 
+                    ? telefone : "(11) 95430-1259";
+
+            whatsAppService.simularConexaoTeste(config, numero);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", 
+                    "🎉 WhatsApp conectado com sucesso! As automações de lembrete, agendamento e comanda já estão ativas.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao conectar WhatsApp: " + e.getMessage());
+        }
+        return "redirect:/" + slug + "/configuracoes/whatsapp";
+    }
+
+    /**
+     * Desconecta o WhatsApp pareado.
+     */
+    @PostMapping("/desconectar")
+    public String desconectarWhatsApp(@PathVariable String slug,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual().orElse(null);
+            if (config != null) {
+                whatsAppService.desconectar(config);
+            }
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "WhatsApp desconectado com sucesso. Você pode parear um novo aparelho quando desejar.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao desconectar: " + e.getMessage());
+        }
+        return "redirect:/" + slug + "/configuracoes/whatsapp";
+    }
+
+    /**
+     * Endpoint AJAX para polling de status de conexão do WhatsApp.
+     */
+    @GetMapping("/status")
+    @ResponseBody
+    public java.util.Map<String, Object> consultarStatus(@PathVariable String slug) {
+        WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual().orElse(null);
+        if (config == null) {
+            return java.util.Map.of("conectado", false);
+        }
+
+        boolean conectado = config.isConectado();
+        if (!conectado) {
+            conectado = whatsAppService.verificarEAtualizarConexaoReal(config);
+        }
+
+        return java.util.Map.of(
+                "conectado", conectado,
+                "ativo", config.isAtivo(),
+                "numeroConectado", config.getNumeroConectado() != null ? config.getNumeroConectado() : "",
+                "instanceName", config.getInstanceName() != null ? config.getInstanceName() : slug
+        );
+    }
+
+    /**
      * Endpoint AJAX para obter o QR Code em tempo real da Evolution API para pareamento via WhatsApp Web.
      */
     @GetMapping("/qrcode")

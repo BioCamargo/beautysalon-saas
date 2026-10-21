@@ -9,16 +9,35 @@
         <!-- CABEÇALHO COM LOGO & EMPRESA -->
         <div class="sidebar-header">
             <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
-                style="text-align: center; display: block; text-decoration: none;">
-                <img th:src="${empresaLogo != null and !empresaLogo.isEmpty() ? empresaLogo : '/images/nexipro-logo.svg'}" 
-                    th:alt="${empresaNome != null ? empresaNome : 'NEXI PRO'}" 
-                    class="sidebar-logo-img"
-                    style="max-height: 44px; width: auto; object-fit: contain; margin: 0 auto 0.4rem; display: block;"
-                    onerror="this.style.display='none'; document.getElementById('fallbackLogo').style.display='block';" />
-                <div id="fallbackLogo" th:style="${empresaLogo != null and !empresaLogo.isEmpty()} ? 'display: none;' : 'display: block;'">
-                    <div class="sidebar-brand-name" th:text="${empresaNome != null ? empresaNome : 'NEXI PRO'}">NEXI PRO</div>
-                    <div class="sidebar-brand-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'GESTÃO INTELIGENTE'}">
-                        GESTÃO INTELIGENTE</div>
+                style="text-align: center; display: block; text-decoration: none; width: 100%;">
+                <!-- 1. Logotipo Oficial NEXI PRO (Sempre fixo no topo) -->
+                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" class="sidebar-nexipro-logo"
+                    onerror="this.style.display='none'; document.getElementById('sidebarNexiFallback').style.display='block';" />
+                <div id="sidebarNexiFallback" style="display: none;" class="sidebar-brand-name">NEXI PRO</div>
+
+                <!-- Divisor sutil entre a plataforma e o estabelecimento -->
+                <div class="sidebar-brand-divider"></div>
+
+                <!-- 2. Identificação da Empresa (Logotipo da empresa ou Nome em texto) -->
+                <div class="sidebar-empresa-brand">
+                    <!-- Quando tiver logotipo da empresa cadastrado: exibe a imagem da logo do salão -->
+                    <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" class="sidebar-empresa-logo-wrap">
+                        <img th:src="${empresaLogo}" th:alt="${empresaNome != null ? empresaNome : 'Logotipo'}"
+                            class="sidebar-empresa-logo-img"
+                            onerror="this.style.display='none'; document.getElementById('sidebarEmpresaNomeFallback').style.display='block';" />
+                        <div id="sidebarEmpresaNomeFallback" style="display: none;" class="sidebar-brand-name"
+                            th:text="${empresaNome != null ? empresaNome : 'NEXI PRO'}">STUDIO HC</div>
+                    </div>
+
+                    <!-- Quando NÃO tiver logotipo: exibe o nome em texto -->
+                    <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" class="sidebar-brand-name"
+                        th:text="${empresaNome != null ? empresaNome : 'NEXI PRO'}">STUDIO HC</div>
+                </div>
+
+                <!-- 3. Informação do Tipo / Segmento da Empresa (Sempre visível abaixo) -->
+                <div class="sidebar-brand-tag"
+                    th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'GESTÃO INTELIGENTE'}">
+                    ESTÚDIO MULTIDISCIPLINAR / OUTROS
                 </div>
             </a>
         </div>
@@ -101,22 +120,22 @@
                 <span>Equipe & Comissões</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
-                th:classappend="${activePage == 'whatsapp'} ? 'active' : ''"
+            <a th:href="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
+                class="nav-link" th:classappend="${activePage == 'whatsapp'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-whatsapp text-success"></i>
                 <span>Integração WhatsApp</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/anamnese(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
-                th:classappend="${activePage == 'anamnese-builder'} ? 'active' : ''"
+            <a th:href="@{/{slug}/configuracoes/anamnese(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
+                class="nav-link" th:classappend="${activePage == 'anamnese-builder'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-ui-checks-grid text-warning"></i>
                 <span>Form Builder Anamnese</span>
             </a>
 
-            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
-                th:classappend="${activePage == 'empresa'} ? 'active' : ''"
+            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
+                class="nav-link" th:classappend="${activePage == 'empresa'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-gear-fill text-primary"></i>
                 <span>Dados da Empresa & Pix</span>

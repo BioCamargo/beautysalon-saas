@@ -8,6 +8,7 @@ import com.beautysalon.model.TenantRole;
 import com.beautysalon.model.User;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.UserRepository;
+import com.beautysalon.service.WhatsAppService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,12 +28,16 @@ public class EmpresaServiceImpl implements EmpresaService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private final WhatsAppService whatsAppService;
+
     public EmpresaServiceImpl(EmpresaRepository empresaRepository,
                               UserRepository userRepository,
-                              BCryptPasswordEncoder passwordEncoder) {
+                              BCryptPasswordEncoder passwordEncoder,
+                              WhatsAppService whatsAppService) {
         this.empresaRepository = empresaRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.whatsAppService = whatsAppService;
     }
 
     @Override
@@ -68,6 +73,9 @@ public class EmpresaServiceImpl implements EmpresaService {
 
         empresa = empresaRepository.save(empresa);
         log.info("Empresa criada: {} (slug={})", empresa.getNome(), empresa.getSlug());
+
+        // Auto-provisiona a Integração WhatsApp com zero parâmetros necessários
+        whatsAppService.obterOuCriarConfiguracaoPadrao(empresa);
 
         // Cria o usuário OWNER
         User owner = User.builder()

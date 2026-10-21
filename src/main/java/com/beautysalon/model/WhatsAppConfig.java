@@ -29,13 +29,18 @@ public class WhatsAppConfig {
     private Empresa empresa;
 
     @Builder.Default
-    private boolean ativo = false;
+    private boolean ativo = true;
+
+    @Builder.Default
+    private boolean conectado = false;
+
+    private String numeroConectado;
 
     /**
-     * Provedor: META_OFFICIAL, EVOLUTION_API, Z_API
+     * Provedor: EVOLUTION_API (padrão plug-and-play via QR Code), META_OFFICIAL, Z_API
      */
     @Builder.Default
-    private String provider = "META_OFFICIAL";
+    private String provider = "EVOLUTION_API";
 
     // --- META CLOUD API (Oficial) ---
     private String metaPhoneNumberId;

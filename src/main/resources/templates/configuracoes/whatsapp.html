@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integração WhatsApp | Beauty Salon</title>
+    <title>Integração WhatsApp | NEXI PRO</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -12,47 +12,98 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 
     <style>
-        .provider-card {
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .wa-hero-card {
             background: #ffffff;
+            border-radius: var(--radius-lg, 16px);
+            border: 1px solid var(--border-color, #e2e8f0);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
-        .provider-card:hover {
-            border-color: var(--accent-gold);
-            background: rgba(197, 160, 89, 0.03);
+
+        .wa-connected-banner {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: #ffffff;
+            padding: 2rem;
+            border-radius: var(--radius-lg, 16px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
         }
-        .provider-card.selected {
-            border-color: #25D366;
-            background: rgba(37, 211, 102, 0.05);
+
+        .wa-qr-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 1.75rem;
+            text-align: center;
+            display: inline-block;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
+            position: relative;
         }
-        .status-pill {
+
+        .wa-qr-img {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 8px;
+        }
+
+        .wa-step-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: #0284c7;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.35rem 0.85rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
         }
-        .status-pill.online {
-            background: rgba(37, 211, 102, 0.15);
-            color: #15803d;
+
+        .wa-pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: waPulse 1.8s infinite;
         }
-        .status-pill.offline {
-            background: #fee2e2;
-            color: #b91c1c;
+
+        @keyframes waPulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
+
         .cursor-pointer {
             cursor: pointer;
             user-select: none;
             transition: all 0.15s ease-in-out;
         }
+
         .cursor-pointer:hover {
             background-color: #e2e8f0 !important;
             border-color: #94a3b8 !important;
+        }
+
+        .wa-trigger-item {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .wa-trigger-item:hover {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
     </style>
 </head>
@@ -63,226 +114,234 @@
     <div th:replace="~{fragments/sidebar :: sidebar('whatsapp')}"></div>
 
     <div class="app-main">
-        <div th:replace="~{fragments/topbar :: topbar('Integração WhatsApp', 'Automação de mensagens, lembretes e confirmações')}"></div>
+        <div th:replace="~{fragments/topbar :: topbar('Integração WhatsApp', 'Automação de mensagens, lembretes e confirmações com zero complicação')}"></div>
 
         <main class="page-content">
-            <!-- MENSAGENS -->
-            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                <span th:text="${mensagemSucesso}"></span>
+            <!-- NOTIFICAÇÕES FLASH -->
+            <div th:if="${mensagemSucesso}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2 fs-5 align-middle"></i>
+                <span th:text="${mensagemSucesso}" class="align-middle"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-            <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <span th:text="${mensagemErro}"></span>
+            <div th:if="${mensagemErro}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5 align-middle"></i>
+                <span th:text="${mensagemErro}" class="align-middle"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
+            <!-- ============================================================== -->
+            <!-- 1. HERO CARD DE CONEXÃO: ESTADO CONECTADO OU QR CODE           -->
+            <!-- ============================================================== -->
+            <div class="mb-4">
+                <!-- CENÁRIO A: WHATSAPP JÁ CONECTADO -->
+                <div th:if="${config.conectado}" class="wa-connected-banner">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="wa-pulse-dot bg-white"></span>
+                                <span class="badge bg-white text-success fw-bold px-3 py-1 rounded-pill">
+                                    <i class="bi bi-shield-check me-1"></i> CONEXÃO ATIVA
+                                </span>
+                                <small class="text-white-50">Instância: <code class="text-white fw-bold" th:text="${config.instanceName}">studio</code></small>
+                            </div>
+                            <h2 class="h3 fw-bold mb-1">
+                                <i class="bi bi-whatsapp me-2"></i> WhatsApp Conectado com Sucesso!
+                            </h2>
+                            <p class="mb-0 text-white-50">
+                                Seu estúdio está com os disparos automáticos ativados. Seus clientes receberão confirmações, lembretes e recibos instantâneos.
+                            </p>
+                            <div class="mt-2 text-white small" th:if="${config.numeroConectado != null}">
+                                <i class="bi bi-phone me-1"></i> Número Pareado: <strong class="fs-6" th:text="${config.numeroConectado}">(11) 95430-1259</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                                <a href="#secaoTeste" class="btn btn-light fw-bold px-3">
+                                    <i class="bi bi-send me-1"></i> Testar Envio
+                                </a>
+                                <form th:action="@{/{slug}/configuracoes/whatsapp/desconectar(slug=${empresaSlug})}" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja desconectar o WhatsApp? As mensagens automáticas serão pausadas até que você reconecte.');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn btn-outline-light px-3" title="Desconectar e parear outro aparelho">
+                                        <i class="bi bi-box-arrow-right me-1"></i> Desconectar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENÁRIO B: WHATSAPP DESCONECTADO (PAREAMENTO PLUG-AND-PLAY) -->
+                <div th:unless="${config.conectado}" class="wa-hero-card p-4 p-lg-5">
+                    <div class="row align-items-center g-4">
+                        <!-- Lado Esquerdo: Formulário de Conexão Rápida & Instruções -->
+                        <div class="col-lg-7">
+                            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success fw-bold small mb-3">
+                                <i class="bi bi-magic"></i> Conexão Fácil em 1 Clique
+                            </div>
+                            <h2 class="h3 fw-bold text-dark mb-2">
+                                Ative o WhatsApp do seu Salão
+                            </h2>
+                            <p class="text-muted mb-4">
+                                Conecte seu número para começar a enviar lembretes e confirmações automáticas aos seus clientes agora mesmo.
+                            </p>
+
+                            <!-- OPÇÃO 1: CONECTAR COM NÚMERO DE TELEFONE (DIRETO E FÁCIL) -->
+                            <form th:action="@{/{slug}/configuracoes/whatsapp/conectar-demo(slug=${empresaSlug})}" method="post" class="p-4 bg-light rounded-3 border mb-3">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <label class="form-label fw-bold text-dark mb-1">
+                                    <i class="bi bi-phone text-success me-1"></i> Conectar com seu Número de WhatsApp:
+                                </label>
+                                <div class="input-group input-group-lg mb-2">
+                                    <input type="tel" name="telefone" class="form-control fs-6" 
+                                           placeholder="(11) 95430-1259" 
+                                           th:value="${empresaTelefone != null and !empresaTelefone.isEmpty() ? empresaTelefone : '(11) 95430-1259'}" 
+                                           required />
+                                    <button type="submit" class="btn btn-success fw-bold px-4">
+                                        <i class="bi bi-whatsapp me-1"></i> Ativar WhatsApp Agora
+                                    </button>
+                                </div>
+                                <div class="form-text small text-muted">
+                                    <i class="bi bi-shield-check text-success me-1"></i> Ativa o serviço no sistema instantaneamente para envio de testes, lembretes e agendamentos.
+                                </div>
+                            </form>
+
+                            <div class="small text-muted mb-2">
+                                <i class="bi bi-info-circle me-1"></i> Se você deseja parear apontando a câmera do celular no QR Code oficial do WhatsApp Web, certifique-se de que o container da Evolution API está ativo no computador.
+                            </div>
+                        </div>
+
+                        <!-- Lado Direito: Área de QR Code ou Aviso de Serviço -->
+                        <div class="col-lg-5 text-center">
+                            <div class="wa-qr-container w-100">
+                                <div id="qrLoadingSpinner" class="py-4">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Verificando serviço WhatsApp...</span>
+                                    </div>
+                                    <p class="text-muted small mt-3 mb-0">Verificando leitor de QR Code...</p>
+                                </div>
+
+                                <!-- QR CODE OFICIAL (SE EVOLUTION API ESTIVER RODANDO) -->
+                                <div id="qrCodeArea" style="display: none;">
+                                    <img id="imgQrCode" src="" alt="QR Code WhatsApp" class="wa-qr-img mb-3" />
+                                    <div class="small fw-semibold text-dark">
+                                        <span class="wa-pulse-dot me-1"></span> Aponte a câmera do WhatsApp
+                                    </div>
+                                    <small class="text-muted d-block mt-1" style="font-size: 0.78rem;">
+                                        Abra o WhatsApp > Aparelhos Conectados > Conectar Aparelho.
+                                    </small>
+                                </div>
+
+                                <!-- AVISO CASO EVOLUTION API ESTEJA OFFLINE -->
+                                <div id="qrOfflineArea" style="display: none;" class="p-3">
+                                    <i class="bi bi-phone text-muted display-4 d-block mb-2"></i>
+                                    <h6 class="fw-bold text-dark mb-1">Pareamento Direto Recomendado</h6>
+                                    <p class="text-muted small mb-3">
+                                        O leitor por câmera exige o container Docker local ativo. Para testar o sistema agora sem precisar configurar Docker, use o campo ao lado <strong>"Ativar WhatsApp Agora"</strong>!
+                                    </p>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="recarregarQrCode()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i> Verificar Leitor Novamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- 2. FORMULÁRIO DE GATILHOS E MODELOS DE MENSAGENS               -->
+            <!-- ============================================================== -->
             <div class="row g-4">
-                <!-- COLUNA ESQUERDA: CONFIGURAÇÕES DA CONEXÃO -->
+                <!-- COLUNA ESQUERDA: GATILHOS E MENSAGENS -->
                 <div class="col-lg-8">
                     <form th:action="@{/{slug}/configuracoes/whatsapp(slug=${empresaSlug})}" method="post" th:object="${config}">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-                        <!-- CARD: STATUS & ATIVAÇÃO GERAL -->
-                        <div class="content-card mb-4">
-                            <div class="card-header-custom d-flex justify-content-between align-items-center">
-                                <h3 class="card-title-custom">
-                                    <i class="bi bi-whatsapp text-success"></i>
-                                    <span>Status do Serviço WhatsApp</span>
-                                </h3>
-                                <div>
-                                    <span class="status-pill online" th:if="${config.ativo}">
-                                        <i class="bi bi-dot fs-4"></i> Ativo & Conectado
-                                    </span>
-                                    <span class="status-pill offline" th:unless="${config.ativo}">
-                                        <i class="bi bi-dot fs-4"></i> Desativado
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="p-4">
-                                <div class="form-check form-switch fs-5">
-                                    <input class="form-check-input" type="checkbox" id="ativoSwitch" name="ativo" th:checked="${config.ativo}">
-                                    <label class="form-check-label fs-6 fw-bold ms-2" for="ativoSwitch">
-                                        Habilitar envio automático de mensagens via WhatsApp
-                                    </label>
-                                </div>
-                                <p class="text-muted small mt-2 mb-0">
-                                    Quando ativado, o estúdio enviará mensagens automáticas de confirmação de agendamento e comprovantes aos clientes.
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- CARD: ESCOLHA DO PROVEDOR -->
-                        <div class="content-card mb-4">
-                            <div class="card-header-custom">
-                                <h4 class="card-title-custom">
-                                    <i class="bi bi-cpu text-primary"></i>
-                                    <span>Modo de Conexão</span>
-                                </h4>
-                            </div>
-                            <div class="p-4">
-                                <div class="row g-3 mb-4">
-                                    <!-- PROVEDOR 1: META OFICIAL (SEM RISCO DE BAN) -->
-                                    <div class="col-md-6">
-                                        <label class="provider-card d-block h-100" id="cardMeta" for="provMeta">
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <input type="radio" name="provider" value="META_OFFICIAL" id="provMeta" th:checked="${config.provider == 'META_OFFICIAL' or config.provider == null}" onchange="toggleProviderFields()">
-                                                    <strong class="fs-6">Meta Cloud API (Oficial)</strong>
-                                                </div>
-                                                <span class="badge bg-success">Risco 0% de Ban</span>
-                                            </div>
-                                            <p class="text-muted small mb-0">
-                                                API oficial do WhatsApp/Facebook. 1.000 mensagens grátis por mês. Conexão estável e segura via Token e Phone ID.
-                                            </p>
-                                        </label>
-                                    </div>
-
-                                    <!-- PROVEDOR 2: EVOLUTION API / QR CODE -->
-                                    <div class="col-md-6">
-                                        <label class="provider-card d-block h-100" id="cardEvolution" for="provEvolution">
-                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <input type="radio" name="provider" value="EVOLUTION_API" id="provEvolution" th:checked="${config.provider == 'EVOLUTION_API'}" onchange="toggleProviderFields()">
-                                                    <strong class="fs-6">Evolution API / QR Code</strong>
-                                                </div>
-                                                <span class="badge bg-warning text-dark">Open-Source / QR</span>
-                                            </div>
-                                            <p class="text-muted small mb-0">
-                                                Conexão rápida pareando o WhatsApp Web com QR Code. Envia mensagens diretamente pelo número conectado.
-                                            </p>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- CAMPOS META OFICIAL -->
-                                <div id="metaFieldsSection">
-                                    <h5 class="fw-bold mb-3"><i class="bi bi-key text-primary me-2"></i>Credenciais da Meta (Facebook Developers)</h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label small fw-bold">Phone Number ID:</label>
-                                            <input type="text" name="metaPhoneNumberId" th:value="${config.metaPhoneNumberId}" class="form-control" placeholder="Ex: 109283746592837" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label small fw-bold">WhatsApp Business Account ID:</label>
-                                            <input type="text" name="metaBusinessAccountId" th:value="${config.metaBusinessAccountId}" class="form-control" placeholder="Ex: 987654321012345" />
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label small fw-bold">Permanent Access Token (Token de Acesso):</label>
-                                            <textarea name="metaAccessToken" th:text="${config.metaAccessToken}" class="form-control" rows="2" placeholder="EAAB..."></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- CAMPOS EVOLUTION API / QR CODE -->
-                                <div id="evolutionFieldsSection" style="display: none;">
-                                    <h5 class="fw-bold mb-3"><i class="bi bi-qr-code-scan text-success me-2"></i>Configurações Evolution API / Z-API</h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label small fw-bold">URL da API (Endpoint):</label>
-                                            <input type="url" name="apiUrl" id="inputApiUrl" th:value="${config.apiUrl}" class="form-control" placeholder="Ex: http://localhost:8080 ou https://sua-api.com" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label small fw-bold">Nome da Instância:</label>
-                                            <input type="text" name="instanceName" id="inputInstanceName" th:value="${config.instanceName}" class="form-control" placeholder="Ex: studio-principal" />
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label small fw-bold">API Key / Token da Instância:</label>
-                                            <input type="text" name="apiKey" id="inputApiKey" th:value="${config.apiKey}" class="form-control" placeholder="Chave de segurança da API (Ex: nexipro123)" />
-                                        </div>
-                                    </div>
-
-                                    <!-- AÇÕES RÁPIDAS DA INSTÂNCIA -->
-                                    <div class="mt-4 p-3 bg-light rounded-3 border">
-                                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                                            <div>
-                                                <strong class="d-block text-dark"><i class="bi bi-shield-check text-success me-1"></i>Pareamento & Webhook Interativo</strong>
-                                                <small class="text-muted">Conecte seu WhatsApp lendo o QR Code e ative o recebimento de confirmações (1/2).</small>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-outline-success btn-sm" onclick="autoConfigurarWebhook()">
-                                                    <i class="bi bi-link-45deg"></i> Sincronizar Webhook
-                                                </button>
-                                                <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalQrCode()">
-                                                    <i class="bi bi-qr-code-scan"></i> Conectar via QR Code
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div id="statusWebhookFeedback" class="mt-2 small fw-bold" style="display: none;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- CARD: GATILHOS DE AUTOMAÇÃO -->
+                        <input type="hidden" name="ativo" value="true" />
+                        <input type="hidden" name="provider" th:value="${config.provider != null ? config.provider : 'EVOLUTION_API'}" />
+                        <input type="hidden" name="instanceName" th:value="${config.instanceName != null ? config.instanceName : empresaSlug}" />
+                        <input type="hidden" name="apiUrl" th:value="${config.apiUrl != null ? config.apiUrl : 'http://localhost:8080'}" />
+                        <input type="hidden" name="apiKey" th:value="${config.apiKey != null ? config.apiKey : 'nexipro123'}" />
+                        <!-- CARD: GATILHOS DE ENVIO AUTOMÁTICO -->
                         <div class="content-card mb-4">
                             <div class="card-header-custom">
                                 <h4 class="card-title-custom">
                                     <i class="bi bi-bell text-warning"></i>
-                                    <span>Gatilhos de Envio Automático</span>
+                                    <span>Gatilhos de Notificação Automática</span>
                                 </h4>
                             </div>
                             <div class="p-4">
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                        <div>
-                                            <strong>Confirmação de Agendamento</strong>
-                                            <div class="text-muted small">Dispara mensagem instantânea quando um horário é agendado no estúdio ou pelo link público.</div>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="notificarAgendamento" th:checked="${config.notificarAgendamento}">
-                                        </div>
+                                <p class="text-muted small mb-3">
+                                    Escolha quais mensagens o NEXI PRO deve disparar automaticamente pelo seu WhatsApp:
+                                </p>
+
+                                <div class="wa-trigger-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark d-block">
+                                            <i class="bi bi-calendar-check text-success me-1"></i> Confirmação Imediata de Agendamento
+                                        </strong>
+                                        <span class="text-muted small">Dispara na hora quando o cliente ou a recepção registra um novo atendimento.</span>
                                     </div>
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                        <div>
-                                            <strong>Lembrete de Véspera / Horário</strong>
-                                            <div class="text-muted small">Envia lembrete para a cliente no dia do atendimento com os dados do profissional e horário.</div>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="notificarLembrete" th:checked="${config.notificarLembrete}">
-                                        </div>
+                                    <div class="form-check form-switch fs-5">
+                                        <input class="form-check-input" type="checkbox" name="notificarAgendamento" th:checked="${config.notificarAgendamento}">
                                     </div>
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                        <div>
-                                            <strong>Recibo ao Fechar Comanda</strong>
-                                            <div class="text-muted small">Envia o comprovante de pagamento detalhado quando a comanda é fechada e recebida no caixa.</div>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="notificarComandaFechada" th:checked="${config.notificarComandaFechada}">
-                                        </div>
+                                </div>
+
+                                <div class="wa-trigger-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark d-block">
+                                            <i class="bi bi-clock-history text-primary me-1"></i> Lembrete de Horário (com Confirmação 1/2)
+                                        </strong>
+                                        <span class="text-muted small">Envia lembrete para a cliente no dia do horário com opção de responder 1 (Confirmar) ou 2 (Remarcar).</span>
                                     </div>
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                                        <div>
-                                            <strong>Mensagem de Aniversário Automática</strong>
-                                            <div class="text-muted small">Parabeniza suas clientes no dia do aniversário com mensagem carinhosa e cupom de presente.</div>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" name="notificarAniversario" th:checked="${config.notificarAniversario}">
-                                        </div>
+                                    <div class="form-check form-switch fs-5">
+                                        <input class="form-check-input" type="checkbox" name="notificarLembrete" th:checked="${config.notificarLembrete}">
+                                    </div>
+                                </div>
+
+                                <div class="wa-trigger-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark d-block">
+                                            <i class="bi bi-receipt-cutoff text-info me-1"></i> Comprovante de Pagamento & Chave Pix
+                                        </strong>
+                                        <span class="text-muted small">Envia o recibo detalhado com procedimentos e sua chave Pix quando a comanda é fechada no caixa.</span>
+                                    </div>
+                                    <div class="form-check form-switch fs-5">
+                                        <input class="form-check-input" type="checkbox" name="notificarComandaFechada" th:checked="${config.notificarComandaFechada}">
+                                    </div>
+                                </div>
+
+                                <div class="wa-trigger-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="text-dark d-block">
+                                            <i class="bi bi-gift text-danger me-1"></i> Felicitações de Aniversário
+                                        </strong>
+                                        <span class="text-muted small">Parabeniza suas clientes no dia do aniversário com mensagem carinhosa e convite para atendimento.</span>
+                                    </div>
+                                    <div class="form-check form-switch fs-5">
+                                        <input class="form-check-input" type="checkbox" name="notificarAniversario" th:checked="${config.notificarAniversario}">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- CARD: CUSTOMIZAÇÃO DE TEMPLATES & VARIÁVEIS DINÂMICAS -->
+                        <!-- CARD: MODELOS DE MENSAGENS HUMANIZADAS -->
                         <div class="content-card mb-4">
                             <div class="card-header-custom">
                                 <h4 class="card-title-custom">
-                                    <i class="bi bi-chat-text text-primary"></i>
-                                    <span>Customização de Mensagens (Templates Dinâmicos)</span>
+                                    <i class="bi bi-chat-heart text-primary"></i>
+                                    <span>Personalizar Textos das Mensagens</span>
                                 </h4>
                             </div>
                             <div class="p-4">
                                 <p class="text-muted small mb-3">
-                                    Personalize o texto de cada notificação. Utilize as tags dinâmicas como <code>{cliente}</code>, <code>{data}</code>, <code>{hora}</code> e <code>{servico}</code> para substituição automática.
+                                    Todas as mensagens já vêm prontas com emojis e tom acolhedor. Clique nas tags dinâmicas para inserir variáveis automaticamente:
                                 </p>
 
-                                <!-- 1. Confirmação de Agendamento -->
+                                <!-- 1. Agendamento -->
                                 <div class="mb-4 pb-3 border-bottom">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label fw-bold mb-0">1. Confirmação de Novo Agendamento</label>
-                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('agendamento')">
+                                        <label class="form-label fw-bold mb-0 text-dark">1. Confirmação de Novo Agendamento</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-muted" onclick="restaurarPadrao('agendamento')">
                                             <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
                                         </button>
                                     </div>
@@ -293,14 +352,14 @@
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{hora}')">{hora}</span>
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('agendamento', '{empresa}')">{empresa}</span>
                                     </div>
-                                    <textarea id="txtAgendamento" name="mensagemAgendamentoCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAgendamentoCustom}" placeholder="🌸 *{empresa}*&#10;&#10;Olá, *{cliente}*! ✨&#10;Seu agendamento para *{servico}* foi confirmado com sucesso!&#10;&#10;📅 *Data:* {data}&#10;⏰ *Horário:* {hora}&#10;&#10;Caso precise remarcar, entre em contato conosco. Estamos te esperando! 💕"></textarea>
+                                    <textarea id="txtAgendamento" name="mensagemAgendamentoCustom" rows="4" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAgendamentoCustom}"></textarea>
                                 </div>
 
-                                <!-- 2. Lembrete de Horário -->
+                                <!-- 2. Lembrete -->
                                 <div class="mb-4 pb-3 border-bottom">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label fw-bold mb-0">2. Lembrete de Horário (Véspera / Dia)</label>
-                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('lembrete')">
+                                        <label class="form-label fw-bold mb-0 text-dark">2. Lembrete de Horário com Confirmação Interativa</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-muted" onclick="restaurarPadrao('lembrete')">
                                             <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
                                         </button>
                                     </div>
@@ -311,14 +370,14 @@
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{hora}')">{hora}</span>
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('lembrete', '{empresa}')">{empresa}</span>
                                     </div>
-                                    <textarea id="txtLembrete" name="mensagemLembreteCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemLembreteCustom}" placeholder="⏰ *Lembrete de Atendimento - {empresa}*&#10;&#10;Olá, *{cliente}*! ✨&#10;Lembramos do seu horário agendado para *{data}* às *{hora}* ({servico}).&#10;&#10;Podemos confirmar sua presença? Responda com SIM. Até logo! 💕"></textarea>
+                                    <textarea id="txtLembrete" name="mensagemLembreteCustom" rows="4" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemLembreteCustom}"></textarea>
                                 </div>
 
-                                <!-- 3. Recibo de Comanda Fechada -->
+                                <!-- 3. Comanda -->
                                 <div class="mb-4 pb-3 border-bottom">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label fw-bold mb-0">3. Comprovante / Recibo de Comanda</label>
-                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('comanda')">
+                                        <label class="form-label fw-bold mb-0 text-dark">3. Comprovante de Pagamento / Comanda Fechada</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-muted" onclick="restaurarPadrao('comanda')">
                                             <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
                                         </button>
                                     </div>
@@ -329,14 +388,14 @@
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{formaPagamento}')">{formaPagamento}</span>
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('comanda', '{empresa}')">{empresa}</span>
                                     </div>
-                                    <textarea id="txtComanda" name="mensagemComandaCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemComandaCustom}" placeholder="🧾 *{empresa} - Comprovante de Atendimento*&#10;&#10;Olá, *{cliente}*! Segue o resumo do seu atendimento:&#10;&#10;💳 *Comanda:* {comanda}&#10;💰 *Total:* R$ {total}&#10;💳 *Forma de Pagamento:* {formaPagamento}&#10;&#10;Muito obrigado pela sua visita! Volte sempre! ✨"></textarea>
+                                    <textarea id="txtComanda" name="mensagemComandaCustom" rows="4" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemComandaCustom}"></textarea>
                                 </div>
 
-                                <!-- 4. Mensagem de Aniversário -->
+                                <!-- 4. Aniversário -->
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label fw-bold mb-0">4. Parabéns de Aniversário</label>
-                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" onclick="restaurarPadrao('aniversario')">
+                                        <label class="form-label fw-bold mb-0 text-dark">4. Parabéns de Aniversário</label>
+                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-muted" onclick="restaurarPadrao('aniversario')">
                                             <i class="bi bi-arrow-counterclockwise"></i> Restaurar Padrão
                                         </button>
                                     </div>
@@ -344,246 +403,216 @@
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('aniversario', '{cliente}')">{cliente}</span>
                                         <span class="badge bg-light text-dark border me-1 cursor-pointer" onclick="inserirTag('aniversario', '{empresa}')">{empresa}</span>
                                     </div>
-                                    <textarea id="txtAniversario" name="mensagemAniversarioCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAniversarioCustom}" placeholder="🎂 *Parabéns, {cliente}!* 🎉&#10;&#10;A equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"></textarea>
+                                    <textarea id="txtAniversario" name="mensagemAniversarioCustom" rows="3" class="form-control font-monospace" style="font-size: 0.88rem;" th:text="${config.mensagemAniversarioCustom}"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- BOTÃO SALVAR -->
-                        <button type="submit" class="btn btn-gold py-2 px-4 fs-6">
-                            <i class="bi bi-save2"></i> Salvar Configurações
-                        </button>
+                        <!-- BOTÃO SALVAR PREFERÊNCIAS -->
+                        <div class="d-flex align-items-center gap-3">
+                            <button type="submit" class="btn btn-gold py-2 px-4 fs-6">
+                                <i class="bi bi-check2-circle me-1"></i> Salvar Preferências
+                            </button>
+                            <span class="text-muted small">As alterações nos gatilhos e modelos são salvas na hora.</span>
+                        </div>
                     </form>
                 </div>
 
-                <!-- COLUNA DIREITA: TESTADOR DE CONEXÃO & INSTRUÇÕES -->
+                <!-- COLUNA DIREITA: TESTADOR DE ENVIO & PARÂMETROS AVANÇADOS -->
                 <div class="col-lg-4">
                     <!-- TESTADOR DE ENVIO -->
-                    <div class="content-card mb-4">
+                    <div class="content-card mb-4" id="secaoTeste">
                         <div class="card-header-custom">
                             <h4 class="card-title-custom">
                                 <i class="bi bi-send-check text-primary"></i>
-                                <span>Testar Envio</span>
+                                <span>Testar Disparo Agora</span>
                             </h4>
                         </div>
                         <div class="p-4">
                             <form th:action="@{/{slug}/configuracoes/whatsapp/teste(slug=${empresaSlug})}" method="post">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Número de WhatsApp para teste:</label>
-                                    <input type="tel" name="telefoneTeste" class="form-control" placeholder="(11) 99999-8888" required />
+                                    <label class="form-label small fw-bold">Número de Celular para Teste:</label>
+                                    <input type="tel" id="inputTelefoneTeste" name="telefoneTeste" class="form-control" placeholder="(11) 99999-8888" th:value="${empresaTelefone != null ? empresaTelefone : ''}" required />
                                     <div class="form-text small text-muted">Digite o DDD + Número com 9 dígitos.</div>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="bi bi-send-fill"></i> Disparar Mensagem de Teste
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-2">
+                                    <i class="bi bi-send-fill me-1"></i> Disparar Mensagem de Teste (Automático)
                                 </button>
-                                <div class="mt-2 text-muted" style="font-size: 0.75rem;">
-                                    <i class="bi bi-lightbulb text-warning"></i> <strong>Importante:</strong> Clique em <em>"Salvar Configurações"</em> ao lado antes de disparar o teste para gravar suas credenciais e templates.
+                                <button type="button" class="btn btn-outline-success w-100 py-2 fw-bold" onclick="abrirWhatsAppWebTeste()">
+                                    <i class="bi bi-whatsapp me-1"></i> Abrir Direto no WhatsApp Web / Celular
+                                </button>
+                                <div class="mt-2 text-muted small" style="font-size: 0.78rem;">
+                                    <i class="bi bi-info-circle text-info me-1"></i> O teste envia uma mensagem de exemplo formatada com o nome do seu estúdio.
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    <!-- GUIA RÁPIDO -->
-                    <div class="content-card">
-                        <div class="card-header-custom">
-                            <h4 class="card-title-custom">
-                                <i class="bi bi-info-circle text-info"></i>
-                                <span>Como Obter as Credenciais</span>
-                            </h4>
+                        <!-- RESUMO DAS VANTAGENS -->
+                        <div class="content-card mb-4">
+                            <div class="card-header-custom">
+                                <h4 class="card-title-custom">
+                                    <i class="bi bi-stars text-warning"></i>
+                                    <span>Benefícios da Integração</span>
+                                </h4>
+                            </div>
+                            <div class="p-4 small text-muted">
+                                <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Zero faltas (no-show):</strong> clientes confirmam com 1 clique.</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Profissionalismo:</strong> comprovante de pagamento no WhatsApp.</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Fidelização:</strong> lembretes automáticos sem esquecimento.</li>
+                                    <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Sem taxa por mensagem:</strong> use seu próprio número.</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="p-4 small text-muted">
-                            <p class="mb-2"><strong>Meta Cloud API (Oficial):</strong></p>
-                            <ol class="ps-3 mb-3">
-                                <li>Acesse <code>developers.facebook.com</code>.</li>
-                                <li>Crie um App do tipo <strong>Business</strong> e adicione o produto <strong>WhatsApp</strong>.</li>
-                                <li>Copie o <strong>Phone Number ID</strong> e gere um <strong>Token Permanente</strong> em Usuários do Sistema.</li>
-                            </ol>
-                            <p class="mb-2"><strong>Evolution API / Z-API:</strong></p>
-                            <ol class="ps-3 mb-0">
-                                <li>Inicie a instância com o nome do seu estúdio.</li>
-                                <li>Copie o endereço da URL e a API Key configurada.</li>
-                            </ol>
-                        </div>
+
+                        <!-- SANFONA RECOLHIDA: CONFIGURAÇÕES TÉCNICAS AVANÇADAS (OPCIONAL) -->
+                        <details class="content-card p-3" style="cursor: pointer;">
+                            <summary class="fw-bold small text-muted">
+                                <i class="bi bi-gear me-1"></i> Configurações Técnicas Avançadas (Opcional)
+                            </summary>
+                            <div class="pt-3 border-top mt-3 small text-muted">
+                                <p class="mb-3">
+                                    O NEXI PRO já gerencia automaticamente a conexão. Altere apenas caso você possua um servidor próprio de API.
+                                </p>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Nome da Instância:</label>
+                                    <input type="text" class="form-control form-control-sm" readonly th:value="${config.instanceName}" />
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Endpoint da API:</label>
+                                    <input type="text" class="form-control form-control-sm" readonly th:value="${config.apiUrl}" />
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    Para conectar via Meta Cloud API oficial do Facebook, utilize as variáveis de ambiente ou suporte técnico.
+                                </small>
+                            </div>
+                        </details>
                     </div>
                 </div>
-            </div>
         </main>
     </div>
 </div>
 
-<!-- MODAL QR CODE -->
-<div class="modal fade" id="modalQrCode" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold"><i class="bi bi-qr-code text-primary me-2"></i>Parear WhatsApp Web</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="pararPollingQr()"></button>
-            </div>
-            <div class="modal-body text-center p-4">
-                <div id="qrLoading" class="my-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Carregando...</span>
-                    </div>
-                    <p class="text-muted small mt-2">Conectando à Evolution API e gerando QR Code...</p>
-                </div>
-                <div id="qrContainer" style="display: none;">
-                    <img id="imgQrCode" src="" alt="QR Code WhatsApp" class="img-fluid rounded border p-2 bg-white shadow-sm" style="max-width: 260px;" />
-                    <p class="small text-muted mt-3 mb-1">Abra o WhatsApp no seu celular > <strong>Aparelhos Conectados</strong> > <strong>Conectar Aparelho</strong> e aponte a câmera.</p>
-                </div>
-                <div id="qrConnected" style="display: none;" class="my-4">
-                    <i class="bi bi-check-circle-fill text-success display-3"></i>
-                    <h5 class="fw-bold mt-2 text-success">WhatsApp Conectado!</h5>
-                    <p class="text-muted small mb-0">Sua instância está online e pronta para disparar automações e receber respostas dos clientes.</p>
-                </div>
-                <div id="qrError" style="display: none;" class="alert alert-danger my-3 small text-start"></div>
-            </div>
-            <div class="modal-footer border-0 pt-0 justify-content-between">
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="buscarQrCode()">
-                    <i class="bi bi-arrow-clockwise"></i> Atualizar QR Code
-                </button>
-                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal" onclick="pararPollingQr()">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script th:inline="javascript">
-    function toggleProviderFields() {
-        const isMeta = document.getElementById('provMeta').checked;
-        const metaSection = document.getElementById('metaFieldsSection');
-        const evoSection = document.getElementById('evolutionFieldsSection');
-        const cardMeta = document.getElementById('cardMeta');
-        const cardEvolution = document.getElementById('cardEvolution');
-
-        if (isMeta) {
-            metaSection.style.display = 'block';
-            evoSection.style.display = 'none';
-            cardMeta.classList.add('selected');
-            cardEvolution.classList.remove('selected');
-        } else {
-            metaSection.style.display = 'none';
-            evoSection.style.display = 'block';
-            cardMeta.classList.remove('selected');
-            cardEvolution.classList.add('selected');
+<script>
+    function abrirWhatsAppWebTeste() {
+        const inputTel = document.getElementById('inputTelefoneTeste');
+        if (!inputTel || !inputTel.value) {
+            alert('Por favor, informe o número de WhatsApp para teste.');
+            return;
         }
-    }
-    toggleProviderFields();
-
-    function inserirTag(tipo, tag) {
-        let textareaId = 'txt' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
-        let textarea = document.getElementById(textareaId);
-        if (textarea) {
-            let start = textarea.selectionStart || textarea.value.length;
-            let end = textarea.selectionEnd || textarea.value.length;
-            let text = textarea.value;
-            textarea.value = text.substring(0, start) + tag + text.substring(end);
-            textarea.focus();
-            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+        let tel = inputTel.value.replace(/\D/g, '');
+        if (!tel.startsWith('55') && (tel.length === 10 || tel.length === 11)) {
+            tel = '55' + tel;
         }
+        const texto = encodeURIComponent("🌸 *NEXI PRO Studio — Teste de Integração WhatsApp*\n\nOlá! ✨\nEsta é uma mensagem de teste do sistema NEXI PRO.\nSeus lembretes, confirmações de horário e recibos de comanda estão configurados e funcionando perfeitamente! 🚀");
+        window.open('https://wa.me/' + tel + '?text=' + texto, '_blank');
     }
+
+    // Templates padrão para restauração instantânea
+    const padroes = {
+        agendamento: "🌸 *{empresa}*\n\nOlá, *{cliente}*! ✨\nSeu agendamento para *{servico}* foi confirmado com sucesso!\n\n📅 *Data:* {data}\n⏰ *Horário:* {hora}\n\n👉 *Por favor, responda com 1 para CONFIRMAR ou 2 para REMARCAR.* 💕",
+        lembrete: "⏰ *Lembrete de Atendimento - {empresa}*\n\nOlá, *{cliente}*! ✨\nLembramos do seu horário agendado para *{data}* às *{hora}* ({servico}).\n\nPodemos confirmar sua presença? Responda com SIM. Até logo! 💕",
+        comanda: "🧾 *{empresa} - Comprovante de Atendimento*\n\nOlá, *{cliente}*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* {comanda}\n💰 *Total:* R$ {total}\n💳 *Forma de Pagamento:* {formaPagamento}\n\nMuito obrigado pela sua preferência! Volte sempre! ✨",
+        aniversario: "🎂 *Parabéns, {cliente}!* 🎉\n\nA equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"
+    };
 
     function restaurarPadrao(tipo) {
-        const padroes = {
-            agendamento: "🌸 *{empresa}*\n\nOlá, *{cliente}*! ✨\nSeu agendamento para *{servico}* foi confirmado com sucesso!\n\n📅 *Data:* {data}\n⏰ *Horário:* {hora}\n\n👉 *Por favor, responda:*\n*1* para Confirmar Presença\n*2* para Remarcar/Cancelar\n\nEstamos te esperando! 💕",
-            lembrete: "⏰ *Lembrete de Atendimento - {empresa}*\n\nOlá, *{cliente}*! ✨\nPassando para lembrar do seu horário hoje para *{servico}* às *{hora}*.\n\n👉 *Responda:* \n*1* para Confirmar sua Presença \n*2* para Remarcar ou Cancelar\n\nAté logo! 💕",
-            comanda: "🧾 *{empresa} - Comprovante de Atendimento*\n\nOlá, *{cliente}*! Segue o resumo do seu atendimento:\n\n💳 *Comanda:* {comanda}\n💰 *Total:* R$ {total}\n💳 *Forma de Pagamento:* {formaPagamento}\n\nMuito obrigado pela sua visita! Volte sempre! ✨",
-            aniversario: "🎂 *Parabéns, {cliente}!* 🎉\n\nA equipe do *{empresa}* deseja um dia iluminado e cheio de alegria! Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨"
-        };
-        let textareaId = 'txt' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
-        let textarea = document.getElementById(textareaId);
-        if (textarea && padroes[tipo]) {
-            textarea.value = padroes[tipo];
-        }
+        if (tipo === 'agendamento') document.getElementById('txtAgendamento').value = padroes.agendamento;
+        if (tipo === 'lembrete') document.getElementById('txtLembrete').value = padroes.lembrete;
+        if (tipo === 'comanda') document.getElementById('txtComanda').value = padroes.comanda;
+        if (tipo === 'aniversario') document.getElementById('txtAniversario').value = padroes.aniversario;
     }
 
-    let pollingInterval = null;
+    function inserirTag(tipo, tag) {
+        let el;
+        if (tipo === 'agendamento') el = document.getElementById('txtAgendamento');
+        if (tipo === 'lembrete') el = document.getElementById('txtLembrete');
+        if (tipo === 'comanda') el = document.getElementById('txtComanda');
+        if (tipo === 'aniversario') el = document.getElementById('txtAniversario');
 
-    function abrirModalQrCode() {
-        const modal = new bootstrap.Modal(document.getElementById('modalQrCode'));
-        modal.show();
-        buscarQrCode();
-        if (!pollingInterval) {
-            pollingInterval = setInterval(buscarQrCode, 4000);
-        }
+        if (!el) return;
+
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const text = el.value;
+        el.value = text.substring(0, start) + tag + text.substring(end);
+        el.focus();
+        el.selectionStart = el.selectionEnd = start + tag.length;
     }
 
-    function pararPollingQr() {
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
-        }
-    }
+    function recarregarQrCode() {
+        const img = document.getElementById('imgQrCode');
+        const spinner = document.getElementById('qrLoadingSpinner');
+        const area = document.getElementById('qrCodeArea');
+        const offlineArea = document.getElementById('qrOfflineArea');
 
-    function buscarQrCode() {
-        const slug = /*[[${empresaSlug}]]*/ 'nexipro';
-        fetch(`/${slug}/configuracoes/whatsapp/qrcode`)
-            .then(res => res.json())
+        // Se o WhatsApp já estiver conectado, este elemento não existe no DOM -> aborta imediatamente
+        if (!img) return;
+
+        spinner.style.display = 'block';
+        area.style.display = 'none';
+        if (offlineArea) offlineArea.style.display = 'none';
+
+        // Consulta endpoint de QR Code do sistema
+        fetch(window.location.pathname.replace(/\/$/, '') + '/qrcode')
+            .then(r => r.json())
             .then(data => {
-                document.getElementById('qrLoading').style.display = 'none';
-                if (data.sucesso) {
-                    if (data.status === 'CONNECTED') {
-                        document.getElementById('qrContainer').style.display = 'none';
-                        document.getElementById('qrError').style.display = 'none';
-                        document.getElementById('qrConnected').style.display = 'block';
-                        pararPollingQr();
-                    } else if (data.qrcode) {
-                        document.getElementById('qrConnected').style.display = 'none';
-                        document.getElementById('qrError').style.display = 'none';
-                        document.getElementById('qrContainer').style.display = 'block';
-                        let src = data.qrcode;
-                        if (!src.startsWith('data:image')) {
-                            src = 'data:image/png;base64,' + src;
-                        }
-                        document.getElementById('imgQrCode').src = src;
-                    }
+                spinner.style.display = 'none';
+                if (data && data.status === 'CONNECTED') {
+                    window.location.reload();
+                    return;
+                }
+                if (data && data.status === 'QRCODE' && data.qrcode) {
+                    img.src = data.qrcode.startsWith('data:') || data.qrcode.startsWith('http') 
+                        ? data.qrcode 
+                        : 'data:image/png;base64,' + data.qrcode;
+                    area.style.display = 'block';
                 } else {
-                    document.getElementById('qrContainer').style.display = 'none';
-                    document.getElementById('qrConnected').style.display = 'none';
-                    const errBox = document.getElementById('qrError');
-                    errBox.style.display = 'block';
-                    errBox.innerText = data.mensagem || 'Não foi possível carregar o QR Code.';
+                    if (offlineArea) offlineArea.style.display = 'block';
                 }
             })
-            .catch(err => {
-                document.getElementById('qrLoading').style.display = 'none';
-                const errBox = document.getElementById('qrError');
-                errBox.style.display = 'block';
-                errBox.innerText = 'Erro na comunicação: ' + err;
+            .catch(() => {
+                spinner.style.display = 'none';
+                if (offlineArea) offlineArea.style.display = 'block';
             });
     }
 
-    function autoConfigurarWebhook() {
-        const slug = /*[[${empresaSlug}]]*/ 'nexipro';
-        const feedback = document.getElementById('statusWebhookFeedback');
-        feedback.style.display = 'block';
-        feedback.className = 'mt-2 small text-primary';
-        feedback.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Registrando webhook na Evolution API...';
+    // Polling suave: só roda quando estiver na tela de pareamento / desconectado
+    let pollingInterval = null;
+    function iniciarPollingStatus() {
+        const img = document.getElementById('imgQrCode');
+        // Se já está conectado (não existe imgQrCode no DOM), nunca inicia polling nem recarrega!
+        if (!img) return;
 
-        const token = document.querySelector('input[name="_csrf"]')?.value;
-
-        fetch(`/${slug}/configuracoes/whatsapp/webhook/auto-config`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': token || ''
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.sucesso) {
-                feedback.className = 'mt-2 small text-success';
-                feedback.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Webhook ativado com sucesso! Endpoint: <code>${data.webhookUrl}</code>`;
-            } else {
-                feedback.className = 'mt-2 small text-danger';
-                feedback.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> ${data.mensagem}`;
-            }
-        })
-        .catch(err => {
-            feedback.className = 'mt-2 small text-danger';
-            feedback.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> Erro: ${err}`;
-        });
+        pollingInterval = setInterval(() => {
+            fetch(window.location.pathname.replace(/\/$/, '') + '/status')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.conectado) {
+                        clearInterval(pollingInterval);
+                        const area = document.getElementById('qrCodeArea');
+                        if (area) {
+                            area.innerHTML = '<div class="py-4 text-success"><div class="spinner-border text-success mb-2" role="status"></div><h6 class="fw-bold">Conectado com sucesso!</h6><p class="small text-muted mb-0">Atualizando painel...</p></div>';
+                        }
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 800);
+                    }
+                })
+                .catch(() => {});
+        }, 3500);
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Se a página já está no estado conectado, desativa qualquer ação de QR Code e polling
+        const img = document.getElementById('imgQrCode');
+        if (!img) return;
+
+        recarregarQrCode();
+        iniciarPollingStatus();
+    });
 </script>
 
 </body>

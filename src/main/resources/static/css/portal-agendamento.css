@@ -579,3 +579,42 @@ body {
         padding-top: 2rem;
     }
 }
+
+/* ==========================================================================
+   ALTO CONTRASTE E LEGIBILIDADE IMPECÁVEL PARA O PORTAL DO CLIENTE
+   ========================================================================== */
+.booking-app-wrapper label.form-label,
+.booking-app-wrapper .step-block label,
+.booking-app-wrapper .form-floating-custom label {
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    font-size: 0.92rem !important;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.booking-app-wrapper .text-muted,
+.booking-app-wrapper .small.text-muted,
+.booking-app-wrapper .prof-pill-sub {
+    color: #cbd5e1 !important; /* Cinza claro suave com ótima leitura em fundo escuro */
+}
+
+.date-picker-custom {
+    color-scheme: dark;
+    background-color: #1a2234 !important;
+    border: 1.5px solid rgba(0, 210, 238, 0.35) !important;
+    color: #ffffff !important;
+}
+
+.form-input-luxury {
+    background: #151b28 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+}
+
+.form-input-luxury:focus {
+    border-color: #00d2ee !important;
+    box-shadow: 0 0 0 3px rgba(0, 210, 238, 0.2) !important;
+    background: #182030 !important;
+}
+

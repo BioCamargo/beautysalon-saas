@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,28 +51,41 @@ public class WhatsAppWebhookController {
         try {
             // 1. Processamento para Evolution API
             String instanceName = payload.get("instance") != null ? String.valueOf(payload.get("instance")) : null;
+            Object eventObj = payload.get("event");
+            String event = eventObj != null ? String.valueOf(eventObj) : "";
             Object dataObj = payload.get("data");
 
-            if (dataObj instanceof Map<?, ?> dataMap) {
-                Object keyObj = dataMap.get("key");
-                if (keyObj instanceof Map<?, ?> keyMap) {
-                    Object fromMe = keyMap.get("fromMe");
-                    if (Boolean.TRUE.equals(fromMe)) {
-                        // Ignora mensagens enviadas pelo próprio salão
-                        return ResponseEntity.ok(Map.of("status", "IGNORED_FROM_ME"));
-                    }
-
-                    String remoteJid = keyMap.get("remoteJid") != null ? String.valueOf(keyMap.get("remoteJid")) : "";
-                    String telefone = remoteJid.split("@")[0];
-
-                    // Extrai o texto da mensagem
-                    String texto = extrairTextoEvolution(dataMap);
-                    if (texto != null && !texto.isBlank()) {
-                        logger.info("Mensagem recebida no Webhook de {} (Instância {}): {}", telefone, instanceName, texto);
-                        boolean processado = whatsAppService.processarRespostaCliente(telefone, texto, instanceName);
-                        return ResponseEntity.ok(Map.of("status", "SUCCESS", "processado", processado));
+            // Evento de conexão (connection.update / CONNECTION_UPDATE)
+            if ("connection.update".equalsIgnoreCase(event) || "CONNECTION_UPDATE".equalsIgnoreCase(event)) {
+                if (dataObj instanceof Map<?, ?> dataMap) {
+                    Object state = dataMap.get("state");
+                    if ("open".equalsIgnoreCase(String.valueOf(state))) {
+                        logger.info("Webhook: Instância WhatsApp '{}' conectou com sucesso (state=open)!", instanceName);
+                        if (instanceName != null) {
+                            whatsAppService.atualizarStatusConexao(instanceName, true);
+                        }
+                        return ResponseEntity.ok(Map.of("status", "CONNECTION_OPEN_REGISTERED"));
+                    } else if ("close".equalsIgnoreCase(String.valueOf(state))) {
+                        logger.info("Webhook: Instância WhatsApp '{}' desconectada (state=close)!", instanceName);
+                        if (instanceName != null) {
+                            whatsAppService.atualizarStatusConexao(instanceName, false);
+                        }
+                        return ResponseEntity.ok(Map.of("status", "CONNECTION_CLOSED_REGISTERED"));
                     }
                 }
+            }
+
+            // Evento de mensagem recebida (pode vir como Map ou List de mensagens)
+            if (dataObj instanceof List<?> list) {
+                for (Object item : list) {
+                    if (item instanceof Map<?, ?> dataMap) {
+                        processarMensagemIndividual(dataMap, instanceName);
+                    }
+                }
+                return ResponseEntity.ok(Map.of("status", "LIST_PROCESSED"));
+            } else if (dataObj instanceof Map<?, ?> dataMap) {
+                boolean processado = processarMensagemIndividual(dataMap, instanceName);
+                return ResponseEntity.ok(Map.of("status", "SUCCESS", "processado", processado));
             }
 
             // 2. Processamento para Meta Cloud API (se vier no padrão Meta)
@@ -85,6 +99,35 @@ public class WhatsAppWebhookController {
         }
 
         return ResponseEntity.ok(Map.of("status", "RECEIVED"));
+    }
+
+    private boolean processarMensagemIndividual(Map<?, ?> dataMap, String instanceName) {
+        try {
+            Object keyObj = dataMap.get("key");
+            if (keyObj instanceof Map<?, ?> keyMap) {
+                Object fromMe = keyMap.get("fromMe");
+                if (Boolean.TRUE.equals(fromMe)) {
+                    return false;
+                }
+
+                String remoteJid = keyMap.get("remoteJid") != null ? String.valueOf(keyMap.get("remoteJid")) : "";
+                String telefone = remoteJid.split("@")[0];
+
+                String texto = extrairTextoEvolution(dataMap);
+                if (texto == null || texto.isBlank()) {
+                    if (dataMap.get("body") != null) texto = String.valueOf(dataMap.get("body"));
+                    else if (dataMap.get("text") != null) texto = String.valueOf(dataMap.get("text"));
+                }
+
+                if (texto != null && !texto.isBlank()) {
+                    logger.info("Mensagem recebida no Webhook de {} (Instância {}): {}", telefone, instanceName, texto);
+                    return whatsAppService.processarRespostaCliente(telefone, texto, instanceName);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Erro ao processar mensagem individual no Webhook: {}", e.getMessage());
+        }
+        return false;
     }
 
     private String extrairTextoEvolution(Map<?, ?> dataMap) {
