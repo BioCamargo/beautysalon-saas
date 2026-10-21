@@ -15,7 +15,7 @@ public enum SegmentoEmpresa {
             "Mapeamento, Curvatura & Pigmentos", "Ex: Pigmento Marrom Café 4 gotas, Curvatura D 0.07 (8-12mm)"),
     ESMALTERIA_PODOLOGIA("Esmalteria & Podologia", "bi-hand-index-thumb", "Ficha de Cuidados & Podologia",
             "Produtos & Procedimento Aplicado", "Ex: Desbaste plantar com bisturi 22, óleo de melaleuca"),
-    GERAL("Estúdio Multidisciplinar / Outros", "bi-stars", "Ficha de Anamnese & Prontuário Técnico",
+    GERAL("Empresa Multidisciplinar / Outros", "bi-stars", "Ficha de Anamnese & Prontuário Técnico",
             "Produtos, Protocolos & Materiais", "Ex: Materiais, tonalidades, marcas e parâmetros aplicados");
 
     private final String descricao;

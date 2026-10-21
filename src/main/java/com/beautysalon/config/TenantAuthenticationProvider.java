@@ -72,7 +72,7 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
         if (slug != null && !slug.isBlank()) {
             Optional<Empresa> empresaOpt = empresaRepository.findBySlug(slug);
             if (empresaOpt.isEmpty()) {
-                throw new BadCredentialsException("Salão não encontrado para o identificador '" + slug + "'.");
+                throw new BadCredentialsException("Empresa não encontrada para o identificador '" + slug + "'.");
             }
 
             Empresa empresa = empresaOpt.get();
@@ -85,7 +85,7 @@ public class TenantAuthenticationProvider implements AuthenticationProvider {
             userToAuthenticate = userRepository.findByUsernameIgnoreCaseAndEmpresaId(inputTrimmed, empresa.getId())
                     .or(() -> userRepository.findByEmailIgnoreCaseAndEmpresaId(inputTrimmed, empresa.getId()))
                     .orElseThrow(() -> new BadCredentialsException(
-                            "Usuário ou e-mail não encontrado neste salão (" + empresa.getNome() + ")."));
+                            "Usuário ou e-mail não encontrado nesta empresa (" + empresa.getNome() + ")."));
 
             if (!passwordEncoder.matches(rawPassword, userToAuthenticate.getPassword())) {
                 throw new BadCredentialsException("Senha incorreta.");

@@ -362,13 +362,13 @@
 
             <!-- BOTÕES DE AÇÃO -->
             <div class="voucher-actions">
-                <!-- Botão 1: Confirmar no WhatsApp do Salão -->
+                <!-- Botão 1: Confirmar no WhatsApp da Empresa -->
                 <div th:if="${empresa != null and empresa.telefone != null and !empresa.telefone.isBlank()}">
-                    <a th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(empresa.telefone, '(', ''), ')', ''), '-', ''), ' ', '')} + '?text=' + ${#strings.escapeJava('Olá! Acabei de fazer um agendamento online no ' + (empresa.nome ?: 'salão') + ' para ' + (servicoNome ?: 'atendimento') + ' no dia ' + (dataAgendamento ?: '') + ' no nome de ' + (clienteNome ?: '') + '. Poderia me confirmar?')}" 
+                    <a th:href="'https://wa.me/55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(empresa.telefone, '(', ''), ')', ''), '-', ''), ' ', '')} + '?text=' + ${#strings.escapeJava('Olá! Acabei de fazer um agendamento online na ' + (empresa.nome ?: 'empresa') + ' para ' + (servicoNome ?: 'atendimento') + ' no dia ' + (dataAgendamento ?: '') + ' no nome de ' + (clienteNome ?: '') + '. Poderia me confirmar?')}" 
                        target="_blank" 
                        class="btn-whatsapp-confirm">
                         <i class="bi bi-whatsapp fs-5"></i>
-                        <span>Confirmar no WhatsApp do Salão</span>
+                        <span>Confirmar no WhatsApp da Empresa</span>
                     </a>
                 </div>
 
@@ -396,11 +396,11 @@
 <script th:inline="javascript">
     // Geração do Link Dinâmico para o Google Calendar
     document.addEventListener('DOMContentLoaded', () => {
-        const servico = /*[[${servicoNome}]]*/ 'Procedimento no Salão';
-        const salao = /*[[${empresa != null ? empresa.nome : 'Studio'}]]*/ 'Beauty Salon';
+        const servico = /*[[${servicoNome}]]*/ 'Procedimento na Empresa';
+        const empresaNome = /*[[${empresa != null ? empresa.nome : 'Empresa'}]]*/ 'Empresa';
         const dataApenas = /*[[${dataApenas}]]*/ '';
         const horaApenas = /*[[${horaApenas}]]*/ '';
-        const local = /*[[${empresa != null and empresa.cidade != null ? empresa.cidade : 'Salão de Beleza'}]]*/ 'São Paulo';
+        const local = /*[[${empresa != null and empresa.cidade != null ? empresa.cidade : 'Empresa'}]]*/ 'São Paulo';
         
         const btnCal = document.getElementById('btnGoogleAgenda');
         if (btnCal && dataApenas && horaApenas) {

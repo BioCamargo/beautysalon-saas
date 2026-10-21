@@ -20,7 +20,7 @@
 
                 <!-- 2. Identificação da Empresa (Logotipo da empresa ou Nome em texto) -->
                 <div class="sidebar-empresa-brand">
-                    <!-- Quando tiver logotipo da empresa cadastrado: exibe a imagem da logo do salão -->
+                    <!-- Quando tiver logotipo da empresa cadastrado: exibe a imagem da logo da empresa -->
                     <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" class="sidebar-empresa-logo-wrap">
                         <img th:src="${empresaLogo}" th:alt="${empresaNome != null ? empresaNome : 'Logotipo'}"
                             class="sidebar-empresa-logo-img"
@@ -37,7 +37,7 @@
                 <!-- 3. Informação do Tipo / Segmento da Empresa (Sempre visível abaixo) -->
                 <div class="sidebar-brand-tag"
                     th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'GESTÃO INTELIGENTE'}">
-                    ESTÚDIO MULTIDISCIPLINAR / OUTROS
+                    EMPRESA MULTIDISCIPLINAR / OUTROS
                 </div>
             </a>
         </div>

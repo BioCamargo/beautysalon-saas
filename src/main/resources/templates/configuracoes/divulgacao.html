@@ -323,15 +323,15 @@
 
                         <!-- O CARTÃO / DISPLAY DE BALCÃO -->
                         <div class="display-balcao-card" id="displayBalcaoPrint">
-                            <!-- LOGO OU ÍCONE DO SALÃO -->
+                            <!-- LOGO OU ÍCONE DA EMPRESA -->
                             <div class="display-logo-circle">
-                                <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" th:src="${empresaLogo}" alt="Logo Salão">
+                                <img th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" th:src="${empresaLogo}" alt="Logo Empresa">
                                 <i th:if="${empresaLogo == null or empresaLogo.isEmpty()}" class="bi bi-scissors text-warning fs-3"></i>
                             </div>
 
-                            <!-- NOME DO SALÃO -->
-                            <h2 class="display-salao-nome" th:text="${empresaNome} ?: 'Studio de Beleza'">NEXI PRO Studio</h2>
-                            <div class="display-salao-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'ESTÚDIO DE BELEZA & BEM-ESTAR'}">BELEZA & ESTÉTICA</div>
+                            <!-- NOME DA EMPRESA -->
+                            <h2 class="display-salao-nome" th:text="${empresaNome} ?: 'Sua Empresa'">NEXI PRO</h2>
+                            <div class="display-salao-tag" th:text="${empresaSegmento != null ? empresaSegmento.descricao : 'EMPRESA & BEM-ESTAR'}">BELEZA & ESTÉTICA</div>
 
                             <!-- CONTAINER DO QR CODE -->
                             <div class="display-qr-box">

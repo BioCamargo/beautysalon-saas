@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 @Getter
 public enum PlanoSaaS {
 
-    SOLO("Plano Solo", new BigDecimal("59.00"), 1, "Para autônomos e estúdios individuais"),
-    STUDIO("Plano Studio", new BigDecimal("129.00"), 5, "Para salões e clínicas com equipe até 5 profissionais"),
+    SOLO("Plano Solo", new BigDecimal("59.00"), 1, "Para autônomos e pequenos negócios individuais"),
+    STUDIO("Plano Studio", new BigDecimal("129.00"), 5, "Para empresas e clínicas com equipe até 5 profissionais"),
     VIP("Plano Premium VIP", new BigDecimal("229.00"), 999, "Equipe ilimitada, DRE contábil e anti-churn");
 
     private final String nomeExibicao;

@@ -207,7 +207,7 @@ public class ClienteController {
                 redirectAttributes.addFlashAttribute("mensagemSucesso", msg);
             } else if (resultado.getTotalDuplicadosIgnorados() > 0) {
                 redirectAttributes.addFlashAttribute("mensagemAlerta",
-                        "Todos os " + resultado.getTotalDuplicadosIgnorados() + " clientes da planilha já estavam cadastrados no salão.");
+                        "Todos os " + resultado.getTotalDuplicadosIgnorados() + " clientes da planilha já estavam cadastrados na empresa.");
             } else {
                 redirectAttributes.addFlashAttribute("mensagemErro",
                         "Nenhum cliente válido encontrado na planilha. Verifique as colunas e tente novamente.");

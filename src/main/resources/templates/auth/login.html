@@ -135,7 +135,7 @@
             document.cookie = "nexipro_last_slug=" + encodeURIComponent(currentSlug) + "; path=/; max-age=2592000";
         } catch(e) {}
     } else {
-        // Se estiver no login genérico, verifica se já existe um estúdio salvo no navegador
+        // Se estiver no login genérico, verifica se já existe uma empresa salva no navegador
         try {
             const lastSlug = localStorage.getItem('nexipro_last_slug');
             if (lastSlug) {
@@ -143,7 +143,7 @@
                 const link = document.getElementById('recentStudioLink');
                 const text = document.getElementById('recentStudioSlugText');
                 if (banner && link && text) {
-                    text.textContent = 'Acessar portal do ' + lastSlug;
+                    text.textContent = 'Acessar portal da ' + lastSlug;
                     link.href = '/' + lastSlug + '/login';
                     banner.style.display = 'block';
                 }
