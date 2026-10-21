@@ -26,9 +26,9 @@ public class DataLoader implements CommandLineRunner {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public DataLoader(EmpresaRepository empresaRepository,
-                      UserRepository userRepository,
-                      WhatsAppConfigRepository whatsAppConfigRepository,
-                      BCryptPasswordEncoder passwordEncoder) {
+            UserRepository userRepository,
+            WhatsAppConfigRepository whatsAppConfigRepository,
+            BCryptPasswordEncoder passwordEncoder) {
         this.empresaRepository = empresaRepository;
         this.userRepository = userRepository;
         this.whatsAppConfigRepository = whatsAppConfigRepository;
