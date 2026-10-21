@@ -17,7 +17,7 @@
                             th:text="${empresaNome != null ? empresaNome : 'NEXI PRO Estabelecimento'}">NEXI PRO Estabelecimento</span>
                         <span class="badge bg-warning text-dark" style="font-size: 0.72rem; font-weight: 700;"
                             th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() == 'TRIAL'}">
-                            <i class="bi bi-clock-history me-1"></i>Teste: <span th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 15} + ' dias'">15 dias</span>
+                            <i class="bi bi-clock-history me-1"></i>Teste: <span th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 7} + ' dias'">7 dias</span>
                         </span>
                     </div>
                     <h2 class="mb-1" style="font-family: var(--font-serif); font-size: 1.75rem; color: #ffffff;">
