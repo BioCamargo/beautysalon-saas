@@ -36,8 +36,12 @@ public class DataLoader implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        inicializarEmpresaEDadosIniciais();
+    public void run(String... args) {
+        try {
+            inicializarEmpresaEDadosIniciais();
+        } catch (Exception e) {
+            log.warn("DataLoader: Inicialização de demonstração ignorada com segurança: {}", e.getMessage());
+        }
     }
 
     private void inicializarEmpresaEDadosIniciais() {
