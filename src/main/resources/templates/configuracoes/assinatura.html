@@ -325,40 +325,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- CARD DE IDENTIFICADORES DO GATEWAY (ASAAS) -->
-                <div class="gateway-settings-card">
-                    <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
-                        <i class="bi bi-sliders2 text-primary fs-4"></i>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-dark">Identificadores de Cobrança do Gateway</h5>
-                            <small class="text-muted">Parâmetros de sincronização automática com o Asaas</small>
-                        </div>
-                    </div>
-
-                    <form th:action="@{/{slug}/assinatura/atualizar-gateway(slug=${empresaSlug})}" method="post">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold">Asaas Customer ID</label>
-                                <input type="text" name="asaasCustomerId" class="form-control" th:value="${empresa.asaasCustomerId}" placeholder="Ex: cus_000005230940"/>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold">Asaas Subscription ID</label>
-                                <input type="text" name="asaasSubscriptionId" class="form-control" th:value="${empresa.asaasSubscriptionId}" placeholder="Ex: sub_000005230940"/>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-bold">Link da Fatura Atual</label>
-                                <input type="url" name="linkFaturaAtual" class="form-control" th:value="${empresa.linkFaturaAtual}" placeholder="https://www.asaas.com/i/..."/>
-                            </div>
-                            <div class="col-12 text-end mt-3">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3">
-                                    <i class="bi bi-save me-1"></i> Salvar Identificadores
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
             </div>
         </main>
     </div>
