@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.beans.PropertyEditorSupport;
 
 @Slf4j
 @Controller
@@ -18,6 +21,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AssinaturaController {
 
     private final EmpresaRepository empresaRepository;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(PlanoSaaS.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(PlanoSaaS.fromString(text));
+            }
+        });
+    }
 
     @GetMapping
     public String exibirGestaoAssinatura(@PathVariable String slug, Model model) {
@@ -36,18 +49,17 @@ public class AssinaturaController {
 
     @PostMapping("/alterar-plano")
     public String alterarPlano(@PathVariable String slug,
-                               @RequestParam String novoPlano,
+                               @RequestParam PlanoSaaS novoPlano,
                                RedirectAttributes redirectAttributes) {
         Long empresaId = TenantContext.getEmpresaId();
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
 
-        PlanoSaaS plano = PlanoSaaS.fromString(novoPlano);
-        empresa.setPlano(plano);
+        empresa.setPlano(novoPlano);
         empresaRepository.save(empresa);
 
-        log.info("Empresa ID={} ({}) alterou plano para {}", empresa.getId(), slug, plano);
-        redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + plano.getNomeExibicao() + " com sucesso!");
+        log.info("Empresa ID={} ({}) alterou plano para {}", empresa.getId(), slug, novoPlano);
+        redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + novoPlano.getNomeExibicao() + " com sucesso!");
 
         return "redirect:/" + slug + "/assinatura";
     }
