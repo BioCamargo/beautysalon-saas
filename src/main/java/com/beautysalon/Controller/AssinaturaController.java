@@ -36,17 +36,18 @@ public class AssinaturaController {
 
     @PostMapping("/alterar-plano")
     public String alterarPlano(@PathVariable String slug,
-                               @RequestParam PlanoSaaS novoPlano,
+                               @RequestParam String novoPlano,
                                RedirectAttributes redirectAttributes) {
         Long empresaId = TenantContext.getEmpresaId();
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
 
-        empresa.setPlano(novoPlano);
+        PlanoSaaS plano = PlanoSaaS.fromString(novoPlano);
+        empresa.setPlano(plano);
         empresaRepository.save(empresa);
 
-        log.info("Empresa ID={} ({}) alterou plano para {}", empresa.getId(), slug, novoPlano);
-        redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + novoPlano.getNomeExibicao() + " com sucesso!");
+        log.info("Empresa ID={} ({}) alterou plano para {}", empresa.getId(), slug, plano);
+        redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + plano.getNomeExibicao() + " com sucesso!");
 
         return "redirect:/" + slug + "/assinatura";
     }

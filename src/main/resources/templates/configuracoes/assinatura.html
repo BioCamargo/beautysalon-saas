@@ -231,8 +231,8 @@
                 <div class="row g-4 mb-4">
                     <!-- 1. PLANO SOLO -->
                     <div class="col-lg-4">
-                        <div class="plan-card" th:classappend="${empresa.plano != null and empresa.plano.name() == 'STARTER'} ? 'featured' : ''">
-                            <span class="plan-badge-current mb-3 align-self-start" th:if="${empresa.plano != null and empresa.plano.name() == 'STARTER'}">
+                        <div class="plan-card" th:classappend="${empresa.plano != null and empresa.plano.name() == 'SOLO'} ? 'featured' : ''">
+                            <span class="plan-badge-current mb-3 align-self-start" th:if="${empresa.plano != null and empresa.plano.name() == 'SOLO'}">
                                 <i class="bi bi-check-circle-fill"></i> Seu Plano Atual
                             </span>
                             <h4 class="fw-bold mb-1 text-dark">Plano Solo</h4>
@@ -251,10 +251,10 @@
                             </ul>
 
                             <form th:action="@{/{slug}/assinatura/alterar-plano(slug=${empresaSlug})}" method="post">
-                                <input type="hidden" name="novoPlano" value="STARTER"/>
+                                <input type="hidden" name="novoPlano" value="SOLO"/>
                                 <button type="submit" class="btn btn-outline-dark w-100 py-2 rounded-pill fw-bold"
-                                        th:disabled="${empresa.plano != null and empresa.plano.name() == 'STARTER'}">
-                                    <span th:text="${empresa.plano != null and empresa.plano.name() == 'STARTER'} ? 'Plano Ativo' : 'Escolher Solo'">Escolher Solo</span>
+                                        th:disabled="${empresa.plano != null and empresa.plano.name() == 'SOLO'}">
+                                    <span th:text="${empresa.plano != null and empresa.plano.name() == 'SOLO'} ? 'Plano Ativo' : 'Escolher Solo'">Escolher Solo</span>
                                 </button>
                             </form>
                         </div>

@@ -25,4 +25,19 @@ public enum PlanoSaaS {
         this.limiteProfissionais = limiteProfissionais;
         this.descricao = descricao;
     }
+
+    public static PlanoSaaS fromString(String value) {
+        if (value == null || value.isBlank()) {
+            return SOLO;
+        }
+        String v = value.trim().toUpperCase();
+        if ("STARTER".equals(v)) {
+            return SOLO;
+        }
+        try {
+            return PlanoSaaS.valueOf(v);
+        } catch (IllegalArgumentException e) {
+            return SOLO;
+        }
+    }
 }
