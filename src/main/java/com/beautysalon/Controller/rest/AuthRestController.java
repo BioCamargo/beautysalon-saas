@@ -84,7 +84,7 @@ public class AuthRestController {
     }
 
     @GetMapping("/find-tenants")
-    @Operation(summary = "Localizar links exclusivos de salões por e-mail")
+    @Operation(summary = "Localizar links exclusivos de empresas por e-mail")
     public ResponseEntity<?> findTenantsByEmail(@RequestParam("email") String email) {
         if (email == null || email.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Informe um e-mail válido."));
@@ -93,10 +93,10 @@ public class AuthRestController {
         List<User> users = userRepository.findAllByEmail(email.trim().toLowerCase());
         if (users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Nenhum estúdio encontrado associado a este e-mail."));
+                    .body(Map.of("message", "Nenhuma empresa encontrada associada a este e-mail."));
         }
 
-        List<Map<String, String>> saloes = users.stream()
+        List<Map<String, String>> empresas = users.stream()
                 .filter(u -> u.getEmpresa() != null && u.getEmpresa().isAtivo())
                 .map(u -> Map.of(
                         "nome", u.getEmpresa().getNome(),
@@ -106,7 +106,11 @@ public class AuthRestController {
                 .distinct()
                 .toList();
 
-        return ResponseEntity.ok(Map.of("saloes", saloes));
+        return ResponseEntity.ok(Map.of(
+                "empresas", empresas,
+                "saloes", empresas,
+                "tenants", empresas
+        ));
     }
 
     @PostMapping("/tab-logout")

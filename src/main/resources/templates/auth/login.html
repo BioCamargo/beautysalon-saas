@@ -20,9 +20,9 @@
     <!-- CABEÇALHO DO CARD -->
     <div class="auth-header">
         <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}">
-            <img th:src="${empresaLogo}" alt="Logo Salão" class="auth-logo-img" />
+            <img th:src="${empresaLogo}" alt="Logo Empresa" class="auth-logo-img" />
             <div class="auth-title-brand" th:text="${empresaNome}">NEXI PRO</div>
-            <div class="auth-subtitle-brand">Portal Exclusivo do Estabelecimento</div>
+            <div class="auth-subtitle-brand">Portal Exclusivo da Empresa</div>
         </div>
         <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.85rem; text-align: center;">
             <img th:src="@{/images/nexipro-logo-dark.svg}" alt="NEXI PRO" style="height: 52px; width: auto; max-width: 100%; display: inline-block;" />
@@ -32,15 +32,15 @@
 
     <!-- IDENTIFICAÇÃO DO TENANT QUANDO ACESSADO VIA /{slug}/login -->
     <div th:if="${empresaSlug != null}" style="background: rgba(0, 210, 238, 0.07); border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
-        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente do Estabelecimento</small>
+        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente da Empresa</small>
         <strong style="color: #0284c7; font-size: 1.05rem;" th:text="${empresaNome} ?: ${empresaSlug}">Studio VIP</strong>
     </div>
 
-    <!-- BANNER DE ACESSO RÁPIDO AO ESTÚDIO RECENTE (Quando no login genérico) -->
+    <!-- BANNER DE ACESSO RÁPIDO À EMPRESA RECENTE (Quando no login genérico) -->
     <div th:if="${empresaSlug == null}" id="recentStudioBanner" style="display: none; background: rgba(0, 210, 238, 0.08); border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
-        <small style="color: #64748b; font-size: 0.72rem; text-transform: uppercase; font-weight: 700; display: block;">Estabelecimento Acessado Recentemente</small>
+        <small style="color: #64748b; font-size: 0.72rem; text-transform: uppercase; font-weight: 700; display: block;">Empresa Acessada Recentemente</small>
         <a id="recentStudioLink" href="#" style="color: #0284c7; font-weight: 700; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
-            <i class="bi bi-shop"></i> <span id="recentStudioSlugText">Entrar no meu Estabelecimento</span> <i class="bi bi-arrow-right"></i>
+            <i class="bi bi-building"></i> <span id="recentStudioSlugText">Entrar na minha Empresa</span> <i class="bi bi-arrow-right"></i>
         </a>
     </div>
 
@@ -52,7 +52,7 @@
 
     <div th:if="${param.registered}" class="auth-alert auth-alert-success">
         <i class="bi bi-check-circle-fill"></i>
-        <span>Estúdio cadastrado com sucesso! Faça login para começar.</span>
+        <span>Empresa cadastrada com sucesso! Faça login para começar.</span>
     </div>
 
     <div th:if="${param.logout}" class="auth-alert auth-alert-success">
@@ -85,14 +85,14 @@
         </button>
     </form>
 
-    <!-- PAINEL RETRÁTIL: LOCALIZAR MEU ESTÚDIO POR E-MAIL -->
+    <!-- PAINEL RETRÁTIL: LOCALIZAR MINHA EMPRESA POR E-MAIL -->
     <div th:if="${empresaSlug == null}" style="margin-top: 1rem; text-align: center;">
         <a href="javascript:void(0)" onclick="toggleFindStudioDrawer()" style="color: #64748b; font-size: 0.78rem; text-decoration: none; font-weight: 600;">
-            <i class="bi bi-search me-1"></i> Não sabe o link do seu salão? Clique aqui
+            <i class="bi bi-search me-1"></i> Não sabe o link da sua empresa? Clique aqui
         </a>
         
         <div id="findStudioDrawer" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 0.75rem; text-align: left;">
-            <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Localizar Salão por E-mail</label>
+            <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Localizar Empresa por E-mail</label>
             <div style="display: flex; gap: 6px;">
                 <input type="email" id="inputSearchEmail" placeholder="Digite seu e-mail cadastrado" style="flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 0.82rem; outline: none;" />
                 <button type="button" onclick="searchStudioByEmail()" class="btn btn-sm btn-dark" style="border-radius: 6px; font-size: 0.78rem; font-weight: 600;">
@@ -176,7 +176,7 @@
             return;
         }
 
-        resultsDiv.innerHTML = '<span class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Buscando seus estúdios...</span>';
+        resultsDiv.innerHTML = '<span class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Buscando suas empresas...</span>';
 
         fetch('/api/auth/find-tenants?email=' + encodeURIComponent(email))
             .then(res => {
@@ -184,9 +184,10 @@
                 return res.json();
             })
             .then(data => {
-                if (data.saloes && data.saloes.length > 0) {
+                const list = data.empresas || data.tenants || data.saloes || [];
+                if (list.length > 0) {
                     let html = '<div style="font-weight: 700; color: #16a34a; margin-bottom: 4px;">Seus links exclusivos:</div>';
-                    data.saloes.forEach(s => {
+                    list.forEach(s => {
                         html += `<div style="margin-bottom: 4px;">
                             <a href="${s.url}" style="font-weight: 600; color: #0f172a; text-decoration: underline;">
                                 🏢 ${s.nome} (${s.url})
@@ -195,11 +196,11 @@
                     });
                     resultsDiv.innerHTML = html;
                 } else {
-                    resultsDiv.innerHTML = '<span class="text-danger">Nenhum salão encontrado com este e-mail.</span>';
+                    resultsDiv.innerHTML = '<span class="text-danger">Nenhuma empresa encontrada com este e-mail.</span>';
                 }
             })
             .catch(() => {
-                resultsDiv.innerHTML = '<span class="text-danger">Nenhum estúdio encontrado associado a este e-mail.</span>';
+                resultsDiv.innerHTML = '<span class="text-danger">Nenhuma empresa encontrada associada a este e-mail.</span>';
             });
     }
 </script>

@@ -694,7 +694,7 @@
                     </div>
 
                     <div class="p-2 rounded bg-light small text-muted text-start">
-                        <div><strong>Chave do Salão:</strong> <span th:text="${chavePix}"></span></div>
+                        <div><strong>Chave Pix da Empresa:</strong> <span th:text="${chavePix}"></span></div>
                         <div><strong>Valor a Pagar:</strong> R$ <span th:text="${#numbers.formatDecimal(comanda.saldoRestante > 0 ? comanda.saldoRestante : comanda.valorTotal, 1, 2, 'COMMA')}">0,00</span></div>
                     </div>
                 </div>

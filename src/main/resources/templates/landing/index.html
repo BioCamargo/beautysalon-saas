@@ -40,7 +40,7 @@
             </ul>
 
             <div class="lp-nav-actions">
-                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()" title="Acessar o link exclusivo do seu salão">
+                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()" title="Acessar o link exclusivo da sua empresa">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Já sou cliente</span>
                 </button>
@@ -92,7 +92,7 @@
                     <span class="lp-mockup-dot lp-dot-yellow"></span>
                     <span class="lp-mockup-dot lp-dot-green"></span>
                     <span class="lp-mockup-url">
-                        <i class="bi bi-lock-fill"></i> app.nexipro.com.br/studio-vip/home
+                        <i class="bi bi-lock-fill"></i> nexipro.com.br/sua-empresa/home
                     </span>
                 </div>
 
@@ -145,7 +145,7 @@
                         <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: center;">
                             <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Link Público para Clientes:</div>
                             <div style="font-size: 0.75rem; color: #00E5FF; background: rgba(0,229,255,0.1); padding: 8px; border-radius: 6px; font-family: monospace; word-break: break-all;">
-                                app.nexipro.com.br/studio-vip/agendar
+                                nexipro.com.br/sua-empresa/agendar
                             </div>
                             <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Pronto para colocar na Bio do Instagram</div>
                         </div>
@@ -204,7 +204,7 @@
     <section class="lp-section" id="recursos">
         <div class="lp-section-header">
             <span class="lp-section-tag">FUNCIONALIDADES COMPLETAS</span>
-            <h2 class="lp-section-title">Tudo o que seu estúdio precisa, sem planilhas confusas.</h2>
+            <h2 class="lp-section-title">Tudo o que sua empresa precisa, sem planilhas confusas.</h2>
             <p class="lp-section-desc">
                 Substitua de 3 a 5 ferramentas diferentes por um único sistema integrado, rápido e moderno.
             </p>
@@ -536,12 +536,12 @@
     <!-- 9. BANNER DE CONVERSÃO FINAL -->
     <section class="lp-section" style="padding-top: 1rem;">
         <div class="lp-cta-banner">
-            <h2>Pronto para levar a gestão do seu estúdio a outro nível?</h2>
+            <h2>Pronto para levar a gestão da sua empresa a outro nível?</h2>
             <p>Junte-se a centenas de proprietários de salões e clínicas que economizam tempo e aumentam sua lucratividade todos os dias.</p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a th:href="@{/register}" class="lp-btn-primary" style="font-size: 1.1rem; padding: 0.95rem 2.5rem;">
                     <i class="bi bi-rocket-takeoff-fill"></i>
-                    <span>Cadastrar Meu Estúdio Gratuitamente</span>
+                    <span>Cadastrar Minha Empresa Gratuitamente</span>
                 </a>
             </div>
             <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 1.25rem;">
@@ -588,7 +588,7 @@
                 <h4>Acesso</h4>
                 <ul>
                     <li><a th:href="@{/login}">Área do Cliente (Login)</a></li>
-                    <li><a th:href="@{/register}">Cadastrar Novo Estúdio</a></li>
+                    <li><a th:href="@{/register}">Cadastrar Nova Empresa</a></li>
                     <li><a href="#faq">Dúvidas Frequentes</a></li>
                     <li><a th:href="@{/termos}">Termos de Uso</a></li>
                     <li><a th:href="@{/privacidade}">Privacidade & LGPD</a></li>
@@ -613,9 +613,9 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
                     <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 229, 255, 0.15); color: #00E5FF; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                        <i class="bi bi-shop"></i>
+                        <i class="bi bi-building"></i>
                     </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar meu Estabelecimento</h3>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar minha Empresa</h3>
                 </div>
                 <button type="button" onclick="closeFindStudioModal()" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">
                     <i class="bi bi-x-lg"></i>
@@ -623,12 +623,12 @@
             </div>
 
             <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.25rem;">
-                Cada estabelecimento possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar seu estúdio ou barbearia:
+                Cada empresa possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar sua empresa:
             </p>
 
             <form onsubmit="handleFindStudio(event)">
                 <div style="margin-bottom: 1rem;">
-                    <label style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">E-mail do Proprietário ou Salão:</label>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">E-mail do Responsável ou Empresa:</label>
                     <div style="position: relative;">
                         <i class="bi bi-envelope" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
                         <input type="email" id="inputFindEmail" placeholder="seuemail@exemplo.com" required
@@ -637,7 +637,7 @@
                 </div>
 
                 <button type="submit" id="btnFindStudioSubmit" class="lp-btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
-                    <span>Localizar meu Estabelecimento</span>
+                    <span>Localizar minha Empresa</span>
                     <i class="bi bi-search"></i>
                 </button>
             </form>
@@ -647,7 +647,7 @@
             <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
                 <span style="font-size: 0.82rem; color: #64748b;">Ainda não tem conta no NEXI PRO?</span><br>
                 <a th:href="@{/register}" style="font-size: 0.85rem; color: #00E5FF; font-weight: 700; text-decoration: none;">
-                    Cadastrar meu espaço grátis (7 dias de teste VIP) &rarr;
+                    Cadastrar minha empresa grátis (7 dias de teste VIP) &rarr;
                 </a>
             </div>
         </div>
@@ -677,16 +677,17 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Buscando...</span><i class="bi bi-arrow-repeat spin"></i>';
             resultBox.style.display = 'block';
-            resultBox.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; text-align: center;"><i class="bi bi-arrow-repeat spin"></i> Localizando estúdio...</div>';
+            resultBox.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; text-align: center;"><i class="bi bi-arrow-repeat spin"></i> Localizando empresa...</div>';
 
             try {
                 const res = await fetch(`/api/auth/find-tenants?email=${encodeURIComponent(email)}`);
                 const data = await res.json();
+                const list = data.empresas || data.tenants || data.saloes || [];
 
-                if (res.ok && data.tenants && data.tenants.length > 0) {
-                    let html = '<div style="font-size: 0.78rem; color: #10b981; font-weight: 700; margin-bottom: 0.5rem;"><i class="bi bi-check-circle-fill"></i> Studio(s) localizado(s):</div>';
+                if (res.ok && list.length > 0) {
+                    let html = '<div style="font-size: 0.78rem; color: #10b981; font-weight: 700; margin-bottom: 0.5rem;"><i class="bi bi-check-circle-fill"></i> Empresa(s) localizada(s):</div>';
                     html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
-                    data.tenants.forEach(t => {
+                    list.forEach(t => {
                         html += `
                             <a href="/${t.slug}/login" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #ffffff; transition: all 0.2s ease;">
                                 <div>
@@ -704,7 +705,7 @@
                 } else {
                     resultBox.innerHTML = `
                         <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 10px; padding: 0.75rem; color: #fca5a5; font-size: 0.83rem;">
-                            <i class="bi bi-exclamation-circle-fill me-1"></i> Nenhum salão ativo encontrado com esse e-mail. Verifique a digitação ou crie seu cadastro grátis.
+                            <i class="bi bi-exclamation-circle-fill me-1"></i> Nenhuma empresa ativa encontrada com esse e-mail. Verifique a digitação ou crie seu cadastro grátis.
                         </div>
                     `;
                 }
@@ -712,7 +713,7 @@
                 resultBox.innerHTML = '<div style="color: #ef4444; font-size: 0.83rem;">Erro ao conectar com o servidor. Tente novamente.</div>';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Localizar meu Studio</span><i class="bi bi-search"></i>';
+                submitBtn.innerHTML = '<span>Localizar minha Empresa</span><i class="bi bi-search"></i>';
             }
         }
 

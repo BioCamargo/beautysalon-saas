@@ -14,7 +14,7 @@
                             style="background-color: var(--accent-gold); color: #0b0f19; font-weight: 700; font-size: 0.75rem; letter-spacing: 1px;">PAINEL
                             OPERACIONAL</span>
                         <span class="text-white-50" style="font-size: 0.8rem;"
-                            th:text="${empresaNome != null ? empresaNome : 'NEXI PRO Estabelecimento'}">NEXI PRO Estabelecimento</span>
+                            th:text="${empresaNome != null ? empresaNome : 'NEXI PRO Empresa'}">NEXI PRO Empresa</span>
                         <span class="badge bg-warning text-dark" style="font-size: 0.72rem; font-weight: 700;"
                             th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() == 'TRIAL'}">
                             <i class="bi bi-clock-history me-1"></i>Teste: <span th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 7} + ' dias'">7 dias</span>
@@ -56,10 +56,10 @@
                         </div>
                         <div>
                             <div class="d-flex align-items-center gap-2">
-                                <h5 class="mb-0 fw-bold text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;">Guia de Ativação do Estabelecimento</h5>
+                                <h5 class="mb-0 fw-bold text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;">Guia de Ativação da Empresa</h5>
                                 <span class="badge" style="background: rgba(0, 210, 238, 0.2); color: #00D2EE; border: 1px solid rgba(0, 210, 238, 0.4); font-size: 0.7rem;">PLG SETUP</span>
                             </div>
-                            <small class="text-white-50">Complete os 4 passos essenciais para habilitar o modo de alta performance do seu estúdio</small>
+                            <small class="text-white-50">Complete os 4 passos essenciais para habilitar o modo de alta performance da sua empresa</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
@@ -89,7 +89,7 @@
                     <div class="d-flex align-items-center gap-3">
                         <i class="bi bi-trophy-fill fs-3 text-warning"></i>
                         <div>
-                            <strong class="d-block text-white" style="font-size: 0.98rem;">🎉 Parabéns! Seu estúdio está 100% pronto para faturar!</strong>
+                            <strong class="d-block text-white" style="font-size: 0.98rem;">🎉 Parabéns! Sua empresa está 100% pronta para faturar!</strong>
                             <small class="text-white-50">Você concluiu todos os passos essenciais de implantação do NEXI PRO.</small>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                                     <span class="badge bg-success" style="font-size: 0.7rem; font-weight: 600;">Passo 1</span>
                                     <i class="bi bi-check-circle-fill text-success fs-5"></i>
                                 </div>
-                                <h6 class="fw-bold mb-1 text-white" style="font-size: 0.92rem;">1. Salão Criado</h6>
+                                <h6 class="fw-bold mb-1 text-white" style="font-size: 0.92rem;">1. Empresa Criada</h6>
                                 <p class="text-white-50 small mb-3" style="font-size: 0.78rem;">
                                     Ambiente multi-tenant provisionado e seguro.
                                 </p>
@@ -131,7 +131,7 @@
                                 <h6 class="fw-bold mb-1 text-white" style="font-size: 0.92rem;">2. Serviços & Preços</h6>
                                 <p class="text-white-50 small mb-3" style="font-size: 0.78rem;">
                                     <span th:if="${totalServicos != null and totalServicos > 0}" th:text="${totalServicos} + ' serviço(s) ativo(s) no cardápio.'">Serviços ativos.</span>
-                                    <span th:unless="${totalServicos != null and totalServicos > 0}">Cadastre os serviços oferecidos no estúdio.</span>
+                                    <span th:unless="${totalServicos != null and totalServicos > 0}">Cadastre os serviços oferecidos pela sua empresa.</span>
                                 </p>
                             </div>
                             <a th:href="@{/{slug}/servicos(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
@@ -198,7 +198,7 @@
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-link-45deg fs-5 text-info"></i>
                         <span class="text-white-50" style="font-size: 0.8rem;">
-                            Link público do seu estúdio: <code class="text-info" style="font-size: 0.8rem;" th:text="${'/' + empresaSlug + '/agendar'}">/slug/agendar</code>
+                            Link público da sua empresa: <code class="text-info" style="font-size: 0.8rem;" th:text="${'/' + empresaSlug + '/agendar'}">/slug/agendar</code>
                         </span>
                     </div>
                     <button type="button" id="btnCopiarLinkBio" class="btn btn-sm" onclick="copiarLinkBio()" 
@@ -229,7 +229,7 @@
             const empresaSlug = /*[[${empresaSlug != null ? empresaSlug : ''}]]*/ '';
 
             function calcularProgressoOnboarding() {
-                // Passo 1: Salão cadastrado (sempre concluído = 1)
+                // Passo 1: Empresa cadastrada (sempre concluído = 1)
                 let concluidos = 1;
                 // Passo 2: Catálogo de serviços cadastrado
                 if (totalServicos > 0) concluidos++;

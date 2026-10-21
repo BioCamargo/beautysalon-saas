@@ -148,7 +148,7 @@
     <!-- MAIN APP AREA -->
     <div class="app-main">
         <!-- TOPBAR -->
-        <div th:replace="~{fragments/topbar :: topbar('Gestão da Assinatura & Planos', 'Controle o plano do seu estúdio, faturas e renovações do SaaS')}"></div>
+        <div th:replace="~{fragments/topbar :: topbar('Gestão da Assinatura & Planos', 'Controle o plano da sua empresa, faturas e renovações do SaaS')}"></div>
 
         <main class="page-content">
             <div class="container-fluid px-0">
@@ -182,11 +182,11 @@
                                 </span>
                             </div>
 
-                            <h2 class="fw-bold mb-2 text-white" th:text="${empresa.nome} ?: 'Seu Estabelecimento'">NEXI PRO Studio</h2>
+                            <h2 class="fw-bold mb-2 text-white" th:text="${empresa.nome} ?: 'Sua Empresa'">NEXI PRO Studio</h2>
                             
                             <!-- Cenário 1: Período de Testes Ativo -->
                             <p class="text-light opacity-75 mb-3" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'TRIAL'}">
-                                Seu estúdio está aproveitando o teste grátis com todos os recursos liberados. 
+                                Sua empresa está aproveitando o teste grátis com todos os recursos liberados. 
                                 Restam <strong class="text-warning" th:text="${empresa.diasRestantesTrial} + ' dias'">7 dias</strong> de gratuidade.
                             </p>
 

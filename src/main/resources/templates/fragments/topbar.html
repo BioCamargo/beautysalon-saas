@@ -36,7 +36,7 @@
             <!-- 1. Período de Testes Ativo -->
             <button type="button" class="btn-trial-badge" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
                 th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() == 'TRIAL'}"
-                title="Seu estúdio está no período de teste gratuito. Clique para conhecer os planos.">
+                title="Sua empresa está no período de teste gratuito. Clique para conhecer os planos.">
                 <i class="bi bi-stars text-warning"></i>
                 <span>Teste: <strong
                         th:text="${empresaDiasRestantesTrial != null ? empresaDiasRestantesTrial : 7} + ' dias'">7
@@ -131,7 +131,7 @@
                         </div>
 
                         <p class="text-secondary text-center mb-4" style="font-size: 0.95rem;">
-                            Escolha o plano ideal para a estrutura da sua equipe e mantenha seu estúdio funcionando sem
+                            Escolha o plano ideal para a estrutura da sua equipe e mantenha sua empresa funcionando sem
                             interrupções.
                         </p>
 
@@ -159,7 +159,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Anamnese digital
                                             touch</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
                                         <i class="bi bi-whatsapp me-1 text-success"></i> Ativar Solo
@@ -193,7 +193,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Ficha técnica &
                                             estoque</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-warning btn-sm rounded-pill mt-auto fw-bold text-dark"
                                         style="background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%); border: none;">
@@ -226,7 +226,7 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Suporte
                                             prioritário VIP</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para o meu estúdio: ' + (empresaNome != null ? empresaNome : 'Studio') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
+                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
                                         target="_blank"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
                                         <i class="bi bi-whatsapp me-1 text-success"></i> Ativar VIP
