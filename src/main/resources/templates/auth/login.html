@@ -113,6 +113,21 @@
 <script th:inline="javascript">
     const currentSlug = /*[[${empresaSlug}]]*/ null;
 
+    // Garante limpeza de qualquer sessão anterior nesta aba
+    try {
+        sessionStorage.removeItem('nexi_tab_authenticated');
+    } catch(e) {}
+
+    // Ao enviar formulário de login com sucesso nesta aba, marca como autenticada
+    const loginForm = document.querySelector('form[action*="/login"]');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function() {
+            try {
+                sessionStorage.setItem('nexi_tab_authenticated', 'true');
+            } catch(e) {}
+        });
+    }
+
     if (currentSlug) {
         // Salva nos cookies e local storage para acessos futuros
         try {

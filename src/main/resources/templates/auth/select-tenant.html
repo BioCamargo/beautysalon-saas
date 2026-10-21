@@ -99,5 +99,15 @@
     }
 </style>
 
+<script>
+    document.querySelectorAll('form[action*="/select-tenant"]').forEach(form => {
+        form.addEventListener('submit', function() {
+            try {
+                sessionStorage.setItem('nexi_tab_authenticated', 'true');
+            } catch(e) {}
+        });
+    });
+</script>
+
 </body>
 </html>

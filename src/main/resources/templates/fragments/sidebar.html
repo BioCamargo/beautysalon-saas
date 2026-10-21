@@ -173,6 +173,147 @@
                 </form>
             </div>
         </div>
+
+        <!-- TAB & WINDOW CLOSE AUTO-LOGOUT GUARD -->
+        <script th:inline="javascript">
+            (function() {
+                const TAB_ID = sessionStorage.getItem('nexi_tab_id') || ('tab_' + Math.random().toString(36).substring(2, 10));
+                try {
+                    sessionStorage.setItem('nexi_tab_id', TAB_ID);
+                } catch(e) {}
+
+                function getActiveTabs() {
+                    try {
+                        const raw = localStorage.getItem('nexi_active_tabs');
+                        const tabs = raw ? JSON.parse(raw) : {};
+                        const now = Date.now();
+                        const freshTabs = {};
+                        for (const [id, time] of Object.entries(tabs)) {
+                            if (now - time < 20000) {
+                                freshTabs[id] = time;
+                            }
+                        }
+                        return freshTabs;
+                    } catch (e) {
+                        return {};
+                    }
+                }
+
+                function pingTab() {
+                    try {
+                        const tabs = getActiveTabs();
+                        tabs[TAB_ID] = Date.now();
+                        localStorage.setItem('nexi_active_tabs', JSON.stringify(tabs));
+                    } catch (e) {}
+                }
+
+                // 1. Guard de Autenticação da Aba (Evita sessões zumbis ao reabrir navegador ou aba)
+                try {
+                    const isTabAuth = sessionStorage.getItem('nexi_tab_authenticated');
+                    const activeTabs = getActiveTabs();
+                    const otherActiveTabs = Object.keys(activeTabs).filter(id => id !== TAB_ID);
+
+                    if (!isTabAuth) {
+                        if (otherActiveTabs.length > 0) {
+                            // Outra aba do mesmo navegador está ativa e autenticada
+                            sessionStorage.setItem('nexi_tab_authenticated', 'true');
+                        } else {
+                            // Nenhuma aba ativa e esta aba não possui sessão: invalida sessão e vai para logout
+                            window.location.replace('/logout');
+                            return;
+                        }
+                    }
+                } catch (e) {}
+
+                // Registra ping imediatamente e em loop regular
+                pingTab();
+                const pingInterval = setInterval(pingTab, 5000);
+
+                // 2. Detecção de Navegação Interna vs Fechamento Real
+                let isInternalNavigation = false;
+
+                document.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link && link.href) {
+                        const href = link.getAttribute('href');
+                        if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+                            return;
+                        }
+                        if (link.target === '_blank') {
+                            return;
+                        }
+                        isInternalNavigation = true;
+                    }
+                }, true);
+
+                document.addEventListener('submit', function() {
+                    isInternalNavigation = true;
+                }, true);
+
+                window.addEventListener('keydown', function(e) {
+                    if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R'))) {
+                        isInternalNavigation = true;
+                    }
+                });
+
+                window.addEventListener('popstate', function() {
+                    isInternalNavigation = true;
+                });
+
+                // 3. Ao fechar a aba ou janela
+                window.addEventListener('pagehide', function() {
+                    let isReload = false;
+                    try {
+                        const navEntries = performance.getEntriesByType("navigation");
+                        if (navEntries.length > 0 && navEntries[0].type === "reload") {
+                            isReload = true;
+                        }
+                    } catch (err) {}
+
+                    if (isInternalNavigation || isReload) {
+                        return;
+                    }
+
+                    clearInterval(pingInterval);
+
+                    try {
+                        const tabs = getActiveTabs();
+                        delete tabs[TAB_ID];
+                        localStorage.setItem('nexi_active_tabs', JSON.stringify(tabs));
+
+                        const remainingCount = Object.keys(tabs).length;
+                        if (remainingCount === 0) {
+                            sessionStorage.removeItem('nexi_tab_authenticated');
+                            localStorage.removeItem('nexi_active_tabs');
+
+                            if (navigator.sendBeacon) {
+                                navigator.sendBeacon('/api/auth/tab-logout');
+                            } else {
+                                fetch('/api/auth/tab-logout', { method: 'POST', keepalive: true });
+                            }
+                        }
+                    } catch (err) {
+                        if (navigator.sendBeacon) {
+                            navigator.sendBeacon('/api/auth/tab-logout');
+                        }
+                    }
+                });
+
+                // 4. Logout manual via botão Sair
+                const logoutBtn = document.querySelector('.btn-logout');
+                if (logoutBtn) {
+                    logoutBtn.closest('form')?.addEventListener('submit', function() {
+                        try {
+                            sessionStorage.removeItem('nexi_tab_authenticated');
+                            sessionStorage.removeItem('nexi_tab_id');
+                            const tabs = getActiveTabs();
+                            delete tabs[TAB_ID];
+                            localStorage.setItem('nexi_active_tabs', JSON.stringify(tabs));
+                        } catch(e) {}
+                    });
+                }
+            })();
+        </script>
     </aside>
 
 </body>
