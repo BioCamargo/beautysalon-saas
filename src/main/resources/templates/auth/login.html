@@ -120,21 +120,21 @@
         </div>
     </div>
 
-    <!-- RODAPÉ DO LOGIN ESPECÍFICO DO STUDIO (/{slug}/login) -->
+    <!-- RODAPÉ DO LOGIN ESPECÍFICO DA EMPRESA (/{slug}/login) -->
     <div th:if="${empresaSlug != null}" class="auth-footer" style="margin-top: 1.35rem; padding-top: 0.85rem; border-top: 1px solid #f1f5f9;">
         <span style="display: block; font-size: 0.78rem; color: #64748b; margin-bottom: 2px;">
             <i class="bi bi-info-circle me-1 text-primary"></i> Precisa de acesso ou esqueceu a senha?
         </span>
         <span style="font-size: 0.82rem; font-weight: 600; color: #334155;">
-            Solicite diretamente à gerência ou administradora do seu studio.
+            Solicite diretamente à gerência ou administração da sua empresa.
         </span>
     </div>
 
     <!-- RODAPÉ DO PORTAL GERAL (/login) -->
     <div th:if="${empresaSlug == null}" class="auth-footer" style="margin-top: 1.35rem; padding-top: 0.85rem; border-top: 1px solid #f1f5f9;">
-        <span style="font-size: 0.85rem; color: #64748b;">Ainda não usa o NEXI PRO no seu salão? </span>
+        <span style="font-size: 0.85rem; color: #64748b;">Ainda não usa o NEXI PRO na sua empresa? </span>
         <a th:href="@{/register}" style="color: #0284c7; font-weight: 700; text-decoration: none;">
-            Cadastre sua empresa e teste 7 dias grátis &rarr;
+            Cadastre seu estabelecimento e teste 7 dias grátis &rarr;
         </a>
     </div>
 </div>
