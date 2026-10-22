@@ -66,6 +66,9 @@ public class AsaasClientService {
         }
 
         if (empresa.getAsaasCustomerId() != null && !empresa.getAsaasCustomerId().isBlank()) {
+            if (empresa.getCnpj() != null && !empresa.getCnpj().isBlank()) {
+                atualizarDocumentoClienteSeNecessario(empresa.getAsaasCustomerId(), empresa.getCnpj());
+            }
             return empresa.getAsaasCustomerId();
         }
 
@@ -150,6 +153,22 @@ public class AsaasClientService {
         }
 
         return null;
+    }
+
+    public void atualizarDocumentoClienteSeNecessario(String customerId, String cpfCnpj) {
+        if (customerId == null || cpfCnpj == null || cpfCnpj.isBlank()) return;
+        try {
+            String documentoLimpo = cpfCnpj.replaceAll("\\D", "");
+            if (documentoLimpo.length() == 11 || documentoLimpo.length() == 14) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("cpfCnpj", documentoLimpo);
+                HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, criarHeadersAutenticados());
+                restTemplate.postForEntity(apiUrl + "/customers/" + customerId, request, String.class);
+                log.info("Documento do cliente Asaas ID={} atualizado para {}", customerId, documentoLimpo);
+            }
+        } catch (Exception e) {
+            log.warn("Aviso ao tentar atualizar CPF/CNPJ no Asaas para cliente {}: {}", customerId, e.getMessage());
+        }
     }
 
     /**

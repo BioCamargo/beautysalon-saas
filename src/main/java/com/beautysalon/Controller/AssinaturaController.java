@@ -77,10 +77,17 @@ public class AssinaturaController {
     }
 
     @PostMapping("/gerar-fatura")
-    public String gerarFatura(@PathVariable String slug, RedirectAttributes redirectAttributes) {
+    public String gerarFatura(@PathVariable String slug, 
+                              @RequestParam(required = false) String cpfCnpj,
+                              RedirectAttributes redirectAttributes) {
         Long empresaId = TenantContext.getEmpresaId();
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
+
+        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
+            empresa.setCnpj(cpfCnpj.trim());
+            empresaRepository.save(empresa);
+        }
 
         PlanoSaaS plano = empresa.getPlano() != null ? empresa.getPlano() : PlanoSaaS.STUDIO;
 
@@ -89,6 +96,9 @@ public class AssinaturaController {
             if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
                 return "redirect:" + linkFatura.get();
             }
+        } catch (IllegalArgumentException iae) {
+            redirectAttributes.addFlashAttribute("erro", "Asaas: " + iae.getMessage());
+            return "redirect:/" + slug + "/assinatura";
         } catch (Exception e) {
             log.error("Erro ao gerar fatura avulsa no Asaas: {}", e.getMessage());
         }
@@ -98,10 +108,17 @@ public class AssinaturaController {
     }
 
     @PostMapping("/teste-um-real")
-    public String gerarTesteUmReal(@PathVariable String slug, RedirectAttributes redirectAttributes) {
+    public String gerarTesteUmReal(@PathVariable String slug, 
+                                   @RequestParam(required = false) String cpfCnpj,
+                                   RedirectAttributes redirectAttributes) {
         Long empresaId = TenantContext.getEmpresaId();
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
+
+        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
+            empresa.setCnpj(cpfCnpj.trim());
+            empresaRepository.save(empresa);
+        }
 
         try {
             java.util.Optional<String> linkFatura = asaasClientService.criarCobrancaTeste(empresa);
