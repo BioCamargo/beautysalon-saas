@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title th:text="${pageTitle} ?: 'Política de Privacidade & LGPD | NEXI PRO - Gestão Inteligente'">Política de Privacidade & LGPD | NEXI PRO - Gestão Inteligente</title>
     
     <!-- Favicon Oficial NEXI PRO -->
@@ -38,15 +38,15 @@
     </header>
 
     <!-- CONTEÚDO PRINCIPAL DA POLÍTICA DE PRIVACIDADE -->
-    <main style="max-width: 900px; margin: 3rem auto 6rem; padding: 0 1.5rem; position: relative; z-index: 1;">
+    <main style="max-width: min(900px, 100%); margin: 2rem auto 4rem; padding: 0 1rem; position: relative; z-index: 1;">
         
-        <div style="text-align: center; margin-bottom: 3.5rem;">
+        <div style="text-align: center; margin-bottom: 2.5rem;">
             <span class="lp-section-tag">PROTEÇÃO DE DADOS & SEGURANÇA</span>
-            <h1 class="lp-hero-title" style="font-size: clamp(2rem, 3.5vw, 2.8rem); margin-bottom: 0.75rem;">Política de Privacidade & LGPD</h1>
+            <h1 class="lp-hero-title" style="font-size: clamp(1.75rem, 3.5vw, 2.8rem); margin-bottom: 0.75rem;">Política de Privacidade & LGPD</h1>
             <p style="color: #94a3b8; font-size: 0.95rem;">Em total conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</p>
         </div>
 
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--lp-border); border-radius: 24px; padding: 3rem; color: #cbd5e1; line-height: 1.8;">
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--lp-border); border-radius: clamp(14px, 3vw, 24px); padding: clamp(1.25rem, 4vw, 3rem); color: #cbd5e1; line-height: 1.8;">
             
             <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">1. Compromisso com a Privacidade</h3>
             <p style="margin-bottom: 1.5rem;">

@@ -71,7 +71,7 @@
 }
 
 /* ==========================================================================
-   RESET & BASE STYLES
+   RESET & BASE STYLES (MOBILE-FIRST STANDARD)
    ========================================================================== */
 
 *, *::before, *::after {
@@ -82,6 +82,10 @@
 
 html, body {
     min-height: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -92,6 +96,12 @@ body {
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+img, svg, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 a {
@@ -108,6 +118,9 @@ a {
     display: flex;
     min-height: 100vh;
     width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
 }
 
 /* SIDEBAR */
@@ -131,6 +144,30 @@ a {
     flex-direction: column;
     align-items: center;
     border-bottom: 1px solid var(--sidebar-border);
+    position: relative;
+}
+
+.sidebar-close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text-muted);
+    font-size: 1.2rem;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.sidebar-close-btn:hover {
+    color: #ffffff;
+    background-color: var(--sidebar-hover);
 }
 
 .sidebar-nexipro-logo {
@@ -345,6 +382,9 @@ a {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
     background-color: var(--bg-app);
 }
 
@@ -1175,40 +1215,375 @@ textarea.form-control-modern {
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE (MOBILE-FIRST STANDARD - ZERO OVERFLOW >= 360px)
    ========================================================================== */
 
+/* 1. TABLETS & TELAS MÉDIAS (<= 991px) */
 @media (max-width: 991px) {
+    .app-layout {
+        position: relative;
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100vw;
+    }
+
     .app-sidebar {
-        position: fixed;
-        left: -270px;
+        position: fixed !important;
         top: 0;
+        left: 0;
         bottom: 0;
-        z-index: 1000;
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        box-shadow: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border-right: 1px solid var(--sidebar-border);
     }
 
     .app-sidebar.show {
-        left: 0;
+        transform: translateX(0) !important;
+        box-shadow: 12px 0 35px rgba(0, 0, 0, 0.6) !important;
     }
 
     .sidebar-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        background: rgba(11, 15, 25, 0.72);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 1040;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
     }
 
     .sidebar-overlay.show {
         display: block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.sidebar-open {
+        overflow: hidden !important;
+    }
+
+    .app-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
     }
 
     .app-topbar {
-        padding: 0 1rem;
+        height: auto;
+        min-height: 60px;
+        padding: 0.6rem 1.25rem;
     }
 
     .page-content {
         padding: 1.25rem;
+    }
+}
+
+/* 2. SMARTPHONES & TELAS COMPACTAS (<= 768px) */
+@media (max-width: 768px) {
+    .app-topbar {
+        padding: 0.5rem 0.85rem;
+        gap: 0.5rem;
+    }
+
+    .topbar-left {
+        gap: 0.5rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .topbar-title {
+        font-size: 1.05rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+
+    .topbar-subtitle {
+        font-size: 0.72rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+
+    .topbar-right {
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    .btn-trial-badge {
+        padding: 0.32rem 0.65rem;
+        font-size: 0.78rem;
+        gap: 0.35rem;
+    }
+
+    .page-content {
+        padding: 1rem 0.75rem;
+    }
+
+    /* Grids fluidas e Stat Cards */
+    .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 0.85rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .stat-card {
+        padding: 1.15rem 1.15rem;
+    }
+
+    /* Content Cards e Cabeçalhos Flexíveis */
+    .content-card {
+        margin-bottom: 1.25rem;
+    }
+
+    .card-header-custom {
+        padding: 0.85rem 1rem;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.75rem;
+    }
+
+    .card-title-custom {
+        font-size: 1.05rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .card-actions-custom {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        justify-content: flex-start;
+    }
+
+    .card-actions-custom .btn {
+        flex: 1 1 auto;
+        text-align: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Formulários e Inputs sem zoom forçado no iOS */
+    .form-container-card {
+        padding: 1.25rem 1rem;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .form-control-modern, 
+    .form-control, 
+    .form-select, 
+    input, 
+    select, 
+    textarea {
+        font-size: 16px !important; /* Previne auto-zoom indesejado no Safari/iOS */
+    }
+
+    .search-box {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .search-box input {
+        font-size: 16px !important;
+    }
+
+    /* Tabelas com rolagem suave horizontal interna */
+    .table-responsive {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        border-radius: var(--radius-sm);
+        position: relative;
+    }
+
+    .table-modern, 
+    .table {
+        min-width: 580px;
+    }
+
+    .table-modern th, 
+    .table-modern td {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.82rem;
+    }
+
+    /* Modais Bootstrap e Modais Luxo Fluidos */
+    .modal-dialog {
+        margin: 0.5rem auto !important;
+        max-width: calc(100vw - 1rem) !important;
+    }
+
+    .modal-content {
+        border-radius: 14px !important;
+    }
+
+    .modal-body {
+        padding: 1rem !important;
+    }
+
+    .modal-header {
+        padding: 0.85rem 1rem !important;
+    }
+
+    .modal-footer {
+        padding: 0.75rem 1rem !important;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .modal-footer > * {
+        flex: 1 1 auto;
+    }
+
+    /* FullCalendar Responsivo */
+    .fc .fc-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .fc .fc-toolbar-chunk {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.05rem;
+        text-align: center;
+    }
+
+    .fc .fc-button {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.78rem;
+    }
+
+    #fullCalendarAgendamentos {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* 3. SMARTPHONES PEQUENOS (<= 480px - escala 360px) */
+@media (max-width: 480px) {
+    .app-topbar {
+        padding: 0.4rem 0.6rem;
+        min-height: 54px;
+    }
+
+    .topbar-title {
+        font-size: 0.95rem;
+        max-width: 130px;
+    }
+
+    .topbar-subtitle {
+        display: none;
+    }
+
+    .topbar-right {
+        gap: 0.25rem;
+    }
+
+    .btn-trial-badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.72rem;
+    }
+
+    .btn-trial-badge .badge-upgrade-text {
+        padding: 0.12rem 0.4rem;
+        font-size: 0.68rem;
+    }
+
+    .page-content {
+        padding: 0.75rem 0.5rem;
+    }
+
+    /* Grids empilhadas em coluna única */
+    .stat-grid {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card {
+        padding: 0.9rem 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .card-header-custom {
+        padding: 0.75rem 0.75rem;
+    }
+
+    .card-title-custom {
+        font-size: 0.95rem;
+    }
+
+    .card-actions-custom .btn {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    /* Toasts de Notificação ajustados na tela */
+    #lux-toast-container {
+        top: 0.6rem;
+        right: 0.6rem;
+        left: 0.6rem;
+        max-width: calc(100vw - 1.2rem);
+    }
+
+    .lux-toast {
+        padding: 0.65rem 0.85rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+    }
+
+    /* Empty state luxuoso em telas pequenas */
+    .empty-state-lux {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.05rem;
+    }
+
+    .empty-state-desc {
+        font-size: 0.82rem;
+        margin-bottom: 1rem;
     }
 }
 
@@ -1404,6 +1779,35 @@ textarea.form-control-modern {
     background: rgba(212, 175, 55, 0.12);
     color: #0b0f19;
     box-shadow: 0 4px 14px rgba(212, 175, 55, 0.2);
+}
+
+@media (max-width: 768px) {
+    .btn-gold-action, 
+    .btn-ghost-lux {
+        padding: 0.6rem 1.15rem;
+        font-size: 0.86rem;
+    }
+
+    .speed-pos-chip {
+        flex: 1 1 calc(50% - 0.75rem);
+        min-width: 90px;
+        padding: 0.75rem 0.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-gold-action, 
+    .btn-ghost-lux {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.82rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .speed-pos-chip {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
 }
 
 /* 5. TOAST NOTIFIER FLUTUANTE (Substituição de alert/confirm) */

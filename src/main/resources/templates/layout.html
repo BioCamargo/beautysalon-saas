@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title th:text="${pageTitle} ?: 'NEXI PRO | Gestão Inteligente'">NEXI PRO | Gestão Inteligente</title>
 
     <!-- Favicon Oficial NEXI PRO -->
@@ -35,6 +35,9 @@
         <!-- SIDEBAR FRAGMENT -->
         <div th:replace="~{fragments/sidebar :: sidebar(${activePage} ?: '')}"></div>
 
+        <!-- OVERLAY PARA FECHAR O MENU NO MOBILE -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" aria-hidden="true"></div>
+
         <!-- MAIN APP AREA -->
         <div class="app-main">
             <!-- TOPBAR FRAGMENT -->
@@ -43,7 +46,7 @@
 
             <!-- BANNER DE AVISO DE ASSINATURA / INADIMPLÊNCIA / BLOQUEIO SUAVE -->
             <!-- 1. Bloqueio Suave Ativo (Modo Somente Leitura) -->
-            <div th:if="${empresaBloqueioSuaveAtivo}" 
+            <div th:if="${empresaBloqueioSuaveAtivo}" class="subscription-alert-banner"
                  style="background: linear-gradient(90deg, #450a0a 0%, #1c0505 100%); border-bottom: 2px solid #ef4444; padding: 0.85rem 1.5rem; color: #fecaca; display: flex; align-items: center; justify-content: space-between; gap: 1rem; z-index: 99; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <i class="bi bi-shield-lock-fill" style="font-size: 1.4rem; color: #ef4444;"></i>

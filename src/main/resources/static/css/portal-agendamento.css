@@ -580,6 +580,70 @@ body {
     }
 }
 
+@media (max-width: 480px) {
+    .booking-app-wrapper {
+        padding: 0.65rem 0.65rem 95px;
+        max-width: 100vw;
+    }
+
+    .salon-hero-card {
+        padding: 1.25rem 0.85rem 1.15rem;
+        border-radius: 18px;
+    }
+
+    .salon-title {
+        font-size: 1.35rem;
+    }
+
+    .prof-pill-card {
+        min-width: 115px;
+        padding: 0.55rem 0.65rem;
+    }
+
+    .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+        gap: 0.35rem;
+    }
+
+    .mobile-bottom-bar {
+        padding: 0.65rem 0.75rem;
+    }
+
+    .bottom-bar-content {
+        gap: 0.5rem;
+    }
+
+    .bottom-bar-service {
+        max-width: 120px;
+        font-size: 0.78rem;
+    }
+
+    .bottom-bar-price {
+        font-size: 1.05rem;
+    }
+
+    .btn-confirm-action {
+        padding: 0.65rem 0.95rem;
+        font-size: 0.86rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .bottom-bar-service {
+        max-width: 95px;
+        font-size: 0.72rem;
+    }
+
+    .bottom-bar-price {
+        font-size: 0.98rem;
+    }
+
+    .btn-confirm-action {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+
 /* ==========================================================================
    ALTO CONTRASTE E LEGIBILIDADE IMPECÁVEL PARA O PORTAL DO CLIENTE
    ========================================================================== */

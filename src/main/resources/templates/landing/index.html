@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="theme-color" content="#0b0f19">
-    <title th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Salões, Clínicas e Barbearias'}">NEXI PRO | Gestão Inteligente</title>
-    <meta name="description" content="O sistema definitivo de gestão para empresas de beleza, estética, barbearias e clínicas. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 7 dias grátis.">
+    <title
+        th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Salões, Clínicas e Barbearias'}">
+        NEXI PRO | Gestão Inteligente</title>
+    <meta name="description"
+        content="O sistema definitivo de gestão para empresas de beleza, estética, barbearias e clínicas. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 7 dias grátis.">
 
     <!-- Favicon Oficial NEXI PRO -->
     <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
@@ -14,12 +18,15 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- CSS Customizado da Landing Page (Mobile-First) -->
     <link th:href="@{/css/landing.css}" rel="stylesheet">
 </head>
+
 <body class="landing-page">
 
     <!-- Efeitos de iluminação ambiente blindados contra overflow horizontal -->
@@ -49,7 +56,8 @@
 
             <!-- Ações Header -->
             <div class="lp-nav-actions">
-                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()" title="Acessar o link exclusivo da sua empresa">
+                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()"
+                    title="Acessar o link exclusivo da sua empresa">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Já sou cliente</span>
                 </button>
@@ -58,7 +66,8 @@
                     <i class="bi bi-arrow-right"></i>
                 </a>
                 <!-- Botão Menu Hambúrguer (Mobile) -->
-                <button type="button" class="lp-mobile-menu-btn" onclick="toggleMobileMenu()" id="btnMobileMenu" aria-label="Abrir Menu de Navegação">
+                <button type="button" class="lp-mobile-menu-btn" onclick="toggleMobileMenu()" id="btnMobileMenu"
+                    aria-label="Abrir Menu de Navegação">
                     <i class="bi bi-list" id="iconMobileMenu"></i>
                 </button>
             </div>
@@ -76,13 +85,17 @@
         <ul class="lp-mobile-drawer-links">
             <li><a href="#recursos" onclick="closeMobileMenu()"><i class="bi bi-grid-fill"></i> Recursos</a></li>
             <li><a href="#segmentos" onclick="closeMobileMenu()"><i class="bi bi-scissors"></i> Segmentos</a></li>
-            <li><a href="#diferenciais" onclick="closeMobileMenu()"><i class="bi bi-check2-circle"></i> Diferenciais</a></li>
+            <li><a href="#diferenciais" onclick="closeMobileMenu()"><i class="bi bi-check2-circle"></i> Diferenciais</a>
+            </li>
             <li><a href="#precos" onclick="closeMobileMenu()"><i class="bi bi-tag-fill"></i> Planos & Preços</a></li>
-            <li><a href="#depoimentos" onclick="closeMobileMenu()"><i class="bi bi-chat-quote-fill"></i> Depoimentos</a></li>
-            <li><a href="#faq" onclick="closeMobileMenu()"><i class="bi bi-question-circle-fill"></i> Perguntas Frequentes</a></li>
+            <li><a href="#depoimentos" onclick="closeMobileMenu()"><i class="bi bi-chat-quote-fill"></i> Depoimentos</a>
+            </li>
+            <li><a href="#faq" onclick="closeMobileMenu()"><i class="bi bi-question-circle-fill"></i> Perguntas
+                    Frequentes</a></li>
         </ul>
         <div class="lp-mobile-drawer-actions">
-            <button type="button" class="lp-link-find-studio lp-btn-block" onclick="closeMobileMenu(); openFindStudioModal();">
+            <button type="button" class="lp-link-find-studio lp-btn-block"
+                onclick="closeMobileMenu(); openFindStudioModal();">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span style="display: inline !important;">Já sou cliente (Acessar Empresa)</span>
             </button>
@@ -106,7 +119,9 @@
             </h1>
 
             <p class="lp-hero-subtitle">
-                Agendamento online 24/7 na bio do Instagram, disparos automáticos de lembretes no WhatsApp, frente de caixa com split de comissões, ficha técnica com baixa de insumos e prontuário de anamnese digital com assinatura touch.
+                Agendamento online 24/7 na bio do Instagram, disparos automáticos de lembretes no WhatsApp, frente de
+                caixa com split de comissões, ficha técnica com baixa de insumos e prontuário de anamnese digital com
+                assinatura touch.
             </p>
 
             <div class="lp-hero-cta-group">
@@ -178,7 +193,8 @@
                         <div class="lp-mockup-bottom-grid">
                             <div class="lp-mockup-schedule-box">
                                 <div class="lp-mockup-schedule-header">
-                                    <span class="lp-mockup-schedule-title">Grade de Horários & Profissionais em Tempo Real</span>
+                                    <span class="lp-mockup-schedule-title">Grade de Horários & Profissionais em Tempo
+                                        Real</span>
                                     <span class="lp-mockup-live-tag">● Ao vivo</span>
                                 </div>
                                 <div class="lp-mockup-schedule-items">
@@ -274,7 +290,8 @@
                 </div>
                 <h3 class="lp-feature-title">Agendamento Online 24/7 na Bio</h3>
                 <p class="lp-feature-text">
-                    Seus clientes escolhem o serviço, o profissional favorito e o horário vago sem que você precise parar o atendimento para responder no WhatsApp.
+                    Seus clientes escolhem o serviço, o profissional favorito e o horário vago sem que você precise
+                    parar o atendimento para responder no WhatsApp.
                 </p>
             </div>
 
@@ -285,7 +302,8 @@
                 </div>
                 <h3 class="lp-feature-title">Automação de WhatsApp Anti-No-Show</h3>
                 <p class="lp-feature-text">
-                    Disparos automáticos de confirmação e lembretes com 24 horas e 2 horas de antecedência. Reduza o não-comparecimento em até 70% já na primeira semana.
+                    Disparos automáticos de confirmação e lembretes com 24 horas e 2 horas de antecedência. Reduza o
+                    não-comparecimento em até 70% já na primeira semana.
                 </p>
             </div>
 
@@ -296,7 +314,8 @@
                 </div>
                 <h3 class="lp-feature-title">Frente de Caixa & Comandas Rápidas</h3>
                 <p class="lp-feature-text">
-                    Abertura e fechamento de caixa com conferência física de notas e moedas. Suporte a split de pagamentos (parte Pix, parte Cartão) e comprovante digital.
+                    Abertura e fechamento de caixa com conferência física de notas e moedas. Suporte a split de
+                    pagamentos (parte Pix, parte Cartão) e comprovante digital.
                 </p>
             </div>
 
@@ -307,7 +326,8 @@
                 </div>
                 <h3 class="lp-feature-title">Ficha Técnica & Baixa de Insumos</h3>
                 <p class="lp-feature-text">
-                    Acabe com o desperdício oculto no lavatório. O sistema desconta automaticamente as gramas de pó, oxidante ou cosméticos utilizados a cada atendimento.
+                    Acabe com o desperdício oculto no lavatório. O sistema desconta automaticamente as gramas de pó,
+                    oxidante ou cosméticos utilizados a cada atendimento.
                 </p>
             </div>
 
@@ -318,7 +338,8 @@
                 </div>
                 <h3 class="lp-feature-title">Anamnese Digital com Assinatura Touch</h3>
                 <p class="lp-feature-text">
-                    Formulários clínicos dinâmicos por segmento, registro de fotos antes/depois, assinatura digital touch coletada na tela do celular e geração de prontuário em PDF (LGPD).
+                    Formulários clínicos dinâmicos por segmento, registro de fotos antes/depois, assinatura digital
+                    touch coletada na tela do celular e geração de prontuário em PDF (LGPD).
                 </p>
             </div>
 
@@ -329,14 +350,16 @@
                 </div>
                 <h3 class="lp-feature-title">DRE Contábil & Inteligência Anti-Churn</h3>
                 <p class="lp-feature-text">
-                    Descubra seu lucro líquido real e margem de contribuição por procedimento. O algoritmo identifica clientes que sumiram e te ajuda a resgatá-los.
+                    Descubra seu lucro líquido real e margem de contribuição por procedimento. O algoritmo identifica
+                    clientes que sumiram e te ajuda a resgatá-los.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- 5. ANTES VS DEPOIS (DIFERENCIAIS) -->
-    <section class="lp-section" id="diferenciais" style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+    <section class="lp-section" id="diferenciais"
+        style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
         <div class="lp-section-header">
             <span class="lp-section-tag">A DIFERENÇA NA PRÁTICA</span>
             <h2 class="lp-section-title">O que muda na rotina da sua empresa?</h2>
@@ -349,22 +372,32 @@
             <div class="lp-comp-card lp-comp-before">
                 <span class="lp-comp-badge">SEM O NEXI PRO (ROTINA CAÓTICA)</span>
                 <ul class="lp-comp-list">
-                    <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas difíceis de atualizar no celular.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a cadeira vazia e gerando prejuízo.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Cálculo de comissão feito manualmente no fim do mês gerando desconfiança e brigas na equipe.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Nenhuma noção do custo de produtos gastos no lavatório por procedimento.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Fichas de anamnese em papel que se perdem ou ficam sem respaldo jurídico em casos de alergia.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas
+                        difíceis de atualizar no celular.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a
+                        cadeira vazia e gerando prejuízo.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Cálculo de comissão feito manualmente no fim do mês gerando
+                        desconfiança e brigas na equipe.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Nenhuma noção do custo de produtos gastos no lavatório por
+                        procedimento.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Fichas de anamnese em papel que se perdem ou ficam sem
+                        respaldo jurídico em casos de alergia.</li>
                 </ul>
             </div>
 
             <div class="lp-comp-card lp-comp-after">
                 <span class="lp-comp-badge">COM O NEXI PRO (ROTINA AUTOMATIZADA)</span>
                 <ul class="lp-comp-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio do Instagram e WhatsApp.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70% as faltas e no-shows.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Comissões calculadas em 1 clique em tempo real para cada profissional e assistente.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Ficha técnica deduz o estoque automaticamente e indica o capital parado nas prateleiras.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de anamnese 100% digital com assinatura na tela touch e PDF gerado na hora.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio
+                        do Instagram e WhatsApp.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70%
+                        as faltas e no-shows.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Comissões calculadas em 1 clique em tempo real para cada
+                        profissional e assistente.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Ficha técnica deduz o estoque automaticamente e indica o
+                        capital parado nas prateleiras.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de anamnese 100% digital com assinatura na
+                        tela touch e PDF gerado na hora.</li>
                 </ul>
             </div>
         </div>
@@ -396,7 +429,7 @@
                 <div>
                     <div class="lp-plan-name">Plano Solo</div>
                     <div class="lp-plan-desc">Perfeito para profissionais autônomos e estúdios individuais.</div>
-                    
+
                     <div class="lp-plan-price">
                         <span class="lp-currency">R$</span>
                         <span class="lp-amount" id="priceSolo">59</span>
@@ -424,7 +457,7 @@
                 <div>
                     <div class="lp-plan-name">Plano Studio</div>
                     <div class="lp-plan-desc">Ideal para empresas, salões e clínicas em expansão com equipe.</div>
-                    
+
                     <div class="lp-plan-price">
                         <span class="lp-currency">R$</span>
                         <span class="lp-amount" id="priceStudio">129</span>
@@ -433,7 +466,8 @@
 
                     <ul class="lp-plan-features">
                         <li><i class="bi bi-check-circle-fill"></i> <strong>Até 5 Profissionais</strong></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <strong>Automação de WhatsApp (Lembretes)</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Automação de WhatsApp (Lembretes)</strong>
+                        </li>
                         <li><i class="bi bi-check-circle-fill"></i> Cálculo automático de Comissões</li>
                         <li><i class="bi bi-check-circle-fill"></i> Ficha Técnica & Baixa de Estoque</li>
                         <li><i class="bi bi-check-circle-fill"></i> Form Builder de Anamnese Customizado</li>
@@ -453,7 +487,7 @@
                 <div>
                     <div class="lp-plan-name">Plano Premium VIP</div>
                     <div class="lp-plan-desc">Para grandes empresas, redes e clínicas de alto padrão.</div>
-                    
+
                     <div class="lp-plan-price">
                         <span class="lp-currency">R$</span>
                         <span class="lp-amount" id="priceVip">229</span>
@@ -478,7 +512,8 @@
     </section>
 
     <!-- 7. DEPOIMENTOS DE CLIENTES -->
-    <section class="lp-section" id="depoimentos" style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+    <section class="lp-section" id="depoimentos"
+        style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
         <div class="lp-section-header">
             <span class="lp-section-tag">QUEM USA RECOMENDA</span>
             <h2 class="lp-section-title">O que dizem os donos de estabelecimentos que usam o NEXI PRO</h2>
@@ -488,10 +523,12 @@
             <div class="lp-testimonial-card">
                 <div>
                     <div class="lp-stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                     </div>
                     <p class="lp-test-text">
-                        "O agendamento na bio do Instagram mudou a vida da minha equipe. Nossas clientes adoram escolher os horários sozinhas e o lembrete no WhatsApp reduziu as faltas pela metade!"
+                        "O agendamento na bio do Instagram mudou a vida da minha equipe. Nossas clientes adoram escolher
+                        os horários sozinhas e o lembrete no WhatsApp reduziu as faltas pela metade!"
                     </p>
                 </div>
                 <div class="lp-test-author">
@@ -506,10 +543,12 @@
             <div class="lp-testimonial-card">
                 <div>
                     <div class="lp-stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                     </div>
                     <p class="lp-test-text">
-                        "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o NEXI PRO, o fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
+                        "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o NEXI PRO, o
+                        fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
                     </p>
                 </div>
                 <div class="lp-test-author">
@@ -524,10 +563,12 @@
             <div class="lp-testimonial-card">
                 <div>
                     <div class="lp-stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                     </div>
                     <p class="lp-test-text">
-                        "A ficha de anamnese com assinatura na tela touch e fotos de antes/depois me dá total segurança jurídica e transmite um profissionalismo surreal para as minhas pacientes de estética."
+                        "A ficha de anamnese com assinatura na tela touch e fotos de antes/depois me dá total segurança
+                        jurídica e transmite um profissionalismo surreal para as minhas pacientes de estética."
                     </p>
                 </div>
                 <div class="lp-test-author">
@@ -555,7 +596,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias, você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e clientes reais.
+                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias,
+                    você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e
+                    clientes reais.
                 </div>
             </div>
 
@@ -565,7 +608,8 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória.
+                    Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular,
+                    tablet, notebook ou computador do balcão sem ocupar espaço de memória.
                 </div>
             </div>
 
@@ -575,7 +619,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Assim que você cadastra seu espaço, é gerado um link exclusivo como <code>nexipro.com.br/sua-empresa/agendar</code>. Basta colocar esse link na bio do Instagram ou fixar no WhatsApp para suas clientes agendarem sozinhas.
+                    Assim que você cadastra seu espaço, é gerado um link exclusivo como
+                    <code>nexipro.com.br/sua-empresa/agendar</code>. Basta colocar esse link na bio do Instagram ou
+                    fixar no WhatsApp para suas clientes agendarem sozinhas.
                 </div>
             </div>
 
@@ -585,7 +631,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estabelecimento possui seus dados blindados com criptografia de ponta a ponta e alinhamento total à Lei Geral de Proteção de Dados (LGPD).
+                    Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada
+                    estabelecimento possui seus dados blindados com criptografia de ponta a ponta e alinhamento total à
+                    Lei Geral de Proteção de Dados (LGPD).
                 </div>
             </div>
 
@@ -595,7 +643,8 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a qualquer momento diretamente pelo seu painel administrativo.
+                    Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a
+                    qualquer momento diretamente pelo seu painel administrativo.
                 </div>
             </div>
         </div>
@@ -605,7 +654,8 @@
     <section class="lp-section lp-section-cta">
         <div class="lp-cta-banner">
             <h2>Pronto para levar a gestão da sua empresa a outro nível?</h2>
-            <p>Junte-se a centenas de proprietários e gestores de empresas que economizam tempo e aumentam sua lucratividade todos os dias.</p>
+            <p>Junte-se a centenas de proprietários e gestores de empresas que economizam tempo e aumentam sua
+                lucratividade todos os dias.</p>
             <div class="lp-cta-action-wrapper">
                 <a th:href="@{/register}" class="lp-btn-primary lp-btn-cta-banner">
                     <i class="bi bi-rocket-takeoff-fill"></i>
@@ -627,7 +677,8 @@
                     <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" class="lp-footer-logo" />
                 </div>
                 <p class="lp-footer-desc">
-                    Plataforma inteligente de gestão, agendamento online, comanda, comissões automáticas e fidelização para estabelecimentos de beleza e bem-estar.
+                    Plataforma inteligente de gestão, agendamento online, comanda, comissões automáticas e fidelização
+                    para estabelecimentos de beleza e bem-estar.
                 </p>
             </div>
 
@@ -659,7 +710,8 @@
             <div class="lp-footer-col">
                 <h4>Acesso</h4>
                 <ul>
-                    <li><a href="javascript:void(0)" onclick="openFindStudioModal()"><i class="bi bi-box-arrow-in-right"></i> Área do Cliente (Localizar)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openFindStudioModal()"><i
+                                class="bi bi-box-arrow-in-right"></i> Área do Cliente (Localizar)</a></li>
                     <li><a th:href="@{/register}"><i class="bi bi-rocket-takeoff"></i> Cadastrar Nova Empresa</a></li>
                     <li><a href="#faq"><i class="bi bi-question-circle"></i> Dúvidas Frequentes (FAQ)</a></li>
                     <li><a th:href="@{/termos}"><i class="bi bi-file-text"></i> Termos de Uso</a></li>
@@ -680,7 +732,8 @@
     </footer>
 
     <!-- MODAL PARA LOCALIZAR STUDIO / LINK EXCLUSIVO -->
-    <div class="lp-modal-backdrop" id="modalFindStudio" onclick="if(event.target === this) closeFindStudioModal();" aria-hidden="true">
+    <div class="lp-modal-backdrop" id="modalFindStudio" onclick="if(event.target === this) closeFindStudioModal();"
+        aria-hidden="true">
         <div class="lp-modal-card">
             <div class="lp-modal-header">
                 <div class="lp-modal-header-left">
@@ -695,7 +748,8 @@
             </div>
 
             <p class="lp-modal-desc">
-                Cada empresa possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar sua empresa:
+                Cada empresa possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo
+                responsável para localizar sua empresa:
             </p>
 
             <form onsubmit="handleFindStudio(event)">
@@ -703,7 +757,8 @@
                     <label class="lp-form-label">E-mail do Responsável ou Empresa:</label>
                     <div class="lp-input-wrapper">
                         <i class="bi bi-envelope lp-input-icon"></i>
-                        <input type="email" id="inputFindEmail" placeholder="seuemail@exemplo.com" required class="lp-form-input" />
+                        <input type="email" id="inputFindEmail" placeholder="seuemail@exemplo.com" required
+                            class="lp-form-input" />
                     </div>
                 </div>
 
@@ -731,7 +786,7 @@
             const drawer = document.getElementById('mobileDrawer');
             const icon = document.getElementById('iconMobileMenu');
             const isActive = drawer.classList.contains('active');
-            
+
             if (isActive) {
                 closeMobileMenu();
             } else {
@@ -860,14 +915,15 @@
         function toggleFaq(element) {
             const item = element.parentElement;
             const wasActive = item.classList.contains('active');
-            
+
             // Fecha todos os outros itens
             document.querySelectorAll('.lp-faq-item').forEach(i => i.classList.remove('active'));
-            
+
             if (!wasActive) {
                 item.classList.add('active');
             }
         }
     </script>
 </body>
+
 </html>

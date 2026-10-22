@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title th:text="${pageTitle} ?: 'Agendamento Confirmado! | NEXI PRO'">Agendamento Confirmado! | NEXI PRO</title>
 
     <!-- Favicon Oficial NEXI PRO -->
@@ -252,6 +252,57 @@
 
         .btn-new-booking:hover {
             color: var(--gold-primary);
+        }
+
+        /* Responsividade Mobile-First (down to 360px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.65rem;
+            }
+
+            .vip-voucher-card {
+                border-radius: 20px;
+            }
+
+            .voucher-header {
+                padding: 1.5rem 1rem 1.25rem;
+            }
+
+            .icon-success-glow {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+
+            .voucher-title {
+                font-size: 1.35rem;
+            }
+
+            .voucher-subtitle {
+                font-size: 0.82rem;
+            }
+
+            .voucher-body {
+                padding: 1.15rem 1rem 1.5rem;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+                padding: 0.6rem 0;
+            }
+
+            .detail-value {
+                text-align: left;
+                font-size: 0.92rem;
+            }
+
+            .btn-whatsapp-confirm, 
+            .btn-google-calendar {
+                padding: 0.75rem 1rem;
+                font-size: 0.88rem;
+            }
         }
     </style>
 

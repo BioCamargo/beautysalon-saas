@@ -308,10 +308,41 @@
 
             function toggleSidebar() {
                 const sidebar = document.getElementById('appSidebar');
+                let overlay = document.getElementById('sidebarOverlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'sidebarOverlay';
+                    overlay.className = 'sidebar-overlay';
+                    overlay.setAttribute('aria-hidden', 'true');
+                    overlay.onclick = toggleSidebar;
+                    document.body.appendChild(overlay);
+                }
+
                 if (sidebar) {
-                    sidebar.classList.toggle('show');
+                    const isOpen = sidebar.classList.toggle('show');
+                    if (isOpen) {
+                        overlay.classList.add('show');
+                        document.body.classList.add('sidebar-open');
+                    } else {
+                        overlay.classList.remove('show');
+                        document.body.classList.remove('sidebar-open');
+                    }
                 }
             }
+
+            // Fechar gaveta lateral automaticamente ao clicar em links no mobile
+            document.addEventListener('DOMContentLoaded', function() {
+                const sidebar = document.getElementById('appSidebar');
+                if (sidebar) {
+                    sidebar.querySelectorAll('.nav-link').forEach(link => {
+                        link.addEventListener('click', function() {
+                            if (window.innerWidth <= 991 && sidebar.classList.contains('show')) {
+                                toggleSidebar();
+                            }
+                        });
+                    });
+                }
+            });
 
             /**
              * Modal Global de Confirmação Sofisticado (Anti-alert / Anti-confirm)

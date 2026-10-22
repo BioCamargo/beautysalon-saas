@@ -8,6 +8,11 @@
     <aside th:fragment="sidebar(activePage)" class="app-sidebar" id="appSidebar">
         <!-- CABEÇALHO COM LOGO & EMPRESA -->
         <div class="sidebar-header">
+            <!-- Botão Fechar no Mobile (Drawer) -->
+            <button type="button" class="sidebar-close-btn d-lg-none" onclick="toggleSidebar()" aria-label="Fechar Navegação">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
             <a th:href="@{/{slug}/home(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}"
                 style="text-align: center; display: block; text-decoration: none; width: 100%;">
                 <!-- 1. Logotipo Oficial NEXI PRO (Sempre fixo no topo) -->
