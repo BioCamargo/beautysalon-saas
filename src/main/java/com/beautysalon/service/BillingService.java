@@ -42,9 +42,10 @@ public class BillingService {
 
         log.info("Recebido webhook Asaas: evento={}, customer={}, subscription={}", event, customerId, subscriptionId);
 
-        Optional<Empresa> empresaOpt = buscarEmpresaPorGateway(customerId, subscriptionId);
+        Optional<Empresa> empresaOpt = buscarEmpresaPorGateway(customerId, subscriptionId, payment.getExternalReference());
         if (empresaOpt.isEmpty()) {
-            log.warn("Nenhuma empresa encontrada para customerId={} ou subscriptionId={}", customerId, subscriptionId);
+            log.warn("Nenhuma empresa encontrada para customerId={}, subscriptionId={}, externalReference={}", 
+                    customerId, subscriptionId, payment.getExternalReference());
             return false;
         }
 
@@ -95,13 +96,24 @@ public class BillingService {
     private void validarTokenWebhook(String token) {
         if (configuredWebhookToken != null && !configuredWebhookToken.isBlank()) {
             if (token == null || !token.trim().equals(configuredWebhookToken.trim())) {
-                log.error("Tentativa de acesso ao webhook de billing com token inválido");
+                log.error("Tentativa de acesso ao webhook de billing com token inválido. Recebido='{}', Configurado='{}'", 
+                        token, configuredWebhookToken);
                 throw new SecurityException("Token de webhook inválido");
             }
         }
     }
 
-    private Optional<Empresa> buscarEmpresaPorGateway(String customerId, String subscriptionId) {
+    private Optional<Empresa> buscarEmpresaPorGateway(String customerId, String subscriptionId, String externalReference) {
+        if (externalReference != null && externalReference.startsWith("empresa_")) {
+            try {
+                Long empresaId = Long.parseLong(externalReference.replace("empresa_", "").trim());
+                Optional<Empresa> porId = empresaRepository.findById(empresaId);
+                if (porId.isPresent()) {
+                    log.info("Empresa ID={} localizada por externalReference={}", empresaId, externalReference);
+                    return porId;
+                }
+            } catch (Exception ignored) {}
+        }
         if (subscriptionId != null && !subscriptionId.isBlank()) {
             Optional<Empresa> porSub = empresaRepository.findByAsaasSubscriptionId(subscriptionId);
             if (porSub.isPresent()) return porSub;

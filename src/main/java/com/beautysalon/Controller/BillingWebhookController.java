@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping({"/api/v1/webhooks/billing", "/api/webhooks/asaas"})
+@RequestMapping({"/api/v1/webhooks/billing", "/api/webhooks/asaas", "/api/webhc"})
 @RequiredArgsConstructor
 public class BillingWebhookController {
 

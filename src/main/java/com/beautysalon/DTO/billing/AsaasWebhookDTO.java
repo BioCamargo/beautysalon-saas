@@ -39,5 +39,6 @@ public class AsaasWebhookDTO {
         private LocalDate paymentDate;
         private String invoiceUrl;
         private String bankSlipUrl;
+        private String externalReference;
     }
 }

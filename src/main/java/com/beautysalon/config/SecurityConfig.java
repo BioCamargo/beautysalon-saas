@@ -92,7 +92,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api/v1/webhooks/**",
-                                "/api/webhooks/**"
+                                "/api/webhooks/**",
+                                "/api/webhc",
+                                "/api/webhc/**"
                         ).permitAll()
 
                         // 2. REGRAS POR PAPEL DO TENANT (OWNER / ADMIN)
