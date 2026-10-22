@@ -123,4 +123,44 @@ public class AssinaturaController {
 
         return "redirect:/" + slug + "/assinatura";
     }
+
+    @PostMapping("/simular-status")
+    public String simularStatus(@PathVariable String slug,
+                                @RequestParam String status,
+                                RedirectAttributes redirectAttributes) {
+        Long empresaId = TenantContext.getEmpresaId();
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
+
+        java.time.LocalDateTime agora = java.time.LocalDateTime.now();
+
+        switch (status.toUpperCase()) {
+            case "TRIAL_EXPIRADO":
+                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.EXPIRADA);
+                empresa.setDataExpiracaoTrial(agora.minusDays(1));
+                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Trial expirado! Veja como o sistema bloqueia novos agendamentos e solicita o pagamento.");
+                break;
+            case "INADIMPLENTE":
+                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.INADIMPLENTE);
+                empresa.setDataFimAssinatura(agora.minusDays(4));
+                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Fatura em atraso (Inadimplente com carência estourada).");
+                break;
+            case "ATIVA":
+                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.ATIVA);
+                empresa.setDataFimAssinatura(agora.plusDays(30));
+                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Assinatura Ativa e regularizada por +30 dias!");
+                break;
+            default: // RESTAURAR_TRIAL
+                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL);
+                empresa.setDataExpiracaoTrial(agora.plusDays(7));
+                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Período de Testes restaurado para 7 dias grátis.");
+                break;
+        }
+
+        empresaRepository.save(empresa);
+        log.info("Simulação de assinatura executada para empresa ID={} (slug={}): novo status={}", 
+                empresa.getId(), slug, empresa.getStatusAssinatura());
+
+        return "redirect:/" + slug + "/assinatura";
+    }
 }
