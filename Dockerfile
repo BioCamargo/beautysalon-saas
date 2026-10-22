@@ -39,7 +39,7 @@ EXPOSE 8080 8081
 
 # Variáveis de ambiente padrão com suporte a overrides (Render define PORT automaticamente)
 ENV PORT=8080 \
-    JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC"
+    JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=65.0 -Xss512k -XX:+UseG1GC -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 # Inicializa a aplicação
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
