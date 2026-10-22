@@ -21,6 +21,7 @@ import java.beans.PropertyEditorSupport;
 public class AssinaturaController {
 
     private final EmpresaRepository empresaRepository;
+    private final com.beautysalon.service.AsaasClientService asaasClientService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -58,9 +59,41 @@ public class AssinaturaController {
         empresa.setPlano(novoPlano);
         empresaRepository.save(empresa);
 
+        // Se o gateway Asaas estiver configurado, cria/atualiza a cobrança e fatura
+        try {
+            java.util.Optional<String> linkFatura = asaasClientService.criarOuAtualizarAssinatura(empresa, novoPlano);
+            if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
+                redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + novoPlano.getNomeExibicao() + "! Sua fatura de pagamento foi gerada com sucesso.");
+                return "redirect:" + linkFatura.get();
+            }
+        } catch (Exception e) {
+            log.warn("Aviso ao tentar gerar assinatura no Asaas: {}", e.getMessage());
+        }
+
         log.info("Empresa ID={} ({}) alterou plano para {}", empresa.getId(), slug, novoPlano);
         redirectAttributes.addFlashAttribute("sucesso", "Plano alterado para " + novoPlano.getNomeExibicao() + " com sucesso!");
 
+        return "redirect:/" + slug + "/assinatura";
+    }
+
+    @PostMapping("/gerar-fatura")
+    public String gerarFatura(@PathVariable String slug, RedirectAttributes redirectAttributes) {
+        Long empresaId = TenantContext.getEmpresaId();
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
+
+        PlanoSaaS plano = empresa.getPlano() != null ? empresa.getPlano() : PlanoSaaS.STUDIO;
+
+        try {
+            java.util.Optional<String> linkFatura = asaasClientService.criarOuAtualizarAssinatura(empresa, plano);
+            if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
+                return "redirect:" + linkFatura.get();
+            }
+        } catch (Exception e) {
+            log.error("Erro ao gerar fatura avulsa no Asaas: {}", e.getMessage());
+        }
+
+        redirectAttributes.addFlashAttribute("erro", "Não foi possível gerar a fatura no momento. Verifique as configurações de pagamento.");
         return "redirect:/" + slug + "/assinatura";
     }
 

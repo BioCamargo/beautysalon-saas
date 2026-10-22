@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
@@ -213,11 +213,13 @@
                                 <i class="bi bi-qr-code-scan"></i>
                                 <span>Pagar Fatura (Pix / Cartão)</span>
                             </a>
-                            <button th:if="${empresa.linkFaturaAtual == null or empresa.linkFaturaAtual.isBlank()}"
-                                    type="button" class="btn btn-outline-light btn-lg fw-bold px-4 py-3 rounded-pill"
-                                    data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS">
-                                <i class="bi bi-arrow-repeat me-1"></i> Escolher Novo Plano
-                            </button>
+                            <form th:if="${empresa.linkFaturaAtual == null or empresa.linkFaturaAtual.isBlank()}"
+                                  th:action="@{/{slug}/assinatura/gerar-fatura(slug=${empresaSlug})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-warning btn-lg fw-bold px-4 py-3 rounded-pill shadow-lg d-inline-flex align-items-center gap-2">
+                                    <i class="bi bi-qr-code-scan"></i>
+                                    <span>Pagar Mensalidade (Pix / Cartão)</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
