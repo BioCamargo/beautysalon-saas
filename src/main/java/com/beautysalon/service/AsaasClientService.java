@@ -234,28 +234,29 @@ public class AsaasClientService {
     }
 
     /**
-     * Gera uma cobrança pontual de R$ 1,00 para validação real ponta a ponta do fluxo de pagamento Pix.
+     * Gera uma cobrança pontual de R$ 5,00 (valor mínimo permitido pelo Asaas para contas PF)
+     * para validação real ponta a ponta do fluxo de pagamento Pix.
      */
     @Transactional
-    public Optional<String> criarCobrancaTesteUmReal(Empresa empresa) {
+    public Optional<String> criarCobrancaTeste(Empresa empresa) {
         if (!billingEnabled || apiKey == null || apiKey.isBlank()) {
             log.warn("Integração Asaas desativada ou API Key não configurada.");
-            return Optional.empty();
+            throw new IllegalArgumentException("Chave de API do Asaas não está configurada.");
         }
 
         String customerId = obterOuCriarCliente(empresa);
         if (customerId == null || customerId.isBlank()) {
             log.error("Não foi possível gerar cobrança de teste: customerId nulo");
-            return Optional.empty();
+            throw new IllegalArgumentException("Não foi possível registrar o cliente no Asaas.");
         }
 
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("customer", customerId);
-            body.put("billingType", "UNDEFINED"); // Aceita Pix ou Cartão
-            body.put("value", new BigDecimal("1.00"));
+            body.put("billingType", "PIX"); // Pix direto para teste rápido
+            body.put("value", new BigDecimal("5.00")); // R$ 5,00 é o valor mínimo do Asaas
             body.put("dueDate", LocalDate.now().plusDays(1).toString());
-            body.put("description", "Teste de Validação NEXI PRO - R$ 1,00");
+            body.put("description", "Teste de Validação NEXI PRO - R$ 5,00");
             body.put("externalReference", "empresa_" + empresa.getId());
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, criarHeadersAutenticados());
@@ -267,18 +268,34 @@ public class AsaasClientService {
                 if (invoiceUrl != null && !invoiceUrl.isBlank()) {
                     empresa.setLinkFaturaAtual(invoiceUrl);
                     empresaRepository.save(empresa);
-                    log.info("Fatura de teste R$ 1,00 gerada com sucesso para empresa ID={}: {}", empresa.getId(), invoiceUrl);
+                    log.info("Fatura de teste R$ 5,00 gerada com sucesso para empresa ID={}: {}", empresa.getId(), invoiceUrl);
                     return Optional.of(invoiceUrl);
                 }
             }
         } catch (HttpStatusCodeException hse) {
-            log.error("Erro HTTP ao gerar cobrança de R$ 1,00 no Asaas: status={}, body={}", 
+            String msg = extrairMensagemErroAsaas(hse);
+            log.error("Erro HTTP ao gerar cobrança de R$ 5,00 no Asaas: status={}, body={}", 
                     hse.getStatusCode(), hse.getResponseBodyAsString());
+            throw new IllegalArgumentException(msg);
         } catch (Exception e) {
             log.error("Erro ao gerar cobrança de teste no Asaas: {}", e.getMessage(), e);
+            throw new IllegalArgumentException(e.getMessage());
         }
 
         return Optional.empty();
+    }
+
+    public String extrairMensagemErroAsaas(HttpStatusCodeException hse) {
+        try {
+            if (hse.getResponseBodyAsString() != null) {
+                JsonNode root = objectMapper.readTree(hse.getResponseBodyAsString());
+                JsonNode errors = root.path("errors");
+                if (errors.isArray() && !errors.isEmpty()) {
+                    return errors.get(0).path("description").asText(hse.getMessage());
+                }
+            }
+        } catch (Exception ignored) {}
+        return "Erro HTTP " + hse.getStatusCode().value() + " no Asaas";
     }
 
     /**

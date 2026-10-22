@@ -104,16 +104,19 @@ public class AssinaturaController {
                 .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
 
         try {
-            java.util.Optional<String> linkFatura = asaasClientService.criarCobrancaTesteUmReal(empresa);
+            java.util.Optional<String> linkFatura = asaasClientService.criarCobrancaTeste(empresa);
             if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
-                log.info("Redirecionando para fatura de teste R$ 1,00: {}", linkFatura.get());
+                log.info("Redirecionando para fatura de teste R$ 5,00: {}", linkFatura.get());
                 return "redirect:" + linkFatura.get();
             }
+        } catch (IllegalArgumentException iae) {
+            redirectAttributes.addFlashAttribute("erro", "Asaas: " + iae.getMessage());
+            return "redirect:/" + slug + "/assinatura";
         } catch (Exception e) {
-            log.error("Erro ao gerar fatura de teste R$ 1,00 no Asaas: {}", e.getMessage(), e);
+            log.error("Erro ao gerar fatura de teste R$ 5,00 no Asaas: {}", e.getMessage(), e);
         }
 
-        redirectAttributes.addFlashAttribute("erro", "Não foi possível gerar a cobrança de teste de R$ 1,00. Verifique as configurações de pagamento.");
+        redirectAttributes.addFlashAttribute("erro", "Não foi possível gerar a cobrança de teste de R$ 5,00. Verifique as configurações de pagamento.");
         return "redirect:/" + slug + "/assinatura";
     }
 
