@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Empresas, Clínicas e Barbearias'}">NEXI PRO | Gestão Inteligente</title>
-    <meta name="description" content="O sistema definitivo de gestão para empresas de beleza, estética, barbearias e clínicas. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 7 dias grátis.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0f19">
+    <title
+        th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Salões, Clínicas e Barbearias'}">
+        NEXI PRO | Gestão Inteligente</title>
+    <meta name="description"
+        content="O sistema definitivo de gestão para empresas de beleza, estética, barbearias e clínicas. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 7 dias grátis.">
 
     <!-- Favicon Oficial NEXI PRO -->
     <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
@@ -13,12 +18,15 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- CSS Customizado da Landing Page -->
     <link th:href="@{/css/landing.css}" rel="stylesheet">
 </head>
+
 <body class="landing-page">
 
     <!-- Efeitos de iluminação ambiente -->
@@ -28,19 +36,23 @@
     <!-- 1. NAVBAR DE NAVEGAÇÃO -->
     <header class="lp-navbar">
         <div class="lp-navbar-container">
-            <a th:href="@{/}" class="lp-brand" style="text-decoration: none;">
-                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 38px; width: auto;" />
+            <a th:href="@{/}" class="lp-brand" title="NEXI PRO — Início">
+                <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" class="lp-brand-img" />
             </a>
 
+            <!-- Links Desktop -->
             <ul class="lp-nav-links">
                 <li><a href="#recursos">Recursos</a></li>
                 <li><a href="#diferenciais">Diferenciais</a></li>
                 <li><a href="#precos">Planos</a></li>
+                <li><a href="#depoimentos">Depoimentos</a></li>
                 <li><a href="#faq">FAQ</a></li>
             </ul>
 
+            <!-- Ações Desktop / Mobile -->
             <div class="lp-nav-actions">
-                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()" title="Acessar o link exclusivo da sua empresa">
+                <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()"
+                    title="Acessar o link exclusivo da sua empresa">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span>Já sou cliente</span>
                 </button>
@@ -48,9 +60,40 @@
                     <span>Experimente Grátis</span>
                     <i class="bi bi-arrow-right"></i>
                 </a>
+                <!-- Botão Menu Hambúrguer (Mobile) -->
+                <button type="button" class="lp-mobile-menu-btn" onclick="toggleMobileMenu()" id="btnMobileMenu"
+                    aria-label="Abrir Menu de Navegação">
+                    <i class="bi bi-list" id="iconMobileMenu"></i>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- MENU MOBILE DRAWER (ACESSÍVEL NO CELULAR) -->
+    <div class="lp-mobile-drawer" id="mobileDrawer">
+        <ul class="lp-mobile-drawer-links">
+            <li><a href="#recursos" onclick="closeMobileMenu()"><i class="bi bi-grid-fill"></i> Recursos</a></li>
+            <li><a href="#diferenciais" onclick="closeMobileMenu()"><i class="bi bi-check2-circle"></i> Diferenciais</a>
+            </li>
+            <li><a href="#precos" onclick="closeMobileMenu()"><i class="bi bi-tag-fill"></i> Planos & Preços</a></li>
+            <li><a href="#depoimentos" onclick="closeMobileMenu()"><i class="bi bi-chat-quote-fill"></i> Depoimentos</a>
+            </li>
+            <li><a href="#faq" onclick="closeMobileMenu()"><i class="bi bi-question-circle-fill"></i> Perguntas
+                    Frequentes</a></li>
+        </ul>
+        <div class="lp-mobile-drawer-actions">
+            <button type="button" class="lp-link-find-studio" onclick="closeMobileMenu(); openFindStudioModal();"
+                style="justify-content: center; width: 100%; padding: 0.75rem;">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span style="display: inline !important;">Já sou cliente (Acessar Empresa)</span>
+            </button>
+            <a th:href="@{/register}" class="lp-btn-primary"
+                style="justify-content: center; width: 100%; padding: 0.85rem;">
+                <i class="bi bi-rocket-takeoff-fill"></i>
+                <span>Começar 7 Dias Grátis</span>
+            </a>
+        </div>
+    </div>
 
     <!-- 2. HERO SECTION COM CONVERSÃO E APRESENTAÇÃO -->
     <section class="lp-hero-section">
@@ -64,15 +107,17 @@
         </h1>
 
         <p class="lp-hero-subtitle">
-            Agendamento online 24/7 na bio do Instagram, disparos automáticos de lembretes no WhatsApp, frente de caixa com split de comissões, ficha técnica com baixa de insumos e prontuário de anamnese digital com assinatura touch.
+            Agendamento online 24/7 na bio do Instagram, disparos automáticos de lembretes no WhatsApp, frente de caixa
+            com split de comissões, ficha técnica com baixa de insumos e prontuário de anamnese digital com assinatura
+            touch.
         </p>
 
         <div class="lp-hero-cta-group">
-            <a th:href="@{/register}" class="lp-btn-primary" style="font-size: 1.05rem; padding: 0.85rem 2rem;">
+            <a th:href="@{/register}" class="lp-btn-primary lp-hero-btn-primary">
                 <i class="bi bi-rocket-takeoff-fill"></i>
                 <span>Começar 7 Dias Grátis sem Cartão</span>
             </a>
-            <a href="#recursos" class="lp-btn-secondary" style="font-size: 1.05rem; padding: 0.85rem 1.75rem;">
+            <a href="#recursos" class="lp-btn-secondary lp-hero-btn-secondary">
                 <i class="bi bi-play-circle-fill"></i>
                 <span>Ver Recursos do Sistema</span>
             </a>
@@ -84,7 +129,7 @@
             <span><i class="bi bi-check-circle-fill"></i> Setup automático em 2 minutos</span>
         </div>
 
-        <!-- MOCKUP VISUAL INTERATIVO DO PRODUTO (LIMPO & SEM ELEMENTOS POLUÍDOS SOBREPOSTOS) -->
+        <!-- MOCKUP VISUAL INTERATIVO DO PRODUTO (100% RESPONSIVO & LIMPO) -->
         <div class="lp-mockup-wrapper">
             <div class="lp-mockup-frame">
                 <div class="lp-mockup-topbar">
@@ -97,57 +142,71 @@
                 </div>
 
                 <div class="lp-mockup-content">
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 0.75rem; color: #94a3b8;">Faturamento do Mês</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">R$ 38.450,00</div>
-                            <div style="font-size: 0.72rem; color: #10b981; margin-top: 4px;"><i class="bi bi-arrow-up-right"></i> +24% vs mês anterior</div>
+                    <!-- Grid Superior de KPIs -->
+                    <div class="lp-mockup-stats-grid">
+                        <div class="lp-mockup-kpi-card">
+                            <div class="lp-mockup-kpi-label">Faturamento do Mês</div>
+                            <div class="lp-mockup-kpi-value">R$ 38.450,00</div>
+                            <div class="lp-mockup-kpi-badge" style="color: #10b981;">
+                                <i class="bi bi-arrow-up-right"></i> +24% vs anterior
+                            </div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 0.75rem; color: #94a3b8;">Atendimentos Hoje</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">22 agendados</div>
-                            <div style="font-size: 0.72rem; color: var(--lp-gold); margin-top: 4px;"><i class="bi bi-calendar-check"></i> 0 faltas registradas</div>
+
+                        <div class="lp-mockup-kpi-card">
+                            <div class="lp-mockup-kpi-label">Atendimentos Hoje</div>
+                            <div class="lp-mockup-kpi-value">22 agendados</div>
+                            <div class="lp-mockup-kpi-badge" style="color: #00d2ee;">
+                                <i class="bi bi-calendar-check"></i> 0 faltas registradas
+                            </div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 0.75rem; color: #94a3b8;">Capital em Estoque</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">R$ 14.120,00</div>
-                            <div style="font-size: 0.72rem; color: #38bdf8; margin-top: 4px;"><i class="bi bi-box-seam"></i> Baixa por ficha técnica</div>
+
+                        <div class="lp-mockup-kpi-card">
+                            <div class="lp-mockup-kpi-label">Capital em Estoque</div>
+                            <div class="lp-mockup-kpi-value">R$ 14.120,00</div>
+                            <div class="lp-mockup-kpi-badge" style="color: #38bdf8;">
+                                <i class="bi bi-box-seam"></i> Baixa por ficha técnica
+                            </div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 1rem; border-radius: 12px;">
-                            <div style="font-size: 0.75rem; color: #94a3b8;">Clientes Ativos / CRM</div>
-                            <div style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin-top: 4px;">1.480 cadastros</div>
-                            <div style="font-size: 0.72rem; color: #a855f7; margin-top: 4px;"><i class="bi bi-heart-fill"></i> Alertas anti-churn ativos</div>
+
+                        <div class="lp-mockup-kpi-card">
+                            <div class="lp-mockup-kpi-label">Clientes Ativos / CRM</div>
+                            <div class="lp-mockup-kpi-value">1.480 cadastros</div>
+                            <div class="lp-mockup-kpi-badge" style="color: #a855f7;">
+                                <i class="bi bi-heart-fill"></i> Alertas anti-churn
+                            </div>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; height: 160px; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 0.85rem; font-weight: 700; color: #ffffff;">Grade de Horários & Profissionais em Tempo Real</span>
-                                <span style="font-size: 0.75rem; color: #10b981; background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 6px;">Ao vivo</span>
+                    <!-- Grid Inferior (Agenda ao vivo & Link Bio) -->
+                    <div class="lp-mockup-bottom-grid">
+                        <div class="lp-mockup-schedule-box">
+                            <div class="lp-mockup-schedule-header">
+                                <span class="lp-mockup-schedule-title">Grade de Horários & Profissionais em Tempo
+                                    Real</span>
+                                <span class="lp-mockup-live-tag">● Ao vivo</span>
                             </div>
-                            <div style="display: flex; gap: 0.75rem; overflow: hidden;">
-                                <div style="flex: 1; background: rgba(197, 160, 89, 0.12); border-left: 3px solid var(--lp-gold); padding: 8px; border-radius: 6px;">
-                                    <div style="font-size: 0.75rem; color: var(--lp-gold); font-weight: 700;">14:00 - Camila R.</div>
-                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Mechas Criativas + Nutrição</div>
+                            <div class="lp-mockup-schedule-items">
+                                <div class="lp-mockup-schedule-item lp-mockup-item-cyan">
+                                    <div class="item-time">14:00 - Camila R.</div>
+                                    <div class="item-service">Mechas Criativas + Nutrição</div>
                                 </div>
-                                <div style="flex: 1; background: rgba(56, 189, 248, 0.1); border-left: 3px solid #38bdf8; padding: 8px; border-radius: 6px;">
-                                    <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 700;">14:30 - Lucas M.</div>
-                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Corte Degrade & Barba Terapia</div>
+                                <div class="lp-mockup-schedule-item lp-mockup-item-blue">
+                                    <div class="item-time">14:30 - Lucas M.</div>
+                                    <div class="item-service">Corte Degrade & Barba Terapia</div>
                                 </div>
-                                <div style="flex: 1; background: rgba(168, 85, 247, 0.1); border-left: 3px solid #a855f7; padding: 8px; border-radius: 6px;">
-                                    <div style="font-size: 0.75rem; color: #a855f7; font-weight: 700;">15:00 - Juliana T.</div>
-                                    <div style="font-size: 0.7rem; color: #cbd5e1;">Alongamento de Cílios Volume Russo</div>
+                                <div class="lp-mockup-schedule-item lp-mockup-item-purple">
+                                    <div class="item-time">15:00 - Juliana T.</div>
+                                    <div class="item-service">Cílios Volume Russo</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; border-radius: 12px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Link Público para Clientes:</div>
-                            <div style="font-size: 0.75rem; color: #00E5FF; background: rgba(0,229,255,0.1); padding: 8px; border-radius: 6px; font-family: monospace; word-break: break-all;">
+                        <div class="lp-mockup-bio-box">
+                            <div class="lp-mockup-bio-label">Link Público para Clientes:</div>
+                            <div class="lp-mockup-bio-url">
                                 nexipro.com.br/sua-empresa/agendar
                             </div>
-                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 6px;">Pronto para colocar na Bio do Instagram</div>
+                            <div class="lp-mockup-bio-sub">Pronto para colocar na Bio do Instagram</div>
                         </div>
                     </div>
                 </div>
@@ -192,10 +251,10 @@
     <div class="lp-segments-strip">
         <div class="lp-segments-title">Projetado sob medida para todos os segmentos de beleza e estética</div>
         <div class="lp-segments-list">
-            <div class="lp-segment-item"><i class="bi bi-scissors"></i> Centros de Beleza & Cabeleireiros</div>
+            <div class="lp-segment-item"><i class="bi bi-scissors"></i> Centros de Beleza & Salões</div>
             <div class="lp-segment-item"><i class="bi bi-brush"></i> Barbearias & Visagismo</div>
             <div class="lp-segment-item"><i class="bi bi-flower1"></i> Clínicas de Estética & Spa</div>
-            <div class="lp-segment-item"><i class="bi bi-eye"></i> Lash Designers & Micropigmentação</div>
+            <div class="lp-segment-item"><i class="bi bi-eye"></i> Lash Designers & Sobrancelhas</div>
             <div class="lp-segment-item"><i class="bi bi-hand-index-thumb"></i> Esmalterias & Podologia</div>
         </div>
     </div>
@@ -218,7 +277,8 @@
                 </div>
                 <h3 class="lp-feature-title">Agendamento Online 24/7 na Bio</h3>
                 <p class="lp-feature-text">
-                    Seus clientes escolhem o serviço, o profissional favorito e o horário vago sem que você precise parar o atendimento para responder no WhatsApp.
+                    Seus clientes escolhem o serviço, o profissional favorito e o horário vago sem que você precise
+                    parar o atendimento para responder no WhatsApp.
                 </p>
             </div>
 
@@ -229,7 +289,8 @@
                 </div>
                 <h3 class="lp-feature-title">Automação de WhatsApp Anti-No-Show</h3>
                 <p class="lp-feature-text">
-                    Disparos automáticos de confirmação e lembretes com 24 horas e 2 horas de antecedência. Reduza o não-comparecimento em até 70% já na primeira semana.
+                    Disparos automáticos de confirmação e lembretes com 24 horas e 2 horas de antecedência. Reduza o
+                    não-comparecimento em até 70% já na primeira semana.
                 </p>
             </div>
 
@@ -240,7 +301,8 @@
                 </div>
                 <h3 class="lp-feature-title">Frente de Caixa & Comandas Rápidas</h3>
                 <p class="lp-feature-text">
-                    Abertura e fechamento de caixa com conferência física de notas e moedas. Suporte a split de pagamentos (parte Pix, parte Cartão) e comprovante digital.
+                    Abertura e fechamento de caixa com conferência física de notas e moedas. Suporte a split de
+                    pagamentos (parte Pix, parte Cartão) e comprovante digital.
                 </p>
             </div>
 
@@ -251,7 +313,8 @@
                 </div>
                 <h3 class="lp-feature-title">Ficha Técnica & Baixa de Insumos</h3>
                 <p class="lp-feature-text">
-                    Acabe com o desperdício oculto no lavatório. O sistema desconta automaticamente as gramas de pó, oxidante ou cosméticos utilizados a cada atendimento.
+                    Acabe com o desperdício oculto no lavatório. O sistema desconta automaticamente as gramas de pó,
+                    oxidante ou cosméticos utilizados a cada atendimento.
                 </p>
             </div>
 
@@ -262,7 +325,8 @@
                 </div>
                 <h3 class="lp-feature-title">Anamnese Digital com Assinatura Touch</h3>
                 <p class="lp-feature-text">
-                    Formulários clínicos dinâmicos por segmento, registro de fotos antes/depois, assinatura digital touch coletada na tela do celular e geração de prontuário em PDF (LGPD).
+                    Formulários clínicos dinâmicos por segmento, registro de fotos antes/depois, assinatura digital
+                    touch coletada na tela do celular e geração de prontuário em PDF (LGPD).
                 </p>
             </div>
 
@@ -273,14 +337,16 @@
                 </div>
                 <h3 class="lp-feature-title">DRE Contábil & Inteligência Anti-Churn</h3>
                 <p class="lp-feature-text">
-                    Descubra seu lucro líquido real e margem de contribuição por procedimento. O algoritmo identifica clientes que sumiram e te ajuda a resgatá-los.
+                    Descubra seu lucro líquido real e margem de contribuição por procedimento. O algoritmo identifica
+                    clientes que sumiram e te ajuda a resgatá-los.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- 5. ANTES VS DEPOIS (DIFERENCIAIS) -->
-    <section class="lp-section" id="diferenciais" style="background: rgba(11, 15, 25, 0.4); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+    <section class="lp-section" id="diferenciais"
+        style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
         <div class="lp-section-header">
             <span class="lp-section-tag">A DIFERENÇA NA PRÁTICA</span>
             <h2 class="lp-section-title">O que muda na rotina da sua empresa?</h2>
@@ -293,22 +359,32 @@
             <div class="lp-comp-card lp-comp-before">
                 <span class="lp-comp-badge">SEM O NEXI PRO (ROTINA CAÓTICA)</span>
                 <ul class="lp-comp-list">
-                    <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas difíceis de atualizar no celular.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a cadeira vazia e gerando prejuízo.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Cálculo de comissão feito manualmente no fim do mês gerando desconfiança e brigas na equipe.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Nenhuma noção do custo de produtos gastos no lavatório por procedimento.</li>
-                    <li><i class="bi bi-x-circle-fill"></i> Fichas de anamnese em papel que se perdem ou ficam sem respaldo jurídico em casos de alergia.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Horários marcados em cadernos que rasuram ou planilhas
+                        difíceis de atualizar no celular.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Clientes que faltam de última hora sem avisar, deixando a
+                        cadeira vazia e gerando prejuízo.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Cálculo de comissão feito manualmente no fim do mês gerando
+                        desconfiança e brigas na equipe.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Nenhuma noção do custo de produtos gastos no lavatório por
+                        procedimento.</li>
+                    <li><i class="bi bi-x-circle-fill"></i> Fichas de anamnese em papel que se perdem ou ficam sem
+                        respaldo jurídico em casos de alergia.</li>
                 </ul>
             </div>
 
             <div class="lp-comp-card lp-comp-after">
                 <span class="lp-comp-badge">COM O NEXI PRO (ROTINA AUTOMATIZADA)</span>
                 <ul class="lp-comp-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio do Instagram e WhatsApp.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70% as faltas e no-shows.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Comissões calculadas em 1 clique em tempo real para cada profissional e assistente.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Ficha técnica deduz o estoque automaticamente e indica o capital parado nas prateleiras.</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de anamnese 100% digital com assinatura na tela touch e PDF gerado na hora.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Clientes agendam sozinhas 24h por dia pelo link da Bio
+                        do Instagram e WhatsApp.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Lembretes automáticos no WhatsApp que reduzem em até 70%
+                        as faltas e no-shows.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Comissões calculadas em 1 clique em tempo real para cada
+                        profissional e assistente.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Ficha técnica deduz o estoque automaticamente e indica o
+                        capital parado nas prateleiras.</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de anamnese 100% digital com assinatura na
+                        tela touch e PDF gerado na hora.</li>
                 </ul>
             </div>
         </div>
@@ -327,7 +403,7 @@
         <!-- SWITCH MENSAL / ANUAL -->
         <div class="lp-pricing-toggle">
             <span>Cobrança Mensal</span>
-            <label class="lp-switch">
+            <label class="lp-switch" aria-label="Alternar ciclo de cobrança">
                 <input type="checkbox" id="billingToggle" onchange="toggleBillingCycle()">
                 <span class="lp-slider"></span>
             </label>
@@ -337,25 +413,27 @@
         <div class="lp-pricing-grid">
             <!-- PLANO SOLO -->
             <div class="lp-price-card">
-                <div class="lp-plan-name">Plano Solo</div>
-                <div class="lp-plan-desc">Perfeito para profissionais autônomos e pequenas empresas.</div>
-                
-                <div class="lp-plan-price">
-                    <span class="lp-currency">R$</span>
-                    <span class="lp-amount" id="priceSolo">59</span>
-                    <span class="lp-period">/mês</span>
+                <div>
+                    <div class="lp-plan-name">Plano Solo</div>
+                    <div class="lp-plan-desc">Perfeito para profissionais autônomos e estúdios individuais.</div>
+
+                    <div class="lp-plan-price">
+                        <span class="lp-currency">R$</span>
+                        <span class="lp-amount" id="priceSolo">59</span>
+                        <span class="lp-period">/mês</span>
+                    </div>
+
+                    <ul class="lp-plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> 1 Profissional</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Agendamentos ilimitados</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Link público para Bio do Instagram</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Prontuário de Anamnese Touch & PDF</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Controle de Clientes & CRM</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Frente de Caixa Básico</li>
+                    </ul>
                 </div>
 
-                <ul class="lp-plan-features">
-                    <li><i class="bi bi-check-circle-fill"></i> 1 Profissional</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Agendamentos ilimitados</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Link público para Bio do Instagram</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Prontuário de Anamnese Touch & PDF</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Controle de Clientes & CRM</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Frente de Caixa Básico</li>
-                </ul>
-
-                <a th:href="@{/register}" class="lp-btn-secondary" style="width: 100%; justify-content: center;">
+                <a th:href="@{/register}" class="lp-btn-secondary">
                     <span>Iniciar 7 Dias Grátis</span>
                 </a>
             </div>
@@ -363,26 +441,29 @@
             <!-- PLANO STUDIO (MAIS POPULAR) -->
             <div class="lp-price-card lp-price-featured">
                 <div class="lp-popular-badge">Mais Escolhido pelas Empresas</div>
-                <div class="lp-plan-name">Plano Studio</div>
-                <div class="lp-plan-desc">Ideal para empresas e clínicas em expansão com equipe.</div>
-                
-                <div class="lp-plan-price">
-                    <span class="lp-currency">R$</span>
-                    <span class="lp-amount" id="priceStudio">129</span>
-                    <span class="lp-period">/mês</span>
+                <div>
+                    <div class="lp-plan-name">Plano Studio</div>
+                    <div class="lp-plan-desc">Ideal para empresas, salões e clínicas em expansão com equipe.</div>
+
+                    <div class="lp-plan-price">
+                        <span class="lp-currency">R$</span>
+                        <span class="lp-amount" id="priceStudio">129</span>
+                        <span class="lp-period">/mês</span>
+                    </div>
+
+                    <ul class="lp-plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Até 5 Profissionais</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Automação de WhatsApp (Lembretes)</strong>
+                        </li>
+                        <li><i class="bi bi-check-circle-fill"></i> Cálculo automático de Comissões</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Ficha Técnica & Baixa de Estoque</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Form Builder de Anamnese Customizado</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Split de Pagamentos & Sangrias</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Suporte prioritário via WhatsApp</li>
+                    </ul>
                 </div>
 
-                <ul class="lp-plan-features">
-                    <li><i class="bi bi-check-circle-fill"></i> <strong>Até 5 Profissionais</strong></li>
-                    <li><i class="bi bi-check-circle-fill"></i> <strong>Automação de WhatsApp (Lembretes)</strong></li>
-                    <li><i class="bi bi-check-circle-fill"></i> Cálculo automático de Comissões</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Ficha Técnica & Baixa de Estoque</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Form Builder de Anamnese Customizado</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Split de Pagamentos & Sangrias</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Suporte prioritário via WhatsApp</li>
-                </ul>
-
-                <a th:href="@{/register}" class="lp-btn-primary" style="width: 100%; justify-content: center;">
+                <a th:href="@{/register}" class="lp-btn-primary">
                     <i class="bi bi-lightning-charge-fill"></i>
                     <span>Iniciar 7 Dias Grátis</span>
                 </a>
@@ -390,25 +471,27 @@
 
             <!-- PLANO PREMIUM VIP -->
             <div class="lp-price-card">
-                <div class="lp-plan-name">Plano Premium VIP</div>
-                <div class="lp-plan-desc">Para grandes empresas, redes e clínicas de alto padrão.</div>
-                
-                <div class="lp-plan-price">
-                    <span class="lp-currency">R$</span>
-                    <span class="lp-amount" id="priceVip">229</span>
-                    <span class="lp-period">/mês</span>
+                <div>
+                    <div class="lp-plan-name">Plano Premium VIP</div>
+                    <div class="lp-plan-desc">Para grandes empresas, redes e clínicas de alto padrão.</div>
+
+                    <div class="lp-plan-price">
+                        <span class="lp-currency">R$</span>
+                        <span class="lp-amount" id="priceVip">229</span>
+                        <span class="lp-period">/mês</span>
+                    </div>
+
+                    <ul class="lp-plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Profissionais Ilimitados</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> DRE Contábil & Relatórios Financeiros</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Inteligência Anti-Churn de Clientes</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Módulo de Fidelidade, Cupons & Vouchers</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Múltiplas instâncias de WhatsApp</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Onboarding VIP assistido</li>
+                    </ul>
                 </div>
 
-                <ul class="lp-plan-features">
-                    <li><i class="bi bi-check-circle-fill"></i> <strong>Profissionais Ilimitados</strong></li>
-                    <li><i class="bi bi-check-circle-fill"></i> DRE Contábil & Relatórios Financeiros</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Inteligência Anti-Churn de Clientes</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Módulo de Fidelidade, Cupons & Vouchers</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Múltiplas instâncias de WhatsApp</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Onboarding VIP assistido</li>
-                </ul>
-
-                <a th:href="@{/register}" class="lp-btn-secondary" style="width: 100%; justify-content: center;">
+                <a th:href="@{/register}" class="lp-btn-secondary">
                     <span>Iniciar 7 Dias Grátis</span>
                 </a>
             </div>
@@ -416,7 +499,8 @@
     </section>
 
     <!-- 7. DEPOIMENTOS DE CLIENTES -->
-    <section class="lp-section" id="depoimentos" style="background: rgba(11, 15, 25, 0.4); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
+    <section class="lp-section" id="depoimentos"
+        style="background: rgba(11, 15, 25, 0.5); border-top: 1px solid var(--lp-border-subtle); border-bottom: 1px solid var(--lp-border-subtle);">
         <div class="lp-section-header">
             <span class="lp-section-tag">QUEM USA RECOMENDA</span>
             <h2 class="lp-section-title">O que dizem os donos de estabelecimentos que usam o NEXI PRO</h2>
@@ -424,12 +508,16 @@
 
         <div class="lp-testimonials-grid">
             <div class="lp-testimonial-card">
-                <div class="lp-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                <div>
+                    <div class="lp-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="lp-test-text">
+                        "O agendamento na bio do Instagram mudou a vida da minha equipe. Nossas clientes adoram escolher
+                        os horários sozinhas e o lembrete no WhatsApp reduziu as faltas pela metade!"
+                    </p>
                 </div>
-                <p class="lp-test-text">
-                    "O agendamento na bio do Instagram mudou a vida da minha equipe. Nossas clientes adoram escolher os horários sozinhas e o lembrete no WhatsApp reduziu as faltas pela metade!"
-                </p>
                 <div class="lp-test-author">
                     <div class="lp-author-avatar">MS</div>
                     <div>
@@ -440,12 +528,16 @@
             </div>
 
             <div class="lp-testimonial-card">
-                <div class="lp-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                <div>
+                    <div class="lp-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="lp-test-text">
+                        "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o NEXI PRO, o
+                        fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
+                    </p>
                 </div>
-                <p class="lp-test-text">
-                    "O cálculo de comissão dos barbeiros antes levava 3 horas no sábado à noite. Com o NEXI PRO, o fechamento é em 2 cliques. O controle de estoque de pomadas e lâminas é perfeito."
-                </p>
                 <div class="lp-test-author">
                     <div class="lp-author-avatar">RF</div>
                     <div>
@@ -456,12 +548,16 @@
             </div>
 
             <div class="lp-testimonial-card">
-                <div class="lp-stars">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                <div>
+                    <div class="lp-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="lp-test-text">
+                        "A ficha de anamnese com assinatura na tela touch e fotos de antes/depois me dá total segurança
+                        jurídica e transmite um profissionalismo surreal para as minhas pacientes de estética."
+                    </p>
                 </div>
-                <p class="lp-test-text">
-                    "A ficha de anamnese com assinatura na tela touch e fotos de antes/depois me dá total segurança jurídica e transmite um profissionalismo surreal para as minhas pacientes de estética."
-                </p>
                 <div class="lp-test-author">
                     <div class="lp-author-avatar">CP</div>
                     <div>
@@ -487,7 +583,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias, você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e clientes reais.
+                    Você pode criar a sua conta agora mesmo sem precisar cadastrar cartão de crédito. Durante os 7 dias,
+                    você terá acesso completo a todas as funcionalidades do sistema para testar com sua equipe e
+                    clientes reais.
                 </div>
             </div>
 
@@ -497,7 +595,8 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória.
+                    Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular,
+                    tablet, notebook ou computador do balcão sem ocupar espaço de memória.
                 </div>
             </div>
 
@@ -507,7 +606,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Assim que você cadastra seu espaço, é gerado um link exclusivo como <code>app.nexipro.com.br/seu-espaco/agendar</code>. Basta colocar esse link na bio do Instagram ou fixar no WhatsApp para suas clientes agendarem sozinhas.
+                    Assim que você cadastra seu espaço, é gerado um link exclusivo como
+                    <code>nexipro.com.br/sua-empresa/agendar</code>. Basta colocar esse link na bio do Instagram ou
+                    fixar no WhatsApp para suas clientes agendarem sozinhas.
                 </div>
             </div>
 
@@ -517,7 +618,9 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estabelecimento possui seus dados blindados com criptografia de ponta a ponta e alinhamento total à Lei Geral de Proteção de Dados (LGPD).
+                    Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada
+                    estabelecimento possui seus dados blindados com criptografia de ponta a ponta e alinhamento total à
+                    Lei Geral de Proteção de Dados (LGPD).
                 </div>
             </div>
 
@@ -527,19 +630,21 @@
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="lp-faq-answer">
-                    Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a qualquer momento diretamente pelo seu painel administrativo.
+                    Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a
+                    qualquer momento diretamente pelo seu painel administrativo.
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 9. BANNER DE CONVERSÃO FINAL -->
+    <!-- 9. BANNER DE CONVERSÃO FINAL (ZERO OVERFLOW) -->
     <section class="lp-section" style="padding-top: 1rem;">
         <div class="lp-cta-banner">
             <h2>Pronto para levar a gestão da sua empresa a outro nível?</h2>
-            <p>Junte-se a centenas de proprietários e gestores de empresas que economizam tempo e aumentam sua lucratividade todos os dias.</p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a th:href="@{/register}" class="lp-btn-primary" style="font-size: 1.1rem; padding: 0.95rem 2.5rem;">
+            <p>Junte-se a centenas de proprietários e gestores de empresas que economizam tempo e aumentam sua
+                lucratividade todos os dias.</p>
+            <div style="display: flex; justify-content: center;">
+                <a th:href="@{/register}" class="lp-btn-primary lp-btn-cta-banner">
                     <i class="bi bi-rocket-takeoff-fill"></i>
                     <span>Cadastrar Minha Empresa Gratuitamente</span>
                 </a>
@@ -555,10 +660,11 @@
         <div class="lp-footer-container">
             <div class="lp-footer-col">
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                    <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 34px; width: auto;" />
+                    <img th:src="@{/images/nexipro-logo.svg}" alt="NEXI PRO" style="height: 32px; width: auto;" />
                 </div>
                 <p style="color: #64748b; font-size: 0.9rem; line-height: 1.7; max-width: 320px;">
-                    Plataforma inteligente de gestão, agendamento online, comanda, comissões automáticas e fidelização para estabelecimentos de beleza e bem-estar.
+                    Plataforma inteligente de gestão, agendamento online, comanda, comissões automáticas e fidelização
+                    para estabelecimentos de beleza e bem-estar.
                 </p>
             </div>
 
@@ -576,7 +682,7 @@
             <div class="lp-footer-col">
                 <h4>Segmentos</h4>
                 <ul>
-                    <li><a href="#">Centros de Beleza & Cabelo</a></li>
+                    <li><a href="#">Centros de Beleza & Salões</a></li>
                     <li><a href="#">Barbearias</a></li>
                     <li><a href="#">Clínicas de Estética</a></li>
                     <li><a href="#">Lash & Brow Designers</a></li>
@@ -600,43 +706,52 @@
             <div>
                 © 2026 NEXI PRO — Gestão Inteligente. Todos os direitos reservados.
             </div>
-            <div style="display: flex; gap: 1.5rem;">
-                <span><i class="bi bi-shield-check text-success"></i> Conexão Segura SSL</span>
-                <span><i class="bi bi-lock-fill text-warning"></i> 100% Compatível com LGPD</span>
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                <span><i class="bi bi-shield-check" style="color: #10b981;"></i> Conexão Segura SSL</span>
+                <span><i class="bi bi-lock-fill" style="color: #00d2ee;"></i> 100% Compatível com LGPD</span>
             </div>
         </div>
     </footer>
 
-    <!-- MODAL PARA LOCALIZAR STUDIO / LINK EXCLUSIVO (ZERO POLUIÇÃO DE LOGIN) -->
+    <!-- MODAL PARA LOCALIZAR STUDIO / LINK EXCLUSIVO -->
     <div class="lp-modal-backdrop" id="modalFindStudio" onclick="if(event.target === this) closeFindStudioModal();">
         <div class="lp-modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 229, 255, 0.15); color: #00E5FF; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                    <div
+                        style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 210, 238, 0.15); color: #00d2ee; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                         <i class="bi bi-building"></i>
                     </div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar minha Empresa</h3>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">Acessar minha Empresa
+                    </h3>
                 </div>
-                <button type="button" onclick="closeFindStudioModal()" style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer;">
+                <button type="button" onclick="closeFindStudioModal()"
+                    style="background: none; border: none; color: #64748b; font-size: 1.25rem; cursor: pointer; padding: 4px;"
+                    aria-label="Fechar modal">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
 
             <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.25rem;">
-                Cada empresa possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo responsável para localizar sua empresa:
+                Cada empresa possui seu <strong>link exclusivo de acesso</strong>. Digite o e-mail cadastrado pelo
+                responsável para localizar sua empresa:
             </p>
 
             <form onsubmit="handleFindStudio(event)">
                 <div style="margin-bottom: 1rem;">
-                    <label style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">E-mail do Responsável ou Empresa:</label>
+                    <label
+                        style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">E-mail
+                        do Responsável ou Empresa:</label>
                     <div style="position: relative;">
-                        <i class="bi bi-envelope" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                        <i class="bi bi-envelope"
+                            style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
                         <input type="email" id="inputFindEmail" placeholder="seuemail@exemplo.com" required
-                               style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.7rem 0.85rem 0.7rem 2.4rem; color: #ffffff; font-size: 0.95rem; outline: none;" />
+                            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.7rem 0.85rem 0.7rem 2.4rem; color: #ffffff; font-size: 0.95rem; outline: none;" />
                     </div>
                 </div>
 
-                <button type="submit" id="btnFindStudioSubmit" class="lp-btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
+                <button type="submit" id="btnFindStudioSubmit" class="lp-btn-primary"
+                    style="width: 100%; justify-content: center; padding: 0.75rem;">
                     <span>Localizar minha Empresa</span>
                     <i class="bi bi-search"></i>
                 </button>
@@ -644,9 +759,11 @@
 
             <div id="findStudioResult" style="margin-top: 1.25rem; display: none;"></div>
 
-            <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
+            <div
+                style="margin-top: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
                 <span style="font-size: 0.82rem; color: #64748b;">Ainda não tem conta no NEXI PRO?</span><br>
-                <a th:href="@{/register}" style="font-size: 0.85rem; color: #00E5FF; font-weight: 700; text-decoration: none;">
+                <a th:href="@{/register}"
+                    style="font-size: 0.85rem; color: #00d2ee; font-weight: 700; text-decoration: none;">
                     Cadastrar minha empresa grátis (7 dias de teste VIP) &rarr;
                 </a>
             </div>
@@ -655,6 +772,31 @@
 
     <!-- JAVASCRIPT DA LANDING PAGE -->
     <script>
+        // Menu Mobile Drawer
+        function toggleMobileMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const icon = document.getElementById('iconMobileMenu');
+            const isActive = drawer.classList.contains('active');
+
+            if (isActive) {
+                drawer.classList.remove('active');
+                icon.className = 'bi bi-list';
+                document.body.style.overflow = '';
+            } else {
+                drawer.classList.add('active');
+                icon.className = 'bi bi-x-lg';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const icon = document.getElementById('iconMobileMenu');
+            if (drawer) drawer.classList.remove('active');
+            if (icon) icon.className = 'bi bi-list';
+            document.body.style.overflow = '';
+        }
+
         // Modal de Localização do Studio
         function openFindStudioModal() {
             document.getElementById('modalFindStudio').style.display = 'flex';
@@ -665,6 +807,14 @@
             document.getElementById('modalFindStudio').style.display = 'none';
             document.getElementById('findStudioResult').style.display = 'none';
         }
+
+        // Fechar modais ao pressionar tecla ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeFindStudioModal();
+                closeMobileMenu();
+            }
+        });
 
         async function handleFindStudio(e) {
             e.preventDefault();
@@ -689,12 +839,12 @@
                     html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
                     list.forEach(t => {
                         html += `
-                            <a href="/${t.slug}/login" style="background: rgba(212, 175, 55, 0.08); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #ffffff; transition: all 0.2s ease;">
+                            <a href="/${t.slug}/login" style="background: rgba(0, 210, 238, 0.08); border: 1px solid var(--lp-border); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #ffffff; transition: all 0.2s ease;">
                                 <div>
-                                    <div style="font-weight: 700; font-size: 0.92rem; color: #f4e8c1;">${t.nome}</div>
+                                    <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">${t.nome}</div>
                                     <div style="font-size: 0.75rem; color: #94a3b8;">Link: /${t.slug}/login</div>
                                 </div>
-                                <span style="background: var(--lp-gold); color: #000; font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px;">
+                                <span style="background: var(--lp-primary); color: #070a12; font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 6px;">
                                     Entrar &rarr;
                                 </span>
                             </a>
@@ -742,14 +892,15 @@
         function toggleFaq(element) {
             const item = element.parentElement;
             const wasActive = item.classList.contains('active');
-            
+
             // Fecha todos os outros itens
             document.querySelectorAll('.lp-faq-item').forEach(i => i.classList.remove('active'));
-            
+
             if (!wasActive) {
                 item.classList.add('active');
             }
         }
     </script>
 </body>
+
 </html>
