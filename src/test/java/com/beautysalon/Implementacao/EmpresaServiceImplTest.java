@@ -33,6 +33,9 @@ class EmpresaServiceImplTest {
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Mock
+    private com.beautysalon.service.WhatsAppService whatsAppService;
+
     @InjectMocks
     private EmpresaServiceImpl empresaService;
 

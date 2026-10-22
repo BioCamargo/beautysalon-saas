@@ -84,6 +84,10 @@ public class WhatsAppWebhookController {
                 }
                 return ResponseEntity.ok(Map.of("status", "LIST_PROCESSED"));
             } else if (dataObj instanceof Map<?, ?> dataMap) {
+                if (isFromMe(dataMap)) {
+                    logger.debug("Webhook: Mensagem enviada pelo próprio remetente (fromMe=true), ignorando.");
+                    return ResponseEntity.ok(Map.of("status", "IGNORED_FROM_ME", "processado", false));
+                }
                 boolean processado = processarMensagemIndividual(dataMap, instanceName);
                 return ResponseEntity.ok(Map.of("status", "SUCCESS", "processado", processado));
             }
@@ -99,6 +103,14 @@ public class WhatsAppWebhookController {
         }
 
         return ResponseEntity.ok(Map.of("status", "RECEIVED"));
+    }
+
+    private boolean isFromMe(Map<?, ?> dataMap) {
+        Object keyObj = dataMap.get("key");
+        if (keyObj instanceof Map<?, ?> keyMap) {
+            return Boolean.TRUE.equals(keyMap.get("fromMe"));
+        }
+        return false;
     }
 
     private boolean processarMensagemIndividual(Map<?, ?> dataMap, String instanceName) {
