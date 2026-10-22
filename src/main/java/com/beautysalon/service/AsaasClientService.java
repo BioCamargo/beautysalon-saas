@@ -2,7 +2,9 @@ package com.beautysalon.service;
 
 import com.beautysalon.model.Empresa;
 import com.beautysalon.model.PlanoSaaS;
+import com.beautysalon.model.User;
 import com.beautysalon.repository.EmpresaRepository;
+import com.beautysalon.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +13,13 @@ import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +31,7 @@ import java.util.Optional;
 public class AsaasClientService {
 
     private final EmpresaRepository empresaRepository;
+    private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -39,8 +44,9 @@ public class AsaasClientService {
     @Value("${nexipro.saas.billing.enabled:true}")
     private boolean billingEnabled;
 
-    public AsaasClientService(EmpresaRepository empresaRepository) {
+    public AsaasClientService(EmpresaRepository empresaRepository, UserRepository userRepository) {
         this.empresaRepository = empresaRepository;
+        this.userRepository = userRepository;
         this.objectMapper = new ObjectMapper();
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -63,42 +69,64 @@ public class AsaasClientService {
             return empresa.getAsaasCustomerId();
         }
 
+        // Resolve e-mail da empresa ou do usuário proprietário
+        String email = empresa.getEmail();
+        if (email == null || email.isBlank()) {
+            List<User> usuarios = userRepository.findAllByEmpresaId(empresa.getId());
+            for (User u : usuarios) {
+                if (u.getEmail() != null && !u.getEmail().isBlank()) {
+                    email = u.getEmail().trim();
+                    empresa.setEmail(email);
+                    break;
+                }
+            }
+        }
+        if (email == null || email.isBlank()) {
+            email = "contato." + empresa.getSlug() + "@nexipro.com.br";
+        }
+
+        String nome = empresa.getNome() != null && !empresa.getNome().isBlank() 
+                ? empresa.getNome() 
+                : "Empresa " + empresa.getSlug();
+
         try {
             // 1. Tenta buscar por e-mail no Asaas se disponível
-            String email = empresa.getEmail();
-            if (email != null && !email.isBlank()) {
-                String searchUrl = apiUrl + "/customers?email=" + email.trim();
-                ResponseEntity<String> searchResp = restTemplate.exchange(
-                        searchUrl,
-                        HttpMethod.GET,
-                        new HttpEntity<>(criarHeadersAutenticados()),
-                        String.class
-                );
+            String searchUrl = apiUrl + "/customers?email=" + email.trim();
+            ResponseEntity<String> searchResp = restTemplate.exchange(
+                    searchUrl,
+                    HttpMethod.GET,
+                    new HttpEntity<>(criarHeadersAutenticados()),
+                    String.class
+            );
 
-                if (searchResp.getStatusCode().is2xxSuccessful() && searchResp.getBody() != null) {
-                    JsonNode root = objectMapper.readTree(searchResp.getBody());
-                    JsonNode data = root.path("data");
-                    if (data.isArray() && !data.isEmpty()) {
-                        String customerId = data.get(0).path("id").asText();
-                        empresa.setAsaasCustomerId(customerId);
-                        empresaRepository.save(empresa);
-                        log.info("Cliente Asaas existente localizado por e-mail: {}", customerId);
-                        return customerId;
-                    }
+            if (searchResp.getStatusCode().is2xxSuccessful() && searchResp.getBody() != null) {
+                JsonNode root = objectMapper.readTree(searchResp.getBody());
+                JsonNode data = root.path("data");
+                if (data.isArray() && !data.isEmpty()) {
+                    String customerId = data.get(0).path("id").asText();
+                    empresa.setAsaasCustomerId(customerId);
+                    empresaRepository.save(empresa);
+                    log.info("Cliente Asaas existente localizado por e-mail: {}", customerId);
+                    return customerId;
                 }
             }
 
             // 2. Cria novo cliente no Asaas
             Map<String, Object> body = new HashMap<>();
-            body.put("name", empresa.getNome() != null ? empresa.getNome() : "Empresa " + empresa.getSlug());
-            body.put("email", email != null && !email.isBlank() ? email.trim() : "financeiro@" + empresa.getSlug() + ".nexipro.com.br");
+            body.put("name", nome);
+            body.put("email", email.trim());
             
             if (empresa.getCnpj() != null && !empresa.getCnpj().isBlank()) {
-                // Remove pontuação de CPF/CNPJ
-                body.put("cpfCnpj", empresa.getCnpj().replaceAll("\\D", ""));
+                String documentoLimpo = empresa.getCnpj().replaceAll("\\D", "");
+                if (documentoLimpo.length() == 11 || documentoLimpo.length() == 14) {
+                    body.put("cpfCnpj", documentoLimpo);
+                }
             }
             if (empresa.getTelefone() != null && !empresa.getTelefone().isBlank()) {
-                body.put("phone", empresa.getTelefone().replaceAll("\\D", ""));
+                String foneLimpo = empresa.getTelefone().replaceAll("\\D", "");
+                if (foneLimpo.length() >= 10) {
+                    body.put("phone", foneLimpo);
+                }
             }
             body.put("externalReference", "empresa_" + empresa.getId());
             body.put("notificationDisabled", false);
@@ -115,6 +143,8 @@ public class AsaasClientService {
                 return novoCustomerId;
             }
 
+        } catch (HttpStatusCodeException hse) {
+            log.error("Erro HTTP ao criar cliente no Asaas: status={}, body={}", hse.getStatusCode(), hse.getResponseBodyAsString());
         } catch (Exception e) {
             log.error("Erro ao comunicar com API de clientes do Asaas: {}", e.getMessage(), e);
         }
@@ -194,10 +224,61 @@ public class AsaasClientService {
             empresaRepository.save(empresa);
             return Optional.ofNullable(empresa.getLinkFaturaAtual());
 
+        } catch (HttpStatusCodeException hse) {
+            log.error("Erro HTTP ao criar assinatura no Asaas: status={}, body={}", hse.getStatusCode(), hse.getResponseBodyAsString());
+            return Optional.empty();
         } catch (Exception e) {
             log.error("Erro ao processar assinatura no Asaas: {}", e.getMessage(), e);
             return Optional.empty();
         }
+    }
+
+    /**
+     * Gera uma cobrança pontual de R$ 1,00 para validação real ponta a ponta do fluxo de pagamento Pix.
+     */
+    @Transactional
+    public Optional<String> criarCobrancaTesteUmReal(Empresa empresa) {
+        if (!billingEnabled || apiKey == null || apiKey.isBlank()) {
+            log.warn("Integração Asaas desativada ou API Key não configurada.");
+            return Optional.empty();
+        }
+
+        String customerId = obterOuCriarCliente(empresa);
+        if (customerId == null || customerId.isBlank()) {
+            log.error("Não foi possível gerar cobrança de teste: customerId nulo");
+            return Optional.empty();
+        }
+
+        try {
+            Map<String, Object> body = new HashMap<>();
+            body.put("customer", customerId);
+            body.put("billingType", "UNDEFINED"); // Aceita Pix ou Cartão
+            body.put("value", new BigDecimal("1.00"));
+            body.put("dueDate", LocalDate.now().plusDays(1).toString());
+            body.put("description", "Teste de Validação NEXI PRO - R$ 1,00");
+            body.put("externalReference", "empresa_" + empresa.getId());
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, criarHeadersAutenticados());
+            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl + "/payments", request, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                String invoiceUrl = root.path("invoiceUrl").asText(null);
+                if (invoiceUrl != null && !invoiceUrl.isBlank()) {
+                    empresa.setLinkFaturaAtual(invoiceUrl);
+                    empresaRepository.save(empresa);
+                    log.info("Fatura de teste R$ 1,00 gerada com sucesso para empresa ID={}: {}", empresa.getId(), invoiceUrl);
+                    return Optional.of(invoiceUrl);
+                }
+            }
+        } catch (HttpStatusCodeException hse) {
+            log.error("Erro HTTP ao gerar cobrança de R$ 1,00 no Asaas: status={}, body={}", 
+                    hse.getStatusCode(), hse.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Erro ao gerar cobrança de teste no Asaas: {}", e.getMessage(), e);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -217,7 +298,6 @@ public class AsaasClientService {
                 JsonNode root = objectMapper.readTree(resp.getBody());
                 JsonNode data = root.path("data");
                 if (data.isArray() && !data.isEmpty()) {
-                    // Pega a primeira fatura pendente ou mais recente
                     for (JsonNode payment : data) {
                         String status = payment.path("status").asText();
                         if ("PENDING".equalsIgnoreCase(status) || "OVERDUE".equalsIgnoreCase(status)) {
@@ -231,7 +311,6 @@ public class AsaasClientService {
                             }
                         }
                     }
-                    // Se nenhuma pendente, pega o invoiceUrl do primeiro item
                     return data.get(0).path("invoiceUrl").asText(null);
                 }
             }

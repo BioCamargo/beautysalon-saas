@@ -97,6 +97,26 @@ public class AssinaturaController {
         return "redirect:/" + slug + "/assinatura";
     }
 
+    @PostMapping("/teste-um-real")
+    public String gerarTesteUmReal(@PathVariable String slug, RedirectAttributes redirectAttributes) {
+        Long empresaId = TenantContext.getEmpresaId();
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
+
+        try {
+            java.util.Optional<String> linkFatura = asaasClientService.criarCobrancaTesteUmReal(empresa);
+            if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
+                log.info("Redirecionando para fatura de teste R$ 1,00: {}", linkFatura.get());
+                return "redirect:" + linkFatura.get();
+            }
+        } catch (Exception e) {
+            log.error("Erro ao gerar fatura de teste R$ 1,00 no Asaas: {}", e.getMessage(), e);
+        }
+
+        redirectAttributes.addFlashAttribute("erro", "Não foi possível gerar a cobrança de teste de R$ 1,00. Verifique as configurações de pagamento.");
+        return "redirect:/" + slug + "/assinatura";
+    }
+
     @PostMapping("/atualizar-gateway")
     public String atualizarDadosGateway(@PathVariable String slug,
                                         @RequestParam(required = false) String asaasCustomerId,

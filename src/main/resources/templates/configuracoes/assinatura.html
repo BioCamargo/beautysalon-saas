@@ -220,6 +220,16 @@
                                     <span>Pagar Mensalidade (Pix / Cartão)</span>
                                 </button>
                             </form>
+
+                            <!-- BOTÃO DE TESTE REAL R$ 1,00 -->
+                            <div class="mt-2">
+                                <form th:action="@{/{slug}/assinatura/teste-um-real(slug=${empresaSlug})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold"
+                                            title="Gera uma fatura Pix de apenas R$ 1,00 para você testar no seu celular">
+                                        <i class="bi bi-lightning-charge-fill text-warning"></i> Testar Pix Real (R$ 1,00)
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -392,6 +402,16 @@
                                         <strong>Restaurar Trial</strong><br>
                                         <span class="text-muted" style="font-size: 0.72rem;">Volta para 7 dias grátis</span>
                                     </div>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- 5. Testar Pagamento Real Pix R$ 1,00 -->
+                        <div class="col-12 mt-3 pt-2 border-top">
+                            <form th:action="@{/{slug}/assinatura/teste-um-real(slug=${empresaSlug})}" method="post">
+                                <button type="submit" class="btn btn-warning w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                                    <i class="bi bi-qr-code fs-5"></i>
+                                    <span>Gerar Pix de Teste Real (R$ 1,00) via Asaas</span>
                                 </button>
                             </form>
                         </div>
