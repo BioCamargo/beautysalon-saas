@@ -19,21 +19,29 @@
 <div class="auth-card-modern">
     <!-- CABEÇALHO DO CARD -->
     <div class="auth-header">
-        <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}">
-            <img th:src="${empresaLogo}" alt="Logo Empresa" class="auth-logo-img" />
-            <div class="auth-title-brand" th:text="${empresaNome}">NEXI PRO</div>
-            <div class="auth-subtitle-brand">Portal Exclusivo da Empresa</div>
+        <!-- Logo Personalizada do Studio (se cadastrada) -->
+        <div th:if="${empresaLogo != null and !empresaLogo.isEmpty()}" style="margin-bottom: 0.75rem; text-align: center;">
+            <img th:src="${empresaLogo}" alt="Logo da Empresa" class="auth-logo-img" />
         </div>
-        <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.85rem; text-align: center;">
-            <img th:src="@{/images/nexipro-logo-dark.svg}" alt="NEXI PRO" style="height: 52px; width: auto; max-width: 100%; display: inline-block;" />
-            <div th:if="${empresaNome != null}" class="auth-title-brand" style="margin-top: 0.5rem;" th:text="${empresaNome}">Studio VIP</div>
+        <!-- Logo Oficial NEXI PRO -->
+        <div th:if="${empresaLogo == null or empresaLogo.isEmpty()}" style="margin-bottom: 0.75rem; text-align: center;">
+            <img th:src="@{/images/nexipro-logo-dark.svg}" alt="NEXI PRO - Gestão Inteligente" style="height: 48px; width: auto; max-width: 100%; display: inline-block;" />
         </div>
     </div>
 
     <!-- IDENTIFICAÇÃO DO TENANT QUANDO ACESSADO VIA /{slug}/login -->
-    <div th:if="${empresaSlug != null}" style="background: rgba(0, 210, 238, 0.07); border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 1.25rem; text-align: center;">
-        <small style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block;">Ambiente da Empresa</small>
-        <strong style="color: #0284c7; font-size: 1.05rem;" th:text="${empresaNome} ?: ${empresaSlug}">Studio VIP</strong>
+    <div th:if="${empresaSlug != null}" class="auth-tenant-badge">
+        <div class="auth-tenant-pill">
+            <i class="bi bi-shield-check"></i> Ambiente da Empresa
+        </div>
+        <div class="auth-tenant-title" th:text="${empresaNome} ?: ${empresaSlug}">Studio VIP</div>
+        <div class="auth-tenant-subtitle">Acesso exclusivo para equipe e gestão</div>
+    </div>
+
+    <!-- CABEÇALHO PARA LOGIN GENÉRICO (/login) -->
+    <div th:if="${empresaSlug == null}" style="text-align: center; margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem; letter-spacing: -0.3px;">Portal de Acesso</h2>
+        <p style="font-size: 0.82rem; color: #64748b; margin: 0;">Entre com suas credenciais para gerenciar sua empresa</p>
     </div>
 
     <!-- BANNER DE ACESSO RÁPIDO À EMPRESA RECENTE (Quando no login genérico) -->
@@ -66,22 +74,30 @@
         <!-- Campo Slug Oculto se já veio na URL -->
         <input th:if="${empresaSlug != null}" type="hidden" name="slug" th:value="${empresaSlug}" />
 
-        <div class="auth-input-group">
-            <i class="bi bi-person-fill"></i>
-            <input type="text" id="username" name="username" placeholder="E-mail ou nome de usuário" required autofocus />
+        <div>
+            <label class="auth-field-label" for="username">E-mail ou Usuário</label>
+            <div class="auth-input-group">
+                <i class="bi bi-person-fill auth-input-icon"></i>
+                <input type="text" id="username" name="username" placeholder="Digite seu e-mail ou usuário" required autofocus autocomplete="username" />
+            </div>
         </div>
 
-        <div class="auth-input-group">
-            <i class="bi bi-lock-fill"></i>
-            <input type="password" id="password" name="password" placeholder="Sua senha" required />
-            <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
-                <i class="bi bi-eye" id="toggleIcon"></i>
-            </button>
+        <div>
+            <label class="auth-field-label" for="password">Senha de Acesso</label>
+            <div class="auth-input-group">
+                <i class="bi bi-lock-fill auth-input-icon"></i>
+                <input type="password" id="password" name="password" placeholder="Digite sua senha" required autocomplete="current-password" />
+                <button type="button" id="btnTogglePassword" class="auth-password-toggle"
+                    onclick="togglePasswordVisibility(this)"
+                    title="Mostrar ou ocultar senha" aria-label="Mostrar senha">
+                    <i class="bi bi-eye" id="toggleIcon"></i>
+                </button>
+            </div>
         </div>
 
-        <button type="submit" class="btn-auth mt-2">
+        <button type="submit" class="btn-auth mt-2" id="btnLoginSubmit" style="height: 44px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.95rem; border-radius: 10px;">
             <span>Entrar no Sistema</span>
-            <i class="bi bi-arrow-right ms-2"></i>
+            <i class="bi bi-arrow-right"></i>
         </button>
     </form>
 
@@ -151,17 +167,32 @@
         } catch(e) {}
     }
 
-    function togglePasswordVisibility() {
+    function togglePasswordVisibility(btn) {
         const passwordInput = document.getElementById('password');
         const toggleIcon = document.getElementById('toggleIcon');
+        if (!passwordInput || !toggleIcon) return;
+
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
-            toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+            toggleIcon.className = 'bi bi-eye-slash';
+            if (btn) btn.setAttribute('aria-label', 'Ocultar senha');
         } else {
             passwordInput.type = 'password';
-            toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+            toggleIcon.className = 'bi bi-eye';
+            if (btn) btn.setAttribute('aria-label', 'Mostrar senha');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('btnTogglePassword');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePasswordVisibility(this);
+            });
+        }
+    });
 
     function toggleFindStudioDrawer() {
         const drawer = document.getElementById('findStudioDrawer');

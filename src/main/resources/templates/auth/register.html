@@ -102,14 +102,20 @@
 
                 <label class="auth-field-label" for="password">Senha de Acesso (mín. 6 dígitos) *</label>
                 <div class="auth-input-group">
-                    <i class="bi bi-lock-fill"></i>
+                    <i class="bi bi-lock-fill auth-input-icon"></i>
                     <input type="password" id="password" name="password" placeholder="Digite uma senha segura" required />
+                    <button type="button" class="auth-password-toggle" onclick="toggleRegPassword('password', this)" title="Mostrar ou ocultar senha" aria-label="Mostrar senha">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
 
                 <label class="auth-field-label" for="confirmPassword">Confirmação da Senha *</label>
                 <div class="auth-input-group">
-                    <i class="bi bi-shield-lock-fill"></i>
+                    <i class="bi bi-shield-lock-fill auth-input-icon"></i>
                     <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repita a senha digitada" required />
+                    <button type="button" class="auth-password-toggle" onclick="toggleRegPassword('confirmPassword', this)" title="Mostrar ou ocultar senha" aria-label="Mostrar senha">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -317,6 +323,21 @@
                 e.target.value = v;
             }
         });
+    }
+
+    function toggleRegPassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (!input || !icon) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+            btn.setAttribute('aria-label', 'Ocultar senha');
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+            btn.setAttribute('aria-label', 'Mostrar senha');
+        }
     }
 </script>
 

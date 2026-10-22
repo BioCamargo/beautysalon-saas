@@ -1011,6 +1011,14 @@ textarea.form-control-modern {
     }
 }
 
+@media (max-width: 480px) {
+    .auth-card-modern {
+        padding: 1.25rem 1.15rem;
+        border-radius: 14px;
+        margin: 0.5rem auto;
+    }
+}
+
 .auth-card-modern::before {
     content: "";
     position: absolute;
@@ -1034,63 +1042,155 @@ textarea.form-control-modern {
 }
 
 .auth-title-brand {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.35rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-main);
-    letter-spacing: 1px;
+    letter-spacing: -0.3px;
 }
 
 .auth-subtitle-brand {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     margin-top: 0.15rem;
 }
 
-.auth-field-label {
-    display: block;
+/* Badge Exclusiva do Tenant (Ambiente da Empresa) */
+.auth-tenant-badge {
+    background: linear-gradient(135deg, rgba(0, 210, 238, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 1px solid rgba(0, 210, 238, 0.25);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.auth-tenant-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(0, 210, 238, 0.15);
+    color: #0284c7;
     font-size: 0.72rem;
     font-weight: 700;
-    color: #475569;
-    margin-bottom: 0.15rem;
-    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.35rem;
+}
+
+.auth-tenant-title {
+    font-family: var(--font-sans);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0.15rem 0;
+    letter-spacing: -0.3px;
+}
+
+.auth-tenant-subtitle {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.auth-field-label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.2px;
 }
 
 .auth-input-group {
     position: relative;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.75rem;
 }
 
-.auth-input-group i {
+/* Apenas o ícone líder à esquerda */
+.auth-input-group > i.auth-input-icon,
+.auth-input-group > i:first-child {
     position: absolute;
     left: 0.85rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 0.9rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
     pointer-events: none;
     z-index: 2;
 }
 
 .auth-input-group input {
     width: 100%;
-    height: 38px;
-    padding: 0.45rem 0.85rem 0.45rem 2.4rem;
+    height: 42px;
+    padding: 0.5rem 0.85rem 0.5rem 2.5rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
-    font-size: 0.88rem;
+    font-size: 0.92rem;
+    color: var(--text-main);
     background-color: var(--bg-app);
     transition: var(--transition);
     box-sizing: border-box;
 }
 
+.auth-input-group input[type="password"],
+.auth-input-group input.has-toggle {
+    padding-right: 3rem !important;
+}
+
+/* Botão Olhinho (Show/Hide Password) com área de clique confortável */
+.auth-password-toggle {
+    position: absolute;
+    right: 0.45rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #64748b;
+    cursor: pointer;
+    z-index: 10;
+    pointer-events: auto !important;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.auth-password-toggle:hover {
+    color: #0284c7;
+    background: rgba(0, 210, 238, 0.12);
+}
+
+.auth-password-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 210, 238, 0.35);
+}
+
+.auth-password-toggle i {
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    font-size: 1.15rem !important;
+    pointer-events: none !important;
+    color: inherit !important;
+    display: inline-block !important;
+    z-index: 1 !important;
+}
+
 .auth-input-group select {
     width: 100%;
-    height: 38px;
-    padding: 0.45rem 2rem 0.45rem 2.4rem;
+    height: 42px;
+    padding: 0.5rem 2rem 0.5rem 2.5rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     background-color: var(--bg-app);
     color: var(--text-main);
     font-family: inherit;
