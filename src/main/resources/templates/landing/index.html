@@ -57,12 +57,14 @@
             <!-- Ações Header -->
             <div class="lp-nav-actions">
                 <button type="button" class="lp-link-find-studio" onclick="openFindStudioModal()"
-                    title="Acessar o link exclusivo da sua empresa">
+                    title="Acessar o link exclusivo da sua empresa" aria-label="Entrar / Já sou cliente">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Já sou cliente</span>
+                    <span class="lp-btn-text-desktop">Já sou cliente</span>
+                    <span class="lp-btn-text-mobile">Entrar</span>
                 </button>
-                <a th:href="@{/register}" class="lp-btn-primary lp-btn-nav">
-                    <span>Experimente Grátis</span>
+                <a th:href="@{/register}" class="lp-btn-primary lp-btn-nav" title="Cadastre-se e ganhe 7 dias grátis" aria-label="Experimente Grátis">
+                    <span class="lp-btn-text-desktop">Experimente Grátis</span>
+                    <span class="lp-btn-text-mobile">Testar</span>
                     <i class="bi bi-arrow-right"></i>
                 </a>
                 <!-- Botão Menu Hambúrguer (Mobile) -->
