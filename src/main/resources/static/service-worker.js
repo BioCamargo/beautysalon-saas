@@ -1,18 +1,26 @@
-const CACHE_NAME = 'nexipro-cache-v1';
+const CACHE_NAME = 'nexipro-cache-v2';
 const STATIC_ASSETS = [
     '/css/style.css',
+    '/images/pwa-icon-192.png',
+    '/images/pwa-icon-512.png',
+    '/images/pwa-icon-maskable-192.png',
+    '/images/pwa-icon-maskable-512.png',
     '/images/nexipro-icon-official.png',
-    '/images/nexipro-official-logo.png',
     '/images/nexipro-icon.svg',
-    '/images/nexipro-logo.svg',
     '/manifest.json'
 ];
 
 // Instalação do Service Worker & Cache de Assets Estáticos
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(STATIC_ASSETS);
+        caches.open(CACHE_NAME).then(async (cache) => {
+            for (const asset of STATIC_ASSETS) {
+                try {
+                    await cache.add(asset);
+                } catch (e) {
+                    console.warn('Cache SW asset opcional ignorado:', asset, e);
+                }
+            }
         })
     );
     self.skipWaiting();
