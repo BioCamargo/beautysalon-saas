@@ -159,10 +159,9 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Anamnese digital
                                             touch</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Solo para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
-                                        target="_blank"
+                                    <a th:href="@{/{slug}/assinatura(slug=${empresaSlug})}"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
-                                        <i class="bi bi-whatsapp me-1 text-success"></i> Ativar Solo
+                                        <i class="bi bi-credit-card-2-front me-1"></i> Assinar Solo
                                     </a>
                                 </div>
                             </div>
@@ -193,11 +192,10 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Ficha técnica &
                                             estoque</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano Studio para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
-                                        target="_blank"
+                                    <a th:href="@{/{slug}/assinatura(slug=${empresaSlug})}"
                                         class="btn btn-warning btn-sm rounded-pill mt-auto fw-bold text-dark"
                                         style="background: linear-gradient(135deg, #c5a059 0%, #dfba73 100%); border: none;">
-                                        <i class="bi bi-whatsapp me-1"></i> Ativar Studio
+                                        <i class="bi bi-gem me-1"></i> Assinar Studio
                                     </a>
                                 </div>
                             </div>
@@ -226,10 +224,9 @@
                                         <li><i class="bi bi-check-circle-fill text-success me-1"></i> Suporte
                                             prioritário VIP</li>
                                     </ul>
-                                    <a th:href="'https://wa.me/5511999999999?text=' + ${#uris.escapeQueryParam('Olá! Gostaria de ativar o Plano VIP para a minha empresa: ' + (empresaNome != null ? empresaNome : 'Empresa') + ' (Slug: ' + (empresaSlug != null ? empresaSlug : 'nexipro') + ')')}"
-                                        target="_blank"
+                                    <a th:href="@{/{slug}/assinatura(slug=${empresaSlug})}"
                                         class="btn btn-outline-dark btn-sm rounded-pill mt-auto fw-bold">
-                                        <i class="bi bi-whatsapp me-1 text-success"></i> Ativar VIP
+                                        <i class="bi bi-stars me-1 text-warning"></i> Assinar VIP
                                     </a>
                                 </div>
                             </div>

@@ -61,9 +61,14 @@
                        class="btn btn-sm" style="background: #ef4444; color: #fff; font-weight: 700; border-radius: 8px; padding: 0.4rem 1rem;">
                         <i class="bi bi-credit-card-fill me-1"></i> Pagar Fatura Agora
                     </a>
+                    <a th:if="${empresaLinkFatura == null or #strings.isEmpty(empresaLinkFatura)}"
+                       th:href="@{/{slug}/assinatura(slug=${empresaSlug})}"
+                       class="btn btn-sm" style="background: #ef4444; color: #fff; font-weight: 700; border-radius: 8px; padding: 0.4rem 1rem;">
+                        <i class="bi bi-gem me-1"></i> Escolher Plano
+                    </a>
                     <button type="button" class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalPlanosSaaS"
                             style="border-radius: 8px; font-weight: 600;">
-                        Ver Planos
+                        Comparar Planos
                     </button>
                 </div>
             </div>
