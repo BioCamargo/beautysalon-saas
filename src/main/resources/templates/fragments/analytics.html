@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- ========================================================================= -->
+<!-- FRAGMENTO GLOBAL DE ANALYTICS & OBSERVABILIDADE DE UX (OPENREPLAY & PIXEL) -->
+<!-- ========================================================================= -->
+<th:block th:fragment="openreplay">
+    <script th:if="${@environment.getProperty('nexipro.analytics.openreplay.enabled') == 'true' and @environment.getProperty('nexipro.analytics.openreplay.project-key') != null and !#strings.isEmpty(@environment.getProperty('nexipro.analytics.openreplay.project-key'))}">
+        (function() {
+            var projectKey = "[[${@environment.getProperty('nexipro.analytics.openreplay.project-key')}]]";
+            if (!projectKey || projectKey.trim() === '') return;
+
+            var initOpts = {
+                projectKey: projectKey,
+                defaultInputMode: 1, // 1 = MASCARA TODOS OS INPUTS (Proteção LGPD estrita de dados bancários/senhas)
+                obscureTextNumbers: false,
+                respectDoNotTrack: true
+            };
+
+            var startOpts = {};
+            /*[# th:if="${#authentication != null and #authentication.name != 'anonymousUser'}"]*/
+            startOpts.userID = "[[${#authentication.name}]]";
+            /*[/]*/
+
+            (function(A,s,a,y,e,r){
+                r=window._openreplay = window._openreplay||function(){(r.q=r.q||[]).push(arguments)};
+                e=s.createElement(a);e.async=1;e.src=y;
+                r.start=function(t){r("start",t);};
+                s.getElementsByTagName(a)[0].parentNode.appendChild(e);
+            })(window,document,'script','https://static.openreplay.com/tracker.js');
+
+            _openreplay.start(startOpts);
+
+            // Metadados Multi-Tenant para filtro de sessões no dashboard do fundador
+            /*[# th:if="${empresaSlug != null}"]*/
+            _openreplay('setMetadata', 'empresa_slug', '[[${empresaSlug}]]');
+            /*[/]*/
+            /*[# th:if="${empresaPlano != null}"]*/
+            _openreplay('setMetadata', 'plano', '[[${empresaPlano}]]');
+            /*[/]*/
+            /*[# th:if="${empresaTrialAtivo != null}"]*/
+            _openreplay('setMetadata', 'trial_ativo', '[[${empresaTrialAtivo}]]');
+            /*[/]*/
+            /*[# th:if="${empresaStatusAssinatura != null}"]*/
+            _openreplay('setMetadata', 'status_assinatura', '[[${empresaStatusAssinatura}]]');
+            /*[/]*/
+        })();
+    </script>
+</th:block>
+
+</body>
+</html>
