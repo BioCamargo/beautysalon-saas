@@ -67,7 +67,7 @@
                             <div class="p-2 rounded-2 mb-2 transition-all" id="guiaNotebook">
                                 <strong style="color: #38bdf8; font-size: 0.82rem;"><i class="bi bi-laptop me-1"></i> No Notebook ou PC (Chrome / Edge):</strong>
                                 <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
-                                    Olhe para o topo do navegador: no <strong>final da barra de endereços</strong> (ao lado da estrela de favoritos), clique no ícone de instalar <i class="bi bi-download text-info"></i> e confirme em <strong>"Instalar"</strong>.
+                                    Clique nos <strong>3 pontinhos (<i class="bi bi-three-dots-vertical"></i>)</strong> no canto superior do navegador &rarr; <strong>"Salvar e compartilhar"</strong> &rarr; <strong>"Instalar NEXI PRO"</strong>.
                                 </p>
                             </div>
                             
@@ -189,7 +189,7 @@
                     const card = document.getElementById('guiaNotebook');
                     if (card) card.classList.add('pwa-device-highlight');
                     if (feedback && feedbackTxt) {
-                        feedbackTxt.innerHTML = 'Clique no ícone de instalar <i class="bi bi-download text-info"></i> no <strong>final da barra de endereços</strong> do navegador (no topo da tela) e confirme em <strong>Instalar</strong>.';
+                        feedbackTxt.innerHTML = 'Clique nos <strong>3 pontinhos (<i class="bi bi-three-dots-vertical"></i>)</strong> no topo do Chrome &rarr; <strong>"Salvar e compartilhar"</strong> &rarr; <strong>"Instalar NEXI PRO"</strong>.';
                         feedback.classList.remove('d-none');
                     }
                 } else if (isAndroid) {
