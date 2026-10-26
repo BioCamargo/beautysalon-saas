@@ -52,7 +52,7 @@ public class WhatsAppConfigController {
                     .orElseThrow(() -> new IllegalStateException("Nenhuma configuração do WhatsApp encontrada."));
 
             String empresaNome = com.beautysalon.tenant.TenantContext.getNome() != null 
-                    ? com.beautysalon.tenant.TenantContext.getNome() : "NEXI PRO Studio";
+                    ? com.beautysalon.tenant.TenantContext.getNome() : "NEXI PRO";
             String dataHoje = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String horaAtual = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -104,10 +104,7 @@ public class WhatsAppConfigController {
             WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual()
                     .orElseThrow(() -> new IllegalStateException("Configuração do WhatsApp não encontrada."));
 
-            String numero = (telefone != null && !telefone.isBlank()) 
-                    ? telefone : "(11) 95430-1259";
-
-            whatsAppService.simularConexaoTeste(config, numero);
+            whatsAppService.simularConexaoTeste(config, telefone);
             redirectAttributes.addFlashAttribute("mensagemSucesso", 
                     "🎉 WhatsApp conectado com sucesso! As automações de lembrete, agendamento e comanda já estão ativas.");
         } catch (Exception e) {

@@ -155,8 +155,10 @@ public class WhatsAppService {
         if (config == null) return;
         config.setConectado(true);
         config.setAtivo(true);
+        String telEmpresa = (config.getEmpresa() != null && config.getEmpresa().getTelefone() != null) 
+                ? config.getEmpresa().getTelefone() : "";
         config.setNumeroConectado(numeroTelefone != null && !numeroTelefone.isBlank() 
-                ? numeroTelefone : "(11) 95430-1259");
+                ? numeroTelefone : telEmpresa);
         configRepository.save(config);
         logger.info("WhatsApp pareado e ativado com sucesso para empresa #{}", 
                 config.getEmpresa() != null ? config.getEmpresa().getId() : "N/A");

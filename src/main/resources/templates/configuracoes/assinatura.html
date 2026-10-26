@@ -221,20 +221,6 @@
                                 </button>
                             </form>
 
-                            <!-- BOTÃO DE TESTE REAL R$ 5,00 -->
-                            <div class="mt-2">
-                                <form th:action="@{/{slug}/assinatura/teste-um-real(slug=${empresaSlug})}" method="post" class="d-inline">
-                                    <div th:if="${empresa.cnpj == null or #strings.isEmpty(empresa.cnpj)}" class="mb-2">
-                                        <input type="text" name="cpfCnpj" class="form-control form-control-sm rounded-pill text-center mx-auto text-dark bg-white"
-                                               style="max-width: 200px; font-size: 0.75rem; border: 1px solid #f59e0b;"
-                                               placeholder="Digite seu CPF para o Pix..." required />
-                                    </div>
-                                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold"
-                                            title="Gera uma fatura Pix de R$ 5,00 (mínimo permitido pelo Asaas) para você testar">
-                                        <i class="bi bi-lightning-charge-fill text-warning"></i> Testar Pix Real (R$ 5,00)
-                                    </button>
-                                </form>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -342,93 +328,6 @@
                     </div>
                 </div>
 
-                <!-- PAINEL DE SIMULAÇÃO (MODO TESTE PARA GESTORES/DESENVOLVIMENTO) -->
-                <div class="card border-0 rounded-4 shadow-sm mt-5 p-4" style="background: #f8fafc; border: 1px dashed #cbd5e1 !important;">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-                        <div>
-                            <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
-                                <i class="bi bi-tools text-primary"></i> Simulador de Cenários de Cobrança (Ambiente de Testes)
-                            </h5>
-                            <p class="text-muted small mb-0">Alterne instantaneamente o status da empresa para validar a experiência de bloqueio, régua de cobrança e pagamento.</p>
-                        </div>
-                        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">Exclusivo Admin</span>
-                    </div>
-
-                    <div class="row g-2">
-                        <!-- 1. Simular Trial Expirado -->
-                        <div class="col-sm-6 col-md-3">
-                            <form th:action="@{/{slug}/assinatura/simular-status(slug=${empresaSlug})}" method="post">
-                                <input type="hidden" name="status" value="TRIAL_EXPIRADO"/>
-                                <button type="submit" class="btn btn-outline-danger w-100 py-2 rounded-3 fw-semibold small text-start d-flex align-items-center gap-2">
-                                    <i class="bi bi-hourglass-bottom fs-5 text-danger"></i>
-                                    <div>
-                                        <strong>Trial Expirado</strong><br>
-                                        <span class="text-muted" style="font-size: 0.72rem;">Passou dos 7 dias grátis</span>
-                                    </div>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- 2. Simular Inadimplente -->
-                        <div class="col-sm-6 col-md-3">
-                            <form th:action="@{/{slug}/assinatura/simular-status(slug=${empresaSlug})}" method="post">
-                                <input type="hidden" name="status" value="INADIMPLENTE"/>
-                                <button type="submit" class="btn btn-outline-warning w-100 py-2 rounded-3 fw-semibold small text-start d-flex align-items-center gap-2">
-                                    <i class="bi bi-credit-card-2-back fs-5 text-warning"></i>
-                                    <div>
-                                        <strong>Fatura em Atraso</strong><br>
-                                        <span class="text-muted" style="font-size: 0.72rem;">Carência e aviso</span>
-                                    </div>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- 3. Simular Assinatura Ativa (Paga) -->
-                        <div class="col-sm-6 col-md-3">
-                            <form th:action="@{/{slug}/assinatura/simular-status(slug=${empresaSlug})}" method="post">
-                                <input type="hidden" name="status" value="ATIVA"/>
-                                <button type="submit" class="btn btn-outline-success w-100 py-2 rounded-3 fw-semibold small text-start d-flex align-items-center gap-2">
-                                    <i class="bi bi-check-circle-fill fs-5 text-success"></i>
-                                    <div>
-                                        <strong>Assinatura Paga</strong><br>
-                                        <span class="text-muted" style="font-size: 0.72rem;">Ativa por +30 dias</span>
-                                    </div>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- 4. Restaurar Trial (7 dias) -->
-                        <div class="col-sm-6 col-md-3">
-                            <form th:action="@{/{slug}/assinatura/simular-status(slug=${empresaSlug})}" method="post">
-                                <input type="hidden" name="status" value="RESTAURAR_TRIAL"/>
-                                <button type="submit" class="btn btn-outline-primary w-100 py-2 rounded-3 fw-semibold small text-start d-flex align-items-center gap-2">
-                                    <i class="bi bi-arrow-counterclockwise fs-5 text-primary"></i>
-                                    <div>
-                                        <strong>Restaurar Trial</strong><br>
-                                        <span class="text-muted" style="font-size: 0.72rem;">Volta para 7 dias grátis</span>
-                                    </div>
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- 5. Testar Pagamento Real Pix R$ 5,00 -->
-                        <div class="col-12 mt-3 pt-2 border-top">
-                            <form th:action="@{/{slug}/assinatura/teste-um-real(slug=${empresaSlug})}" method="post">
-                                <div th:if="${empresa.cnpj == null or #strings.isEmpty(empresa.cnpj)}" class="mb-2 row justify-content-center">
-                                    <div class="col-md-6 col-lg-4 text-center">
-                                        <label class="form-label small fw-bold text-muted mb-1">Informe seu CPF ou CNPJ (exigência do Asaas para o Pix):</label>
-                                        <input type="text" name="cpfCnpj" class="form-control form-control-sm text-center rounded-pill"
-                                               placeholder="000.000.000-00" required />
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-warning w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                                    <i class="bi bi-qr-code fs-5"></i>
-                                    <span>Gerar Pix de Teste Real (R$ 5,00 - Mínimo Asaas)</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>

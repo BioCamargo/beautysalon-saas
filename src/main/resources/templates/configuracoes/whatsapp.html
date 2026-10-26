@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
@@ -151,7 +151,7 @@
                                 Sua empresa está com os disparos automáticos ativados. Seus clientes receberão confirmações, lembretes e recibos instantâneos.
                             </p>
                             <div class="mt-2 text-white small" th:if="${config.numeroConectado != null}">
-                                <i class="bi bi-phone me-1"></i> Número Pareado: <strong class="fs-6" th:text="${config.numeroConectado}">(11) 95430-1259</strong>
+                                <i class="bi bi-phone me-1"></i> Número Pareado: <strong class="fs-6" th:text="${config.numeroConectado}">(11) 90000-0000</strong>
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end">
@@ -193,20 +193,20 @@
                                 </label>
                                 <div class="input-group input-group-lg mb-2">
                                     <input type="tel" name="telefone" class="form-control fs-6" 
-                                           placeholder="(11) 95430-1259" 
-                                           th:value="${empresaTelefone != null and !empresaTelefone.isEmpty() ? empresaTelefone : '(11) 95430-1259'}" 
+                                           placeholder="(11) 98888-7777" 
+                                           th:value="${empresaTelefone != null and !empresaTelefone.isEmpty() ? empresaTelefone : ''}" 
                                            required />
                                     <button type="submit" class="btn btn-success fw-bold px-4">
                                         <i class="bi bi-whatsapp me-1"></i> Ativar WhatsApp Agora
                                     </button>
                                 </div>
                                 <div class="form-text small text-muted">
-                                    <i class="bi bi-shield-check text-success me-1"></i> Ativa o serviço no sistema instantaneamente para envio de testes, lembretes e agendamentos.
+                                    <i class="bi bi-shield-check text-success me-1"></i> Ativa o serviço no sistema instantaneamente para envio de confirmações, lembretes e agendamentos.
                                 </div>
                             </form>
 
                             <div class="small text-muted mb-2">
-                                <i class="bi bi-info-circle me-1"></i> Se você deseja parear apontando a câmera do celular no QR Code oficial do WhatsApp Web, certifique-se de que o container da Evolution API está ativo no computador.
+                                <i class="bi bi-info-circle me-1"></i> Você também pode parear via QR Code oficial apontando a câmera do WhatsApp no quadro ao lado.
                             </div>
                         </div>
 
@@ -506,7 +506,7 @@
         if (!tel.startsWith('55') && (tel.length === 10 || tel.length === 11)) {
             tel = '55' + tel;
         }
-        const texto = encodeURIComponent("🌸 *NEXI PRO Studio — Teste de Integração WhatsApp*\n\nOlá! ✨\nEsta é uma mensagem de teste do sistema NEXI PRO.\nSeus lembretes, confirmações de horário e recibos de comanda estão configurados e funcionando perfeitamente! 🚀");
+        const texto = encodeURIComponent("🌸 *NEXI PRO — Teste de Integração WhatsApp*\n\nOlá! ✨\nEsta é uma mensagem de teste do sistema NEXI PRO.\nSeus lembretes, confirmações de horário e recibos de comanda estão configurados e funcionando perfeitamente! 🚀");
         window.open('https://wa.me/' + tel + '?text=' + texto, '_blank');
     }
 

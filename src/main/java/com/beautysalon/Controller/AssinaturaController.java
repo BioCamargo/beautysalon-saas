@@ -107,35 +107,6 @@ public class AssinaturaController {
         return "redirect:/" + slug + "/assinatura";
     }
 
-    @PostMapping("/teste-um-real")
-    public String gerarTesteUmReal(@PathVariable String slug, 
-                                   @RequestParam(required = false) String cpfCnpj,
-                                   RedirectAttributes redirectAttributes) {
-        Long empresaId = TenantContext.getEmpresaId();
-        Empresa empresa = empresaRepository.findById(empresaId)
-                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
-
-        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
-            empresa.setCnpj(cpfCnpj.trim());
-            empresaRepository.save(empresa);
-        }
-
-        try {
-            java.util.Optional<String> linkFatura = asaasClientService.criarCobrancaTeste(empresa);
-            if (linkFatura.isPresent() && !linkFatura.get().isBlank()) {
-                log.info("Redirecionando para fatura de teste R$ 5,00: {}", linkFatura.get());
-                return "redirect:" + linkFatura.get();
-            }
-        } catch (IllegalArgumentException iae) {
-            redirectAttributes.addFlashAttribute("erro", "Asaas: " + iae.getMessage());
-            return "redirect:/" + slug + "/assinatura";
-        } catch (Exception e) {
-            log.error("Erro ao gerar fatura de teste R$ 5,00 no Asaas: {}", e.getMessage(), e);
-        }
-
-        redirectAttributes.addFlashAttribute("erro", "Não foi possível gerar a cobrança de teste de R$ 5,00. Verifique as configurações de pagamento.");
-        return "redirect:/" + slug + "/assinatura";
-    }
 
     @PostMapping("/atualizar-gateway")
     public String atualizarDadosGateway(@PathVariable String slug,
@@ -160,46 +131,6 @@ public class AssinaturaController {
         empresaRepository.save(empresa);
         log.info("Dados de gateway Asaas atualizados para empresa ID={} ({})", empresa.getId(), slug);
         redirectAttributes.addFlashAttribute("sucesso", "Identificadores de faturamento atualizados com sucesso!");
-
-        return "redirect:/" + slug + "/assinatura";
-    }
-
-    @PostMapping("/simular-status")
-    public String simularStatus(@PathVariable String slug,
-                                @RequestParam String status,
-                                RedirectAttributes redirectAttributes) {
-        Long empresaId = TenantContext.getEmpresaId();
-        Empresa empresa = empresaRepository.findById(empresaId)
-                .orElseThrow(() -> new IllegalArgumentException("Empresa não encontrada: " + slug));
-
-        java.time.LocalDateTime agora = java.time.LocalDateTime.now();
-
-        switch (status.toUpperCase()) {
-            case "TRIAL_EXPIRADO":
-                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.EXPIRADA);
-                empresa.setDataExpiracaoTrial(agora.minusDays(1));
-                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Trial expirado! Veja como o sistema bloqueia novos agendamentos e solicita o pagamento.");
-                break;
-            case "INADIMPLENTE":
-                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.INADIMPLENTE);
-                empresa.setDataFimAssinatura(agora.minusDays(4));
-                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Fatura em atraso (Inadimplente com carência estourada).");
-                break;
-            case "ATIVA":
-                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.ATIVA);
-                empresa.setDataFimAssinatura(agora.plusDays(30));
-                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Assinatura Ativa e regularizada por +30 dias!");
-                break;
-            default: // RESTAURAR_TRIAL
-                empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL);
-                empresa.setDataExpiracaoTrial(agora.plusDays(7));
-                redirectAttributes.addFlashAttribute("sucesso", "Simulação: Período de Testes restaurado para 7 dias grátis.");
-                break;
-        }
-
-        empresaRepository.save(empresa);
-        log.info("Simulação de assinatura executada para empresa ID={} (slug={}): novo status={}", 
-                empresa.getId(), slug, empresa.getStatusAssinatura());
 
         return "redirect:/" + slug + "/assinatura";
     }
