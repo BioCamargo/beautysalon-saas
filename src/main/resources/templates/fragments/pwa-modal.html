@@ -4,9 +4,18 @@
 
     <!-- FRAGMENTO DO MODAL DE INSTALAÇÃO DO PWA -->
     <div th:fragment="pwaModal">
+        <style>
+            #modalInstalarApp {
+                z-index: 1080 !important;
+            }
+            #modalInstalarApp.show {
+                display: block !important;
+                z-index: 1080 !important;
+            }
+        </style>
         <!-- MODAL GLOBAL DE INSTALAÇÃO DO APP (PWA) -->
-        <div class="modal fade" id="modalInstalarApp" tabindex="-1" aria-labelledby="modalInstalarAppLabel" aria-hidden="true" style="z-index: 1070;">
-            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal fade" id="modalInstalarApp" tabindex="-1" aria-labelledby="modalInstalarAppLabel" aria-hidden="true" style="z-index: 1080 !important;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1081 !important;">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #0f172a; color: #ffffff; border: 1px solid rgba(0, 210, 238, 0.3);">
                     <div class="modal-header border-0 pb-0" style="background: transparent;">
                         <div class="d-flex align-items-center gap-2">
@@ -83,7 +92,15 @@
                 globalDeferredPrompt = e;
             });
 
+            function moverModalParaBody() {
+                const el = document.getElementById('modalInstalarApp');
+                if (el && el.parentElement !== document.body) {
+                    document.body.appendChild(el);
+                }
+            }
+
             function abrirModalInstalarApp() {
+                moverModalParaBody();
                 const el = document.getElementById('modalInstalarApp');
                 if (el && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                     const modal = bootstrap.Modal.getOrCreateInstance(el);
@@ -91,7 +108,7 @@
                 } else if (globalDeferredPrompt) {
                     executarInstalacaoPwa();
                 } else {
-                    alert('Para baixar o aplicativo:\n\n📱 Android: Toque nos 3 pontinhos e escolha "Instalar aplicativo".\n🍎 iPhone: Toque no botão compartilhar e escolha "Adicionar à Tela de Início".');
+                    alert('Para baixar o aplicativo:\n\n💻 No Notebook/PC: Clique no ícone de instalar na barra de endereços do navegador.\n📱 No Android: Toque nos 3 pontinhos e escolha "Instalar aplicativo".\n🍎 No iPhone: Toque no botão compartilhar e escolha "Adicionar à Tela de Início".');
                 }
             }
 
@@ -130,21 +147,33 @@
                 window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
             }
 
-            // Se já estiver rodando em tela cheia como App (Standalone), oculta botão no menu
-            window.addEventListener('DOMContentLoaded', () => {
+            function inicializarPwaModal() {
+                moverModalParaBody();
                 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
                 if (isStandalone) {
                     const wrap = document.getElementById('sidebarPwaWrap');
-                    const banner = document.getElementById('btnBannerInstalarApp');
                     if (wrap) wrap.style.display = 'none';
-                    if (banner) banner.style.display = 'none';
                 }
-            });
+            }
 
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('SW PWA:', err));
-                });
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', inicializarPwaModal);
+            } else {
+                inicializarPwaModal();
+            }
+
+            function registrarPwaSW() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+                        .then(reg => console.log('SW PWA ativo no escopo:', reg.scope))
+                        .catch(err => console.log('SW PWA:', err));
+                }
+            }
+
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                registrarPwaSW();
+            } else {
+                window.addEventListener('load', registrarPwaSW);
             }
         </script>
     </div>
