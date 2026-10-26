@@ -14,3 +14,7 @@ services:
         value: "NexiPro2026@Pass"
       - key: RABBITMQ_ENABLED
         value: "false"
+      - key: OPENREPLAY_ENABLED
+        value: "true"
+      - key: OPENREPLAY_PROJECT_KEY
+        value: "OuLAJttNYuOR1kDgjTiZ"
