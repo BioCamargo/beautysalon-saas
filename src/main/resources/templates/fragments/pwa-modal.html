@@ -12,10 +12,20 @@
                 display: block !important;
                 z-index: 1080 !important;
             }
+            @keyframes pwaGlow {
+                0% { box-shadow: 0 0 5px rgba(0, 210, 238, 0.4); border-color: rgba(0, 210, 238, 0.6); }
+                50% { box-shadow: 0 0 20px rgba(0, 210, 238, 0.9); border-color: #00D2EE; transform: scale(1.02); }
+                100% { box-shadow: 0 0 5px rgba(0, 210, 238, 0.4); border-color: rgba(0, 210, 238, 0.6); }
+            }
+            .pwa-device-highlight {
+                animation: pwaGlow 1.8s infinite ease-in-out;
+                background: rgba(0, 210, 238, 0.12) !important;
+                border: 1.5px solid #00D2EE !important;
+            }
         </style>
         <!-- MODAL GLOBAL DE INSTALAÇÃO DO APP (PWA) -->
         <div class="modal fade" id="modalInstalarApp" tabindex="-1" aria-labelledby="modalInstalarAppLabel" aria-hidden="true" style="z-index: 1080 !important;">
-            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1081 !important;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 490px; z-index: 1081 !important;">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #0f172a; color: #ffffff; border: 1px solid rgba(0, 210, 238, 0.3);">
                     <div class="modal-header border-0 pb-0" style="background: transparent;">
                         <div class="d-flex align-items-center gap-2">
@@ -29,40 +39,48 @@
                     </div>
                     <div class="modal-body p-4 text-center">
                         <!-- BOTÃO DIRETO DE INSTALAÇÃO SE DISPONÍVEL -->
-                        <div id="pwaNativePromptArea" class="mb-4">
-                            <button type="button" class="btn btn-lg w-100 fw-bold py-3 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2"
+                        <div id="pwaNativePromptArea" class="mb-3">
+                            <button type="button" id="btnDownloadPwaModal" class="btn btn-lg w-100 fw-bold py-3 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2"
                                     onclick="executarInstalacaoPwa()"
-                                    style="background: linear-gradient(135deg, #00D2EE 0%, #0099b8 100%); color: #070a12;">
+                                    style="background: linear-gradient(135deg, #00D2EE 0%, #0099b8 100%); color: #070a12; transition: all 0.25s ease;">
                                 <i class="bi bi-download fs-5"></i>
-                                <span>Baixar App Agora</span>
+                                <span id="btnDownloadPwaModalText">Baixar App Agora</span>
                             </button>
                             <small class="text-white-50 d-block mt-2" style="font-size: 0.78rem;">Instalação leve, instantânea e sem consumir memória do seu aparelho</small>
+                        </div>
+
+                        <!-- FEEDBACK DINÂMICO INLINE (SUBSTITUI ALERTS) -->
+                        <div id="pwaFeedbackArea" class="d-none text-start rounded-3 p-3 mb-3" style="background: rgba(0, 210, 238, 0.12); border: 1px solid #00D2EE;">
+                            <div class="d-flex align-items-center gap-2 fw-bold text-info small mb-1">
+                                <i class="bi bi-arrow-down-circle-fill"></i> Siga o passo indicado abaixo:
+                            </div>
+                            <div id="pwaFeedbackText" class="text-white small" style="font-size: 0.8rem; line-height: 1.4;"></div>
                         </div>
 
                         <!-- GUIA PASSO A PASSO POR DISPOSITIVO -->
                         <div class="text-start rounded-3 p-3 mb-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
                             <div class="fw-bold text-white small mb-2 d-flex align-items-center gap-2">
-                                <i class="bi bi-devices text-info"></i> Como instalar no seu dispositivo:
+                                <i class="bi bi-devices text-info"></i> Como concluir no seu dispositivo:
                             </div>
 
                             <!-- NOTEBOOK / COMPUTADOR -->
-                            <div class="mb-3">
+                            <div class="p-2 rounded-2 mb-2 transition-all" id="guiaNotebook">
                                 <strong style="color: #38bdf8; font-size: 0.82rem;"><i class="bi bi-laptop me-1"></i> No Notebook ou PC (Chrome / Edge):</strong>
                                 <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
-                                    Clique no botão <strong>"Baixar App Agora"</strong> acima ou no ícone de instalar <i class="bi bi-download"></i> no final da barra de endereços do navegador.
+                                    Olhe para o topo do navegador: no <strong>final da barra de endereços</strong> (ao lado da estrela de favoritos), clique no ícone de instalar <i class="bi bi-download text-info"></i> e confirme em <strong>"Instalar"</strong>.
                                 </p>
                             </div>
                             
                             <!-- ANDROID -->
-                            <div class="mb-3">
+                            <div class="p-2 rounded-2 mb-2 transition-all" id="guiaAndroid">
                                 <strong style="color: #00D2EE; font-size: 0.82rem;"><i class="bi bi-android2 me-1"></i> No Celular Android (Chrome / Samsung):</strong>
                                 <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
-                                    Toque nos <strong>3 pontinhos</strong> do navegador e selecione <strong>"Instalar aplicativo"</strong>.
+                                    Toque nos <strong>3 pontinhos</strong> do navegador e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
                                 </p>
                             </div>
 
                             <!-- IPHONE / IPAD -->
-                            <div class="mb-1">
+                            <div class="p-2 rounded-2 mb-1 transition-all" id="guiaIphone">
                                 <strong style="color: #c5a059; font-size: 0.82rem;"><i class="bi bi-apple me-1"></i> No iPhone / iPad (Safari):</strong>
                                 <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
                                     Toque no botão de <strong>Compartilhar</strong> (quadrado com seta para cima) e selecione <strong>"Adicionar à Tela de Início"</strong>.
@@ -86,6 +104,44 @@
 
         <!-- JAVASCRIPT GLOBAL DO PWA -->
         <script>
+            // SISTEMA GLOBAL DE NOTIFICAÇÃO TOAST (SEM ALERTS NATIVOS)
+            window.showLuxToast = function(title, message, type = 'info') {
+                let container = document.getElementById('luxToastContainer');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'luxToastContainer';
+                    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; max-width: 360px; pointer-events: none;';
+                    document.body.appendChild(container);
+                }
+                const toast = document.createElement('div');
+                toast.style.cssText = 'pointer-events: auto; background: #0f172a; color: #ffffff; border: 1px solid rgba(0, 210, 238, 0.4); border-radius: 12px; padding: 12px 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: start; gap: 12px; animation: fadeIn 0.3s ease; font-family: sans-serif;';
+                
+                let iconClass = 'bi-info-circle-fill text-info';
+                if (type === 'success') iconClass = 'bi-check-circle-fill text-success';
+                if (type === 'warning') iconClass = 'bi-exclamation-triangle-fill text-warning';
+                if (type === 'error') iconClass = 'bi-x-circle-fill text-danger';
+
+                toast.innerHTML = `
+                    <i class="bi ${iconClass} fs-5 mt-1"></i>
+                    <div style="flex: 1;">
+                        ${title ? `<div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 2px;">${title}</div>` : ''}
+                        <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">${message}</div>
+                    </div>
+                    <button type="button" style="background: none; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 0 4px;" onclick="this.parentElement.remove()">×</button>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.4s ease';
+                    setTimeout(() => toast.remove(), 400);
+                }, 4000);
+            };
+
+            // Sobrescreve o alert nativo do navegador para manter o padrão elegante em 100% dos fluxos
+            window.alert = function(msg) {
+                window.showLuxToast('NEXI PRO', msg, 'info');
+            };
+
             let globalDeferredPrompt = null;
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
@@ -108,7 +164,48 @@
                 } else if (globalDeferredPrompt) {
                     executarInstalacaoPwa();
                 } else {
-                    alert('Para baixar o aplicativo:\n\n💻 No Notebook/PC: Clique no ícone de instalar na barra de endereços do navegador.\n📱 No Android: Toque nos 3 pontinhos e escolha "Instalar aplicativo".\n🍎 No iPhone: Toque no botão compartilhar e escolha "Adicionar à Tela de Início".');
+                    destacarInstrucoesInstalacao();
+                }
+            }
+
+            function destacarInstrucoesInstalacao() {
+                const isDesktop = !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const isAndroid = /Android/i.test(navigator.userAgent);
+                const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                const feedback = document.getElementById('pwaFeedbackArea');
+                const feedbackTxt = document.getElementById('pwaFeedbackText');
+                const btn = document.getElementById('btnDownloadPwaModal');
+                const btnTxt = document.getElementById('btnDownloadPwaModalText');
+
+                if (btnTxt) {
+                    btnTxt.textContent = 'Veja o passo a passo abaixo';
+                }
+
+                // Remove destaques anteriores
+                document.querySelectorAll('#guiaNotebook, #guiaAndroid, #guiaIphone').forEach(el => el.classList.remove('pwa-device-highlight'));
+
+                if (isDesktop) {
+                    const card = document.getElementById('guiaNotebook');
+                    if (card) card.classList.add('pwa-device-highlight');
+                    if (feedback && feedbackTxt) {
+                        feedbackTxt.innerHTML = 'Clique no ícone de instalar <i class="bi bi-download text-info"></i> no <strong>final da barra de endereços</strong> do navegador (no topo da tela) e confirme em <strong>Instalar</strong>.';
+                        feedback.classList.remove('d-none');
+                    }
+                } else if (isAndroid) {
+                    const card = document.getElementById('guiaAndroid');
+                    if (card) card.classList.add('pwa-device-highlight');
+                    if (feedback && feedbackTxt) {
+                        feedbackTxt.innerHTML = 'Toque nos <strong>3 pontinhos</strong> do navegador e selecione <strong>"Instalar aplicativo"</strong>.';
+                        feedback.classList.remove('d-none');
+                    }
+                } else if (isIos) {
+                    const card = document.getElementById('guiaIphone');
+                    if (card) card.classList.add('pwa-device-highlight');
+                    if (feedback && feedbackTxt) {
+                        feedbackTxt.innerHTML = 'Toque no botão de <strong>Compartilhar</strong> (quadrado com seta para cima) e escolha <strong>"Adicionar à Tela de Início"</strong>.';
+                        feedback.classList.remove('d-none');
+                    }
                 }
             }
 
@@ -122,11 +219,12 @@
                                 const modal = bootstrap.Modal.getInstance(modalEl);
                                 if (modal) modal.hide();
                             }
+                            window.showLuxToast('Aplicativo', 'Instalação iniciada com sucesso!', 'success');
                         }
                         globalDeferredPrompt = null;
                     });
                 } else {
-                    alert('Siga o passo a passo exibido no quadro para adicionar à tela inicial!');
+                    destacarInstrucoesInstalacao();
                 }
             }
 
@@ -138,6 +236,9 @@
                         btn.textContent = 'Link Copiado!';
                         setTimeout(() => { btn.textContent = 'Copiar Link do App'; }, 2000);
                     }
+                    window.showLuxToast('Sucesso', 'Link copiado para a área de transferência!', 'success');
+                }).catch(() => {
+                    window.showLuxToast('Link do App', url, 'info');
                 });
             }
 

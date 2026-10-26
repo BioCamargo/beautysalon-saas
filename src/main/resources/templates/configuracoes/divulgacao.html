@@ -406,12 +406,12 @@
                 if (typeof showLuxToast === 'function') {
                     showLuxToast('Sucesso', 'Link copiado para a área de transferência!', 'success');
                 } else {
-                    alert('Link copiado com sucesso: ' + input.value);
+                    if (typeof showLuxToast === 'function') { showLuxToast('Sucesso', 'Link copiado!', 'success'); }
                 }
             }).catch(() => {
                 input.select();
                 document.execCommand('copy');
-                alert('Link copiado: ' + input.value);
+                if (typeof showLuxToast === 'function') { showLuxToast('Sucesso', 'Link copiado!', 'success'); }
             });
         }
     }
@@ -447,7 +447,7 @@
                 showLuxToast('Download Iniciado', 'QR Code baixado em alta resolução.', 'success');
             }
         } else {
-            alert('Aguarde o carregamento do QR Code.');
+            if (typeof showLuxToast === 'function') { showLuxToast('Aguarde', 'Aguarde o carregamento do QR Code.', 'warning'); }
         }
     }
     /*]]>*/

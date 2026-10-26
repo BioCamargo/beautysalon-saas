@@ -352,7 +352,7 @@
             const file = e.target.files && e.target.files[0];
             if (file) {
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('A imagem selecionada é muito grande! O limite máximo é de 5MB.');
+                    if (typeof showLuxToast === 'function') { showLuxToast('Arquivo Muito Grande', 'O limite máximo é de 5MB.', 'error'); }
                     fileInput.value = '';
                     return;
                 }

@@ -396,7 +396,10 @@
                 deferredPrompt = null;
             });
         } else {
-            alert('Para instalar o NEXI PRO como aplicativo:\n\n📱 No Android (Chrome/Samsung): Toque nos 3 pontinhos do navegador e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".\n\n🍎 No iPhone (Safari): Toque no botão de compartilhar (quadrado com seta para cima) e escolha "Adicionar à Tela de Início".\n\n💻 No Computador (Chrome/Edge): Clique no ícone de instalar na barra de endereços.');
+            const btn = document.getElementById('btnInstallPwa');
+            if (btn) {
+                btn.innerHTML = '<i class="bi bi-info-circle me-1"></i> Veja a dica abaixo';
+            }
         }
     }
 

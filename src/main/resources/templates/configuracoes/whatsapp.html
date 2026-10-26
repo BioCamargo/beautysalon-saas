@@ -509,7 +509,7 @@
     function abrirWhatsAppWebTeste() {
         const inputTel = document.getElementById('inputTelefoneTeste');
         if (!inputTel || !inputTel.value) {
-            alert('Por favor, informe o número de WhatsApp para teste.');
+            if (typeof showLuxToast === 'function') { showLuxToast('Atenção', 'Por favor, informe o número de WhatsApp para teste.', 'warning'); }
             return;
         }
         let tel = inputTel.value.replace(/\D/g, '');
