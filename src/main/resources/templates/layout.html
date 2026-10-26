@@ -28,6 +28,15 @@
     <!-- Custom Luxury Style -->
     <link th:href="@{/css/style.css}" rel="stylesheet" />
 
+    <!-- PWA (Progressive Web App) Manifest & Mobile Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0B0E14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NEXI PRO">
+    <link rel="apple-touch-icon" href="/images/nexipro-icon-official.png">
+
     <!-- OPENREPLAY TRACKER (OBSERVABILIDADE NO HEAD) -->
     <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </head>
@@ -169,6 +178,15 @@
                 setTimeout(closeToast, duration);
             }
         };
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('SW PWA:', err));
+            });
+        }
     </script>
 </body>
 </html>
