@@ -15,8 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +70,7 @@ class FinanceiroServiceTest {
     @BeforeEach
     void setUp() {
         TenantContext.setEmpresaId(EMPRESA_ID);
-        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("NEXI PRO Studio").slug("nexipro").build();
+        empresaMock = Empresa.builder().id(EMPRESA_ID).nome("NEXI PRO").slug("nexipro").build();
         operadorMock = User.builder().id(99L).nome("Operador Caixa").build();
     }
 
@@ -443,5 +445,116 @@ class FinanceiroServiceTest {
         assertEquals(new BigDecimal("120.00"), caixa.getSaldoFinalEsperado()); // 100 + 50 - 30 = 120
 
         verify(movimentacaoFinanceiraRepository, times(2)).save(any(MovimentacaoFinanceira.class));
+    }
+
+    @Test
+    @DisplayName("Deve adicionar item de serviço na comanda e calcular a comissão do profissional")
+    void deveAdicionarItemServicoComissao() {
+        Comanda comanda = Comanda.builder()
+                .id(101L)
+                .status("ABERTA")
+                .itens(new ArrayList<>())
+                .empresa(empresaMock)
+                .build();
+
+        Servico corte = Servico.builder()
+                .id(11L)
+                .nome("Corte Estilizado")
+                .preco(new BigDecimal("120.00"))
+                .percentualComissao(new BigDecimal("35.00"))
+                .build();
+
+        User profissional = User.builder()
+                .id(50L)
+                .nome("Especialista")
+                .percentualComissao(new BigDecimal("30.00"))
+                .build();
+
+        when(comandaRepository.findByIdAndEmpresaId(101L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(userRepository.findByIdAndEmpresaId(50L, EMPRESA_ID)).thenReturn(Optional.of(profissional));
+        when(servicoRepository.findByIdAndEmpresaId(11L, EMPRESA_ID)).thenReturn(Optional.of(corte));
+        when(comandaRepository.save(any(Comanda.class))).thenAnswer(i -> i.getArgument(0));
+
+        Comanda atualizada = financeiroService.adicionarItemComanda(
+                101L, "SERVICO", 11L, null, 50L, 2, new BigDecimal("120.00"), null, operadorMock
+        );
+
+        assertNotNull(atualizada);
+        assertEquals(1, atualizada.getItens().size());
+        assertEquals(new BigDecimal("240.00"), atualizada.getValorTotal()); // 120 * 2
+        assertEquals(new BigDecimal("84.00"), atualizada.getTotalComissoes()); // 35% de 240 = 84.00
+    }
+
+    @Test
+    @DisplayName("Deve remover item da comanda aberta e recalcular valores")
+    void deveRemoverItemComanda() {
+        Comanda comanda = Comanda.builder()
+                .id(102L)
+                .status("ABERTA")
+                .itens(new ArrayList<>())
+                .empresa(empresaMock)
+                .build();
+
+        ComandaItem item1 = ComandaItem.builder()
+                .id(201L)
+                .comanda(comanda)
+                .precoUnitario(new BigDecimal("100.00"))
+                .quantidade(1)
+                .valorTotal(new BigDecimal("100.00"))
+                .valorComissao(new BigDecimal("30.00"))
+                .build();
+
+        ComandaItem item2 = ComandaItem.builder()
+                .id(202L)
+                .comanda(comanda)
+                .precoUnitario(new BigDecimal("50.00"))
+                .quantidade(1)
+                .valorTotal(new BigDecimal("50.00"))
+                .valorComissao(new BigDecimal("15.00"))
+                .build();
+
+        comanda.getItens().add(item1);
+        comanda.getItens().add(item2);
+        comanda.recalcularTotais();
+
+        when(comandaRepository.findByIdAndEmpresaId(102L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(comandaRepository.save(any(Comanda.class))).thenAnswer(i -> i.getArgument(0));
+
+        Comanda atualizada = financeiroService.removerItemComanda(102L, 201L);
+
+        assertEquals(1, atualizada.getItens().size());
+        assertEquals(new BigDecimal("50.00"), atualizada.getValorTotal());
+        assertEquals(new BigDecimal("15.00"), atualizada.getTotalComissoes());
+    }
+
+    @Test
+    @DisplayName("Deve remover pagamento parcial e restaurar saldo restante")
+    void deveRemoverPagamentoParcial() {
+        Comanda comanda = Comanda.builder()
+                .id(103L)
+                .status("ABERTA")
+                .valorTotal(new BigDecimal("200.00"))
+                .pagamentos(new LinkedHashSet<>())
+                .empresa(empresaMock)
+                .build();
+
+        PagamentoComanda pg = PagamentoComanda.builder()
+                .id(301L)
+                .comanda(comanda)
+                .formaPagamento("PIX")
+                .valor(new BigDecimal("80.00"))
+                .empresa(empresaMock)
+                .build();
+
+        comanda.getPagamentos().add(pg);
+
+        when(comandaRepository.findByIdAndEmpresaId(103L, EMPRESA_ID)).thenReturn(Optional.of(comanda));
+        when(comandaRepository.save(any(Comanda.class))).thenAnswer(i -> i.getArgument(0));
+
+        financeiroService.removerPagamentoComanda(103L, 301L);
+
+        assertTrue(comanda.getPagamentos().isEmpty());
+        assertEquals(new BigDecimal("200.00"), comanda.getSaldoRestante());
+        verify(pagamentoComandaRepository, times(1)).deleteById(301L);
     }
 }

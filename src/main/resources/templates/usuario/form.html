@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>Formulário de Usuário | Beauty Salon</title>
+    <title>Formulário de Usuário | NEXI PRO</title>
 
     <!-- Bootstrap 5 & Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -86,7 +86,7 @@
         <div class="app-main">
             <!-- TOPBAR -->
             <div
-                th:replace="~{fragments/topbar :: topbar('Operador do Studio', 'Cadastro e manutenção de credenciais e permissões')}">
+                th:replace="~{fragments/topbar :: topbar('Operador da Empresa', 'Cadastro e manutenção de credenciais e permissões')}">
             </div>
 
             <!-- CONTEÚDO PRINCIPAL -->
@@ -117,7 +117,7 @@
                         <div class="form-group-modern">
                             <label class="form-label-modern" for="createUsername">Nome de Usuário (Login):</label>
                             <input type="text" id="createUsername" th:field="*{username}" class="form-control-modern"
-                                placeholder="Ex: keilla_studio" required />
+                                placeholder="Ex: keilla_operadora" required />
                             <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('username')}"
                                 th:errors="*{username}"></span>
                         </div>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>Comanda de Atendimento | Beauty Salon</title>
+    <title>Comanda de Atendimento | NEXI PRO</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -96,7 +96,7 @@
                                 </h3>
                                 <div class="d-flex align-items-center gap-2">
                                     <a th:if="${comanda.status == 'PAGA' and comanda.cliente != null and comanda.cliente.telefone != null}"
-                                       th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(comanda.cliente.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${comanda.cliente.nome} + '%21%20Segue%20o%20resumo%20do%20seu%20atendimento%20no%20Studio%3A%0A💳%20*Comanda%3A*%20' + ${comanda.numeroComanda} + '%0A💰%20*Total%3A*%20R%24%20' + ${#numbers.formatDecimal(comanda.valorTotal, 1, 2, 'POINT')} + '%0A💳%20*Forma%3A*%20' + ${comanda.formaPagamento} + '%0A%0AMuito%20obrigado%20pela%20prefer%C3%AAncia%21%20Volte%20sempre%21%20✨'"
+                                       th:href="'https://api.whatsapp.com/send?phone=55' + ${#strings.replace(#strings.replace(#strings.replace(#strings.replace(comanda.cliente.telefone,' ',''),'-',''),'(',''),')','')} + '&text=Ol%C3%A1%20' + ${comanda.cliente.nome} + '%21%20Segue%20o%20resumo%20do%20seu%20atendimento%20no%20estabelecimento%3A%0A💳%20*Comanda%3A*%20' + ${comanda.numeroComanda} + '%0A💰%20*Total%3A*%20R%24%20' + ${#numbers.formatDecimal(comanda.valorTotal, 1, 2, 'POINT')} + '%0A💳%20*Forma%3A*%20' + ${comanda.formaPagamento} + '%0A%0AMuito%20obrigado%20pela%20prefer%C3%AAncia%21%20Volte%20sempre%21%20✨'"
                                        target="_blank" class="btn btn-sm btn-outline-success" title="Enviar Comprovante no WhatsApp do Cliente">
                                         <i class="bi bi-whatsapp"></i> WhatsApp
                                     </a>
@@ -307,8 +307,8 @@
                                     th:if="${comanda.desconto != null and comanda.desconto > 0}">
                                     <span class="text-danger">Desconto:</span>
                                     <strong class="text-danger"
-                                        th:text="'- R$ ' + ${#numbers.formatDecimal(comanda.desconto, 1, 2, 'COMMA')}">-
-                                                         </div>
+                                        th:text="'- R$ ' + ${#numbers.formatDecimal(comanda.desconto, 1, 2, 'COMMA')}">- R$ 0,00</strong>
+                                </div>
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fs-5 fw-bold">Total a Pagar:</span>
                                     <span class="fs-4 fw-bold text-primary"
@@ -456,7 +456,8 @@
                                     <div class="mt-1" th:if="${comanda.cupomAplicado != null and !#strings.isEmpty(comanda.cupomAplicado)}">
                                         <span class="badge bg-dark" th:text="'Cupom: ' + ${comanda.cupomAplicado}">Cupom: PROMO10</span>
                                     </div>
-                                </div>                       </div>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -469,7 +470,7 @@
     <div id="thermalReceipt" style="display: none;">
         <div style="text-align: center; margin-bottom: 10px;">
             <h3 style="margin: 0; font-size: 15px; font-weight: bold; text-transform: uppercase;"
-                th:text="${comanda.empresa != null ? comanda.empresa.nome : (empresaNome != null ? empresaNome : 'STUDIO DE BELEZA')}">NOME DO STUDIO</h3>
+                th:text="${comanda.empresa != null ? comanda.empresa.nome : (empresaNome != null ? empresaNome : 'ESTABELECIMENTO')}">NOME DO ESTABELECIMENTO</h3>
             <p style="margin: 2px 0; font-size: 11px;">Comprovante de Atendimento</p>
             <p style="margin: 2px 0; font-size: 11px;" th:text="'Comanda: ' + ${comanda.numeroComanda}">CMD-001</p>
             <p style="margin: 2px 0; font-size: 11px;" th:text="'Data: ' + ${#temporals.format(comanda.dataAbertura, 'dd/MM/yyyy HH:mm')}">01/01/2026</p>

@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <h1 class="salon-title" th:text="${empresa != null ? empresa.nome : 'Studio & Estética VIP'}">NEXI PRO Studio</h1>
+        <h1 class="salon-title" th:text="${empresa != null ? empresa.nome : 'Estabelecimento'}">NEXI PRO</h1>
         <div>
             <span class="badge-verified">
                 <i class="bi bi-patch-check-fill text-warning"></i> Agendamento Oficial Verificado
@@ -333,7 +333,7 @@
 
     <footer class="text-center mt-4 text-muted small" style="font-size: 0.75rem;">
         &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> 
-        <span th:text="${empresa != null ? empresa.nome : 'Studio'}">Beauty Salon</span> &bull; 
+        <span th:text="${empresa != null ? empresa.nome : 'Estabelecimento'}">NEXI PRO</span> &bull; 
         Tecnologia <strong style="color: #00E5FF; font-weight: 700;">NEXI PRO</strong> &bull; Gestão Inteligente
     </footer>
 </div>

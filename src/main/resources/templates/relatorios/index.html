@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>Central de Relatórios & Inteligência | Beauty Salon</title>
+    <title>Central de Relatórios & Inteligência | NEXI PRO</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -336,7 +336,7 @@
                                         <td style="text-align: right;" class="text-danger" th:text="'- R$ ' + ${#numbers.formatDecimal(dre.despesasOperacionais, 1, 2, 'COMMA')}">- R$ 0,00</td>
                                     </tr>
                                     <tr class="table-dark" style="font-size: 1.05rem;">
-                                        <td><strong>(=) RESULTADO LÍQUIDO DO STUDIO</strong></td>
+                                        <td><strong>(=) RESULTADO LÍQUIDO DA EMPRESA</strong></td>
                                         <td style="text-align: right;">
                                             <strong th:classappend="${dre.resultadoLiquido >= 0 ? 'text-success' : 'text-danger'}"
                                                     th:text="'R$ ' + ${#numbers.formatDecimal(dre.resultadoLiquido, 1, 2, 'COMMA')}">R$ 0,00</strong>
@@ -675,7 +675,7 @@ function exportarRelatorioAtualCSV() {
     if (!activeTabEl) return;
     
     let csv = [];
-    csv.push(["RELATÓRIO GERENCIAL - BEAUTY SALON"]);
+    csv.push(["RELATÓRIO GERENCIAL - NEXI PRO"]);
     csv.push(["Data de Emissão", new Date().toLocaleDateString('pt-BR')]);
     csv.push([]);
 

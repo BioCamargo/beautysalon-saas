@@ -147,11 +147,11 @@ public class FinanceiroController {
         
         String chavePix = (comanda.getEmpresa() != null && comanda.getEmpresa().getChavePix() != null)
                 ? comanda.getEmpresa().getChavePix()
-                : "pix@salao.com"; // Fallback de exemplo
+                : "pix@empresa.com.br"; // Fallback de exemplo
         String cidade = (comanda.getEmpresa() != null && comanda.getEmpresa().getCidade() != null)
                 ? comanda.getEmpresa().getCidade()
                 : "SAO PAULO";
-        String nomeRecebedor = (comanda.getEmpresa() != null) ? comanda.getEmpresa().getNome() : "STUDIO";
+        String nomeRecebedor = (comanda.getEmpresa() != null) ? comanda.getEmpresa().getNome() : "EMPRESA";
         
         BigDecimal valorCobranca = comanda.getSaldoRestante().compareTo(BigDecimal.ZERO) > 0 ? comanda.getSaldoRestante() : comanda.getValorTotal();
         String pixPayload = pixService.gerarPayloadPix(chavePix, nomeRecebedor, cidade, valorCobranca, comanda.getNumeroComanda());
