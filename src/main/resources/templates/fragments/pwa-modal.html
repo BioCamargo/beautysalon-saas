@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- FRAGMENTO DO MODAL DE INSTALAÇÃO DO PWA -->
+    <div th:fragment="pwaModal">
+        <!-- MODAL GLOBAL DE INSTALAÇÃO DO APP (PWA) -->
+        <div class="modal fade" id="modalInstalarApp" tabindex="-1" aria-labelledby="modalInstalarAppLabel" aria-hidden="true" style="z-index: 1070;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; background: #0f172a; color: #ffffff; border: 1px solid rgba(0, 210, 238, 0.3);">
+                    <div class="modal-header border-0 pb-0" style="background: transparent;">
+                        <div class="d-flex align-items-center gap-2">
+                            <img th:src="@{/images/nexipro-icon.svg}" alt="NEXI PRO" style="width: 36px; height: 36px;" />
+                            <div>
+                                <h5 class="modal-title fw-bold mb-0 text-white" id="modalInstalarAppLabel">Baixar App NEXI PRO</h5>
+                                <small class="text-white-50">Acesse sua empresa direto da tela inicial</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body p-4 text-center">
+                        <!-- BOTÃO DIRETO DE INSTALAÇÃO SE DISPONÍVEL -->
+                        <div id="pwaNativePromptArea" class="mb-4">
+                            <button type="button" class="btn btn-lg w-100 fw-bold py-3 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2"
+                                    onclick="executarInstalacaoPwa()"
+                                    style="background: linear-gradient(135deg, #00D2EE 0%, #0099b8 100%); color: #070a12;">
+                                <i class="bi bi-download fs-5"></i>
+                                <span>Baixar App Agora</span>
+                            </button>
+                            <small class="text-white-50 d-block mt-2" style="font-size: 0.78rem;">Instalação leve, instantânea e sem consumir memória do seu aparelho</small>
+                        </div>
+
+                        <!-- GUIA PASSO A PASSO POR DISPOSITIVO -->
+                        <div class="text-start rounded-3 p-3 mb-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="fw-bold text-white small mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-phone text-info"></i> Como instalar no seu aparelho:
+                            </div>
+                            
+                            <!-- ANDROID -->
+                            <div class="mb-3">
+                                <strong style="color: #00D2EE; font-size: 0.82rem;"><i class="bi bi-android2 me-1"></i> No Android (Chrome / Samsung):</strong>
+                                <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
+                                    Toque nos <strong>3 pontinhos</strong> no canto superior do navegador e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
+                                </p>
+                            </div>
+
+                            <!-- IPHONE / IPAD -->
+                            <div class="mb-2">
+                                <strong style="color: #c5a059; font-size: 0.82rem;"><i class="bi bi-apple me-1"></i> No iPhone (Safari):</strong>
+                                <p class="text-white-50 small mb-0 mt-1" style="font-size: 0.78rem; line-height: 1.4;">
+                                    Toque no botão de <strong>Compartilhar</strong> (ícone de quadrado com setinha para cima) e selecione <strong>"Adicionar à Tela de Início"</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- BOTÕES DE COMPARTILHAMENTO -->
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-light btn-sm w-100 rounded-pill py-2" onclick="copiarLinkApp()">
+                                <i class="bi bi-clipboard me-1"></i> <span id="btnCopyAppLinkText">Copiar Link do App</span>
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm w-100 rounded-pill py-2" onclick="enviarAppWhatsApp()" style="background: #22c55e; border-color: #16a34a;">
+                                <i class="bi bi-whatsapp me-1"></i> Mandar no WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT GLOBAL DO PWA -->
+        <script>
+            let globalDeferredPrompt = null;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                globalDeferredPrompt = e;
+            });
+
+            function abrirModalInstalarApp() {
+                const el = document.getElementById('modalInstalarApp');
+                if (el && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    const modal = bootstrap.Modal.getOrCreateInstance(el);
+                    modal.show();
+                } else if (globalDeferredPrompt) {
+                    executarInstalacaoPwa();
+                } else {
+                    alert('Para baixar o aplicativo:\n\n📱 Android: Toque nos 3 pontinhos e escolha "Instalar aplicativo".\n🍎 iPhone: Toque no botão compartilhar e escolha "Adicionar à Tela de Início".');
+                }
+            }
+
+            function executarInstalacaoPwa() {
+                if (globalDeferredPrompt) {
+                    globalDeferredPrompt.prompt();
+                    globalDeferredPrompt.userChoice.then((choice) => {
+                        if (choice.outcome === 'accepted') {
+                            const modalEl = document.getElementById('modalInstalarApp');
+                            if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                                const modal = bootstrap.Modal.getInstance(modalEl);
+                                if (modal) modal.hide();
+                            }
+                        }
+                        globalDeferredPrompt = null;
+                    });
+                } else {
+                    alert('Siga o passo a passo exibido no quadro para adicionar à tela inicial!');
+                }
+            }
+
+            function copiarLinkApp() {
+                const url = window.location.origin + window.location.pathname;
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.getElementById('btnCopyAppLinkText');
+                    if (btn) {
+                        btn.textContent = 'Link Copiado!';
+                        setTimeout(() => { btn.textContent = 'Copiar Link do App'; }, 2000);
+                    }
+                });
+            }
+
+            function enviarAppWhatsApp() {
+                const url = window.location.origin + window.location.pathname;
+                const msg = encodeURIComponent(`📲 *Acesso ao Aplicativo NEXI PRO*\n\nAbra este link no navegador do seu aparelho para instalar o app e entrar direto:\n${url}`);
+                window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+            }
+
+            // Se já estiver rodando em tela cheia como App (Standalone), oculta botão no menu
+            window.addEventListener('DOMContentLoaded', () => {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                if (isStandalone) {
+                    const wrap = document.getElementById('sidebarPwaWrap');
+                    const banner = document.getElementById('btnBannerInstalarApp');
+                    if (wrap) wrap.style.display = 'none';
+                    if (banner) banner.style.display = 'none';
+                }
+            });
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('SW PWA:', err));
+                });
+            }
+        </script>
+    </div>
+
+</body>
+</html>
