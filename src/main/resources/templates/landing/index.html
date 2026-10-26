@@ -25,6 +25,9 @@
 
     <!-- CSS Customizado da Landing Page (Mobile-First) -->
     <link th:href="@{/css/landing.css}" rel="stylesheet">
+
+    <!-- OPENREPLAY TRACKER (OBSERVABILIDADE NO HEAD) -->
+    <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </head>
 
 <body class="landing-page">
@@ -934,9 +937,6 @@
             }
         }
     </script>
-
-    <!-- INJEÇÃO CONDICIONAL OPENREPLAY (OBSERVABILIDADE LANDING PAGE) -->
-    <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </body>
 
 </html>

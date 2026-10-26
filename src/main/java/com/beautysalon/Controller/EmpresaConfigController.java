@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Base64;
 
 @Controller
-@RequestMapping("/{slug}/configuracoes/empresa")
+@RequestMapping({"/{slug}/configuracoes", "/{slug}/configuracoes/empresa"})
 @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
 public class EmpresaConfigController {
 

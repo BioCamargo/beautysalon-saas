@@ -27,6 +27,9 @@
 
     <!-- Custom Luxury Style -->
     <link th:href="@{/css/style.css}" rel="stylesheet" />
+
+    <!-- OPENREPLAY TRACKER (OBSERVABILIDADE NO HEAD) -->
+    <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </head>
 
 <body>
@@ -167,8 +170,5 @@
             }
         };
     </script>
-
-    <!-- INJEÇÃO CONDICIONAL OPENREPLAY (OBSERVABILIDADE DE UX & SESSÃO) -->
-    <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </body>
 </html>

@@ -6,7 +6,7 @@
 <body>
 
 <!-- ========================================================================= -->
-<!-- FRAGMENTO GLOBAL DE ANALYTICS & OBSERVABILIDADE DE UX (OPENREPLAY & PIXEL) -->
+<!-- FRAGMENTO OFICIAL OPENREPLAY (TRACKER CDN v19 COMPATÍVEL COM NAVEGADOR) -->
 <!-- ========================================================================= -->
 <th:block th:fragment="openreplay">
     <script th:if="${@environment.getProperty('nexipro.analytics.openreplay.enabled') == 'true' and @environment.getProperty('nexipro.analytics.openreplay.project-key') != null and !#strings.isEmpty(@environment.getProperty('nexipro.analytics.openreplay.project-key'))}">
@@ -16,37 +16,34 @@
 
             var initOpts = {
                 projectKey: projectKey,
-                defaultInputMode: 1, // 1 = MASCARA TODOS OS INPUTS (Proteção LGPD estrita de dados bancários/senhas)
+                defaultInputMode: 2, // Mascara campos confidenciais e emails por padrão (LGPD)
                 obscureTextNumbers: false,
-                respectDoNotTrack: true
+                obscureTextEmails: true
             };
 
-            var startOpts = {};
-            /*[# th:if="${#authentication != null and #authentication.name != 'anonymousUser'}"]*/
-            startOpts.userID = "[[${#authentication.name}]]";
-            /*[/]*/
+            var startOpts = {
+                userID: "[[${#authentication != null and #authentication.name != 'anonymousUser' ? #authentication.name : ''}]]"
+            };
 
-            (function(A,s,a,y,e,r){
-                r=window._openreplay = window._openreplay||function(){(r.q=r.q||[]).push(arguments)};
-                e=s.createElement(a);e.async=1;e.src=y;
-                r.start=function(t){r("start",t);};
-                s.getElementsByTagName(a)[0].parentNode.appendChild(e);
-            })(window,document,'script','https://static.openreplay.com/tracker.js');
+            // Loader Oficial do OpenReplay CDN
+            (function(A, s, a, y, e, r) {
+                r = window.OpenReplay = [e, r, y, [s - 1, e]];
+                s = document.createElement('script');
+                s.src = A;
+                s.async = !a;
+                document.getElementsByTagName('head')[0].appendChild(s);
+            })("//static.openreplay.com/latest/openreplay.js", 1, 0, initOpts, startOpts);
 
-            _openreplay.start(startOpts);
-
-            // Metadados Multi-Tenant para filtro de sessões no dashboard do fundador
+            // Metadados do Estabelecimento Multi-Tenant
             /*[# th:if="${empresaSlug != null}"]*/
-            _openreplay('setMetadata', 'empresa_slug', '[[${empresaSlug}]]');
+            window.OpenReplay = window.OpenReplay || [];
+            window.OpenReplay.push(['setMetadata', 'empresa_slug', '[[${empresaSlug}]]']);
             /*[/]*/
             /*[# th:if="${empresaPlano != null}"]*/
-            _openreplay('setMetadata', 'plano', '[[${empresaPlano}]]');
+            window.OpenReplay.push(['setMetadata', 'plano', '[[${empresaPlano}]]']);
             /*[/]*/
             /*[# th:if="${empresaTrialAtivo != null}"]*/
-            _openreplay('setMetadata', 'trial_ativo', '[[${empresaTrialAtivo}]]');
-            /*[/]*/
-            /*[# th:if="${empresaStatusAssinatura != null}"]*/
-            _openreplay('setMetadata', 'status_assinatura', '[[${empresaStatusAssinatura}]]');
+            window.OpenReplay.push(['setMetadata', 'trial_ativo', '[[${empresaTrialAtivo}]]']);
             /*[/]*/
         })();
     </script>
