@@ -376,7 +376,7 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const linkBioUrl = /*[[${linkBio}]]*/ 'http://localhost:8081/p/nexipro';
+    const linkBioUrl = window.location.origin + '/' + (/*[[${empresaSlug}]]*/ 'nexipro') + '/agendar';
     const linkBioProducao = /*[[${linkBioProducao}]]*/ 'https://app.nexipro.com.br/p/nexipro';
     const isLocalhost = /*[[${isLocalhost}]]*/ true;
     const empresaNome = /*[[${empresaNome}]]*/ 'NEXI PRO Studio';
@@ -385,6 +385,8 @@
     // 1. Gera o QR Code com alta resolução
     document.addEventListener("DOMContentLoaded", function() {
         const qrContainer = document.getElementById("qrcodeCanvas");
+        const inpLink = document.getElementById("inputLinkBio");
+        if (inpLink) inpLink.value = linkBioUrl;
         if (qrContainer) {
             qrContainer.innerHTML = "";
             new QRCode(qrContainer, {
