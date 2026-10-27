@@ -45,6 +45,8 @@ application-*.properties
 !application-test.properties
 .env
 uploads/
+modelo_clientes_*.csv
+modelo_clientes_*.xlsx
 
 ### Guias, Estratégias e Notas Internas (Apenas Local) ###
 docs/GUIA_GIT_FLUXO_BRANCHES.md

@@ -95,6 +95,49 @@
                     </div>
                 </div>
 
+                <style>
+                    .onboarding-btn-action {
+                        width: 100% !important;
+                        height: 36px !important;
+                        min-height: 36px !important;
+                        max-height: 36px !important;
+                        padding: 0 0.5rem !important;
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        gap: 0.35rem !important;
+                        border-radius: 8px !important;
+                        font-size: 0.78rem !important;
+                        font-weight: 700 !important;
+                        white-space: nowrap !important;
+                        text-decoration: none !important;
+                        line-height: 1 !important;
+                        transition: all 0.2s ease-in-out !important;
+                        margin-top: auto !important;
+                    }
+                    .onboarding-btn-action.step-done {
+                        background: rgba(16, 185, 129, 0.14) !important;
+                        color: #10B981 !important;
+                        border: 1px solid rgba(16, 185, 129, 0.35) !important;
+                    }
+                    .onboarding-btn-action.step-done:hover {
+                        background: rgba(16, 185, 129, 0.25) !important;
+                        color: #34D399 !important;
+                        border-color: rgba(16, 185, 129, 0.6) !important;
+                    }
+                    .onboarding-btn-action.step-todo {
+                        background: rgba(0, 210, 238, 0.14) !important;
+                        color: #00D2EE !important;
+                        border: 1px solid rgba(0, 210, 238, 0.4) !important;
+                    }
+                    .onboarding-btn-action.step-todo:hover {
+                        background: #00D2EE !important;
+                        color: #0B0E14 !important;
+                        border-color: #00D2EE !important;
+                        box-shadow: 0 0 12px rgba(0, 210, 238, 0.45) !important;
+                    }
+                </style>
+
                 <!-- OS 6 PASSOS DE CONFIGURAÇÃO (GRID RESPONSIVO) -->
                 <div class="d-sm-none text-white-50 text-end mb-2" style="font-size: 0.72rem;"><i class="bi bi-arrow-left-right me-1 text-info"></i> Deslize para ver todos os passos</div>
                 <div class="row g-3 onboarding-steps-row">
@@ -112,9 +155,8 @@
                                     Ambiente multi-tenant provisionado e seguro.
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;">
-                                <i class="bi bi-gear-fill me-1"></i> Configurações
+                            <a th:href="@{/{slug}/configuracoes/empresa(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action step-done">
+                                <i class="bi bi-gear-fill"></i> <span>Configurações</span>
                             </a>
                         </div>
                     </div>
@@ -122,7 +164,7 @@
                     <!-- PASSO 2: CATÁLOGO DE SERVIÇOS -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 onboarding-step-col">
                         <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" 
-                             th:style="${totalServicos != null and totalServicos > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);'">
+                             th:style="${totalServicos != null and totalServicos > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(0, 210, 238, 0.25);'">
                             <div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="badge" th:classappend="${totalServicos != null and totalServicos > 0} ? 'bg-success' : 'bg-secondary'" style="font-size: 0.68rem; font-weight: 600;">Passo 2</span>
@@ -135,10 +177,10 @@
                                     <span th:unless="${totalServicos != null and totalServicos > 0}">Cadastre os serviços oferecidos pela sua empresa.</span>
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/servicos(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               th:style="${totalServicos != null and totalServicos > 0} ? 'background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;' : 'background: #00D2EE; color: #0B0E14; border: none; border-radius: 8px; font-size: 0.76rem;'">
-                                <i class="bi bi-scissors me-1"></i>
-                                <span th:text="${totalServicos != null and totalServicos > 0} ? 'Gerenciar' : 'Adicionar'">Cadastrar</span>
+                            <a th:href="@{/{slug}/servicos(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action"
+                               th:classappend="${totalServicos != null and totalServicos > 0} ? 'step-done' : 'step-todo'">
+                                <i class="bi bi-scissors"></i>
+                                <span th:text="${totalServicos != null and totalServicos > 0} ? 'Gerenciar' : 'Adicionar'">Gerenciar</span>
                             </a>
                         </div>
                     </div>
@@ -146,7 +188,7 @@
                     <!-- PASSO 3: EQUIPE / PROFISSIONAIS -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 onboarding-step-col">
                         <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" 
-                             th:style="${totalProfissionais != null and totalProfissionais > 1} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);'">
+                             th:style="${totalProfissionais != null and totalProfissionais > 1} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(0, 210, 238, 0.25);'">
                             <div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="badge" th:classappend="${totalProfissionais != null and totalProfissionais > 1} ? 'bg-success' : 'bg-secondary'" style="font-size: 0.68rem; font-weight: 600;">Passo 3</span>
@@ -159,10 +201,10 @@
                                     <span th:unless="${totalProfissionais != null and totalProfissionais > 1}">Adicione os prestadores e taxas de comissão.</span>
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/usuarios(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               th:style="${totalProfissionais != null and totalProfissionais > 1} ? 'background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;' : 'background: rgba(255, 255, 255, 0.1); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; font-size: 0.76rem;'">
-                                <i class="bi bi-people-fill me-1"></i>
-                                <span th:text="${totalProfissionais != null and totalProfissionais > 1} ? 'Gerenciar' : 'Adicionar'">Equipe</span>
+                            <a th:href="@{/{slug}/usuarios(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action"
+                               th:classappend="${totalProfissionais != null and totalProfissionais > 1} ? 'step-done' : 'step-todo'">
+                                <i class="bi bi-people-fill"></i>
+                                <span th:text="${totalProfissionais != null and totalProfissionais > 1} ? 'Gerenciar' : 'Adicionar'">Gerenciar</span>
                             </a>
                         </div>
                     </div>
@@ -170,7 +212,7 @@
                     <!-- PASSO 4: BASE DE CLIENTES -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 onboarding-step-col">
                         <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" 
-                             th:style="${totalClientes != null and totalClientes > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);'">
+                             th:style="${totalClientes != null and totalClientes > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(0, 210, 238, 0.25);'">
                             <div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="badge" th:classappend="${totalClientes != null and totalClientes > 0} ? 'bg-success' : 'bg-secondary'" style="font-size: 0.68rem; font-weight: 600;">Passo 4</span>
@@ -183,10 +225,10 @@
                                     <span th:unless="${totalClientes != null and totalClientes > 0}">Cadastre ou importe sua carteira de clientes.</span>
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/clientes(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               th:style="${totalClientes != null and totalClientes > 0} ? 'background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;' : 'background: #00D2EE; color: #0B0E14; border: none; border-radius: 8px; font-size: 0.76rem;'">
-                                <i class="bi bi-person-lines-fill me-1"></i>
-                                <span th:text="${totalClientes != null and totalClientes > 0} ? 'Gerenciar' : 'Cadastrar'">Clientes</span>
+                            <a th:href="@{/{slug}/clientes(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action"
+                               th:classappend="${totalClientes != null and totalClientes > 0} ? 'step-done' : 'step-todo'">
+                                <i class="bi bi-person-lines-fill"></i>
+                                <span th:text="${totalClientes != null and totalClientes > 0} ? 'Gerenciar' : 'Cadastrar'">Gerenciar</span>
                             </a>
                         </div>
                     </div>
@@ -194,7 +236,7 @@
                     <!-- PASSO 5: ESTOQUE & INSUMOS -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 onboarding-step-col">
                         <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" 
-                             th:style="${totalProdutos != null and totalProdutos > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);'">
+                             th:style="${totalProdutos != null and totalProdutos > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(0, 210, 238, 0.25);'">
                             <div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="badge" th:classappend="${totalProdutos != null and totalProdutos > 0} ? 'bg-success' : 'bg-secondary'" style="font-size: 0.68rem; font-weight: 600;">Passo 5</span>
@@ -207,10 +249,10 @@
                                     <span th:unless="${totalProdutos != null and totalProdutos > 0}">Controle insumos ou itens para revenda.</span>
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/estoque(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               th:style="${totalProdutos != null and totalProdutos > 0} ? 'background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;' : 'background: #00D2EE; color: #0B0E14; border: none; border-radius: 8px; font-size: 0.76rem;'">
-                                <i class="bi bi-box-seam me-1"></i>
-                                <span th:text="${totalProdutos != null and totalProdutos > 0} ? 'Gerenciar' : 'Adicionar'">Estoque</span>
+                            <a th:href="@{/{slug}/estoque(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action"
+                               th:classappend="${totalProdutos != null and totalProdutos > 0} ? 'step-done' : 'step-todo'">
+                                <i class="bi bi-box-seam"></i>
+                                <span th:text="${totalProdutos != null and totalProdutos > 0} ? 'Gerenciar' : 'Adicionar'">Adicionar</span>
                             </a>
                         </div>
                     </div>
@@ -218,7 +260,7 @@
                     <!-- PASSO 6: 1º AGENDAMENTO -->
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 onboarding-step-col">
                         <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" 
-                             th:style="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);'">
+                             th:style="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(22, 27, 38, 0.85); border: 1px solid rgba(0, 210, 238, 0.25);'">
                             <div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="badge" th:classappend="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'bg-success' : 'bg-secondary'" style="font-size: 0.68rem; font-weight: 600;">Passo 6</span>
@@ -231,10 +273,10 @@
                                     <span th:unless="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0}">Crie seu 1º horário ou use o link público.</span>
                                 </p>
                             </div>
-                            <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-sm w-100 fw-bold"
-                               th:style="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; font-size: 0.76rem;' : 'background: #00D2EE; color: #0B0E14; border: none; border-radius: 8px; font-size: 0.76rem;'">
-                                <i class="bi bi-calendar-plus me-1"></i>
-                                <span th:text="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'Ver Grade' : 'Criar Horário'">Agendar</span>
+                            <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-sm onboarding-btn-action"
+                               th:classappend="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'step-done' : 'step-todo'">
+                                <i class="bi bi-calendar-plus"></i>
+                                <span th:text="${totalAgendamentosGeral != null and totalAgendamentosGeral > 0} ? 'Ver Grade' : 'Agendar'">Agendar</span>
                             </a>
                         </div>
                     </div>
