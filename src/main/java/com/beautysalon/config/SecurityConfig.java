@@ -23,13 +23,16 @@ public class SecurityConfig {
     private final TenantAuthenticationProvider tenantAuthenticationProvider;
     private final UserRepository userRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final com.beautysalon.service.AuditoriaService auditoriaService;
 
     public SecurityConfig(@org.springframework.context.annotation.Lazy TenantAuthenticationProvider tenantAuthenticationProvider,
                           UserRepository userRepository,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          @org.springframework.context.annotation.Lazy com.beautysalon.service.AuditoriaService auditoriaService) {
         this.tenantAuthenticationProvider = tenantAuthenticationProvider;
         this.userRepository = userRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.auditoriaService = auditoriaService;
     }
 
     @Bean
@@ -41,13 +44,18 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
+            String username = authentication.getName();
             Object principal = authentication.getPrincipal();
+
+            try {
+                auditoriaService.registrar("LOGIN_SUCESSO", "usuario", username, "Autenticação realizada com sucesso");
+            } catch (Exception ignored) {}
+
             if (principal instanceof TenantUserDetails tenantUser && tenantUser.getEmpresaSlug() != null) {
                 response.sendRedirect("/" + tenantUser.getEmpresaSlug() + "/home");
                 return;
             }
 
-            String username = authentication.getName();
             Optional<User> userOpt = userRepository.findFirstByUsername(username);
 
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {

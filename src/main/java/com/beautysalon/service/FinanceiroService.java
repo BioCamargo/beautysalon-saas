@@ -29,6 +29,7 @@ public class FinanceiroService {
     private final AgendamentoRepository agendamentoRepository;
 
     private final PagamentoComandaRepository pagamentoComandaRepository;
+    private final AuditoriaService auditoriaService;
 
     public FinanceiroService(CaixaRepository caixaRepository,
                              ComandaRepository comandaRepository,
@@ -40,7 +41,8 @@ public class FinanceiroService {
                              UserRepository userRepository,
                              WhatsAppService whatsAppService,
                              AgendamentoRepository agendamentoRepository,
-                             PagamentoComandaRepository pagamentoComandaRepository) {
+                             PagamentoComandaRepository pagamentoComandaRepository,
+                             AuditoriaService auditoriaService) {
         this.caixaRepository = caixaRepository;
         this.comandaRepository = comandaRepository;
         this.movimentacaoFinanceiraRepository = movimentacaoFinanceiraRepository;
@@ -52,6 +54,7 @@ public class FinanceiroService {
         this.whatsAppService = whatsAppService;
         this.agendamentoRepository = agendamentoRepository;
         this.pagamentoComandaRepository = pagamentoComandaRepository;
+        this.auditoriaService = auditoriaService;
     }
 
     public Optional<Caixa> buscarCaixaAberto() {
@@ -91,7 +94,10 @@ public class FinanceiroService {
                 .empresa(empresa)
                 .build();
 
-        return caixaRepository.save(caixa);
+        Caixa salvo = caixaRepository.save(caixa);
+        auditoriaService.registrar("CAIXA_ABRIR", "caixa", String.valueOf(salvo.getId()),
+                "Abertura de caixa com saldo inicial de R$ " + salvo.getSaldoInicial() + (observacoes != null ? " (" + observacoes + ")" : ""));
+        return salvo;
     }
 
     @Transactional
@@ -115,7 +121,11 @@ public class FinanceiroService {
             caixa.setObservacoes((caixa.getObservacoes() != null ? caixa.getObservacoes() + " | " : "") + observacoes);
         }
 
-        return caixaRepository.save(caixa);
+        Caixa salvo = caixaRepository.save(caixa);
+        auditoriaService.registrar("CAIXA_FECHAR", "caixa", String.valueOf(salvo.getId()),
+                "Fechamento de caixa. Saldo contado: R$ " + salvo.getSaldoFinalContado() +
+                ", Esperado: R$ " + esperado + ", Diferença: R$ " + salvo.getDiferencaFechamento());
+        return salvo;
     }
 
     @Transactional
@@ -143,7 +153,9 @@ public class FinanceiroService {
                 .empresa(caixa.getEmpresa())
                 .build();
 
-        movimentacaoFinanceiraRepository.save(mov);
+        MovimentacaoFinanceira movSalva = movimentacaoFinanceiraRepository.save(mov);
+        auditoriaService.registrar("CAIXA_MOVIMENTACAO", "movimentacao_financeira", String.valueOf(movSalva.getId()),
+                tipo + " no valor de R$ " + valor + " (" + categoria + ") - " + descricao);
     }
 
     // ================= COMANDAS =================
@@ -403,6 +415,10 @@ public class FinanceiroService {
         caixaRepository.save(caixa);
 
         Comanda salva = comandaRepository.save(comanda);
+
+        auditoriaService.registrar("COMANDA_FECHAR", "comandas", String.valueOf(salva.getId()),
+                "Fechamento de comanda " + salva.getNumeroComanda() + " no valor total de R$ " + salva.getValorTotal() +
+                " com " + (salva.getPagamentos() != null ? salva.getPagamentos().size() : 0) + " pagamento(s)");
 
         // Dispara comprovante de pagamento via WhatsApp se configurado
         try {

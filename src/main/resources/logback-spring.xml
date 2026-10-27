@@ -1,61 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true" scanPeriod="30 seconds">
 
-<!--    define para onde os logs vão (console, arquivo)-->
-    <!-- Appender para console -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{trace_id:-NO_TRACE} | tenant:%X{tenant:-global} | emp:%X{empresa_id:--} | user:%X{usuario:-anon} | ip:%X{client_ip:--}] %logger{36} - %msg%n" />
+    <property name="LOG_DIR" value="logs" />
+
+    <!-- Appender para console com formatação rica MDC -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Appender para log geral -->
+    <!-- Appender para log geral com compressão automática GZ e retenção de 15 dias (Custo Zero de disco) -->
     <appender name="FILE_GENERAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/general.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/general.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+        <file>${LOG_DIR}/general.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archived/general.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <maxHistory>15</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender exclusivo para Auditoria Transacional e de Segurança -->
+    <appender name="FILE_AUDITORIA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/auditoria.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archived/auditoria.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
     <!-- Appender para log de Cliente -->
     <appender name="FILE_CLIENTE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/cliente.log</file>
+        <file>${LOG_DIR}/cliente.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/cliente.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>${LOG_DIR}/cliente.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
     <!-- Appender para log de Servico -->
     <appender name="FILE_SERVICO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/servico.log</file>
+        <file>${LOG_DIR}/servico.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/servico.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>${LOG_DIR}/servico.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
     <!-- Appender para log de Usuario -->
     <appender name="FILE_USUARIO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/usuario.log</file>
+        <file>${LOG_DIR}/usuario.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/usuario.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>${LOG_DIR}/usuario.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
+
+    <!-- Logger dedicado de Auditoria Corporativa -->
+    <logger name="com.beautysalon.service.AuditoriaService" level="INFO" additivity="true">
+        <appender-ref ref="FILE_AUDITORIA"/>
+    </logger>
 
     <!-- Loggers para cada entidade -->
     <logger name="com.beautysalon.exception.ClienteExceptionLogger" level="ERROR" additivity="false">
@@ -70,11 +93,14 @@
         <appender-ref ref="FILE_USUARIO"/>
     </logger>
 
-    <!-- Root logger  “global” da aplicação (pega tudo que não foi tratado por loggers específicos).-->
+    <!-- Supressão de verbosidade de bibliotecas em produção -->
+    <logger name="org.springframework.security" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="WARN"/>
+
+    <!-- Root logger global da aplicação -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE_GENERAL" />
     </root>
-
 
 </configuration>

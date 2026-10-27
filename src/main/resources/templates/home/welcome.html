@@ -248,12 +248,13 @@
                             <i class="bi bi-link-45deg fs-5 text-info"></i>
                             <span>Link público de agendamento da sua empresa:</span>
                         </label>
-                        <div class="input-group shadow-sm">
-                            <span class="input-group-text border-0 text-info" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0, 210, 238, 0.35); border-right: none; border-radius: 10px 0 0 10px; padding: 0.5rem 0.85rem;">
+                        <div class="input-group shadow-sm" style="display: flex; flex-wrap: nowrap; align-items: stretch;">
+                            <span class="input-group-text text-info" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0, 210, 238, 0.35); border-right: none; border-radius: 10px 0 0 10px; padding: 0.55rem 0.85rem; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-globe2 fs-6"></i>
                             </span>
                             <input type="text" id="inputLinkAgendamento" readonly
-                                   style="background: rgba(15, 23, 42, 0.95); color: #00D2EE; border: 1px solid rgba(0, 210, 238, 0.35); border-left: none; border-radius: 0 10px 10px 0; font-family: monospace; font-size: 0.88rem; font-weight: 700; padding: 0.55rem 0.9rem; cursor: pointer; width: 100%;"
+                                   class="form-control"
+                                   style="background: rgba(15, 23, 42, 0.95); color: #00D2EE; border: 1px solid rgba(0, 210, 238, 0.35); border-left: none; border-radius: 0 10px 10px 0; font-family: monospace; font-size: 0.88rem; font-weight: 700; padding: 0.55rem 0.9rem; cursor: pointer; flex: 1 1 auto; width: 1%; min-width: 0; box-shadow: none;"
                                    th:value="@{'/' + ${empresaSlug} + '/agendar'}"
                                    onclick="this.select(); copiarLinkBio();"
                                    title="Clique para selecionar e copiar a URL completa">
