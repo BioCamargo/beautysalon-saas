@@ -34,6 +34,9 @@ class HomeControllerTest {
     private UserRepository userRepository;
 
     @Mock
+    private EmpresaRepository empresaRepository;
+
+    @Mock
     private ClienteRepository clienteRepository;
 
     @Mock

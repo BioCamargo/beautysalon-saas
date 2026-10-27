@@ -9,7 +9,7 @@
     <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
     <link rel="alternate icon" th:href="@{/favicon.ico}">
     <link rel="apple-touch-icon" href="/images/pwa-icon-192.png">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" th:href="${empresaSlug != null and !#strings.isEmpty(empresaSlug)} ? @{/{slug}/manifest.json(slug=${empresaSlug})} : @{/manifest.json}">
     <meta name="theme-color" content="#0B0E14">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">

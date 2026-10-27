@@ -1,10 +1,13 @@
 package com.beautysalon.Controller;
 
+import com.beautysalon.model.Empresa;
 import com.beautysalon.model.User;
+import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -18,6 +21,7 @@ import java.util.Optional;
 public class HomeController {
 
     private final UserRepository userRepository;
+    private final EmpresaRepository empresaRepository;
     private final com.beautysalon.repository.ClienteRepository clienteRepository;
     private final com.beautysalon.repository.AgendamentoRepository agendamentoRepository;
     private final com.beautysalon.service.EstoqueService estoqueService;
@@ -28,6 +32,7 @@ public class HomeController {
     private final com.beautysalon.repository.ServicoRepository servicoRepository;
 
     public HomeController(UserRepository userRepository,
+                          EmpresaRepository empresaRepository,
                           com.beautysalon.repository.ClienteRepository clienteRepository,
                           com.beautysalon.repository.AgendamentoRepository agendamentoRepository,
                           com.beautysalon.service.EstoqueService estoqueService,
@@ -37,6 +42,7 @@ public class HomeController {
                           com.beautysalon.repository.ComandaItemRepository comandaItemRepository,
                           com.beautysalon.repository.ServicoRepository servicoRepository) {
         this.userRepository = userRepository;
+        this.empresaRepository = empresaRepository;
         this.clienteRepository = clienteRepository;
         this.agendamentoRepository = agendamentoRepository;
         this.estoqueService = estoqueService;
@@ -48,7 +54,9 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String root(Authentication authentication, Model model) {
+    public String root(Authentication authentication,
+                       @CookieValue(name = "nexipro_last_slug", required = false) String lastSlug,
+                       Model model) {
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
             if (authentication.getPrincipal() instanceof com.beautysalon.tenant.TenantUserDetails tud && tud.getEmpresaSlug() != null) {
                 return "redirect:/" + tud.getEmpresaSlug() + "/home";
@@ -60,10 +68,28 @@ public class HomeController {
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
                 return "redirect:/" + userOpt.get().getEmpresa().getSlug() + "/home";
             }
+            if (lastSlug != null && !lastSlug.isBlank()) {
+                return "redirect:/" + lastSlug.trim().toLowerCase() + "/home";
+            }
+        }
+
+        // Se o usuário já possui empresa registrada/acessada no dispositivo (ex: abriu o App instalado ou atalho)
+        if (lastSlug != null && !lastSlug.isBlank()) {
+            try {
+                String cleanSlug = java.net.URLDecoder.decode(lastSlug, java.nio.charset.StandardCharsets.UTF_8).trim().toLowerCase();
+                Optional<Empresa> empOpt = empresaRepository.findBySlug(cleanSlug);
+                if (empOpt.isPresent()) {
+                    return "redirect:/" + empOpt.get().getSlug() + "/login";
+                }
+            } catch (Exception ignored) {}
         }
 
         model.addAttribute("pageTitle", "NEXI PRO | Gestão Inteligente & Alta Performance para Empresas, Barbearias e Clínicas");
         return "landing/index";
+    }
+
+    public String root(Authentication authentication, Model model) {
+        return root(authentication, null, model);
     }
 
     @GetMapping("/termos")

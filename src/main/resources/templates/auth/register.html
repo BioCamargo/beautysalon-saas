@@ -15,7 +15,7 @@
     <link th:href="@{/css/style.css(v='2.2')}" rel="stylesheet">
     
     <!-- PWA (Progressive Web App) Manifest & Mobile Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" th:href="${empresaSlug != null and !#strings.isEmpty(empresaSlug)} ? @{/{slug}/manifest.json(slug=${empresaSlug})} : @{/manifest.json}">
     <meta name="theme-color" content="#0B0E14">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -249,7 +249,13 @@
                 // Salva localmente como a última empresa registrada/acessada
                 try {
                     localStorage.setItem('nexipro_last_slug', slug);
-                    document.cookie = "nexipro_last_slug=" + encodeURIComponent(slug) + "; path=/; max-age=2592000";
+                    document.cookie = "nexipro_last_slug=" + encodeURIComponent(slug) + "; path=/; max-age=2592000; SameSite=Lax";
+                    
+                    // Atualiza dinamicamente o manifest no HEAD para vincular o app à empresa recém-criada
+                    let manifestEl = document.querySelector('link[rel="manifest"]');
+                    if (manifestEl) {
+                        manifestEl.setAttribute('href', '/' + encodeURIComponent(slug) + '/manifest.json');
+                    }
                 } catch(err) {
                     console.log('Storage info:', err);
                 }
@@ -387,18 +393,23 @@
     });
 
     function installPwaApp() {
+        const input = document.getElementById('exclusiveUrlText');
+        const studioUrl = input ? input.value : '';
+
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choice) => {
                 if (choice.outcome === 'accepted') {
-                    console.log('PWA instalado pelo usuário com sucesso');
+                    console.log('PWA instalado com sucesso');
                 }
                 deferredPrompt = null;
             });
+        } else if (studioUrl) {
+            window.location.href = studioUrl + '?registered=true&install=true';
         } else {
             const btn = document.getElementById('btnInstallPwa');
             if (btn) {
-                btn.innerHTML = '<i class="bi bi-info-circle me-1"></i> Veja a dica abaixo';
+                btn.innerHTML = '<i class="bi bi-info-circle me-1"></i> Acesse seu link exclusivo';
             }
         }
     }

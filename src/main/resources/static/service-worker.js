@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexipro-cache-v2';
+const CACHE_NAME = 'nexipro-cache-v4';
 const STATIC_ASSETS = [
     '/css/style.css',
     '/images/pwa-icon-192.png',
@@ -6,8 +6,7 @@ const STATIC_ASSETS = [
     '/images/pwa-icon-maskable-192.png',
     '/images/pwa-icon-maskable-512.png',
     '/images/nexipro-icon-official.png',
-    '/images/nexipro-icon.svg',
-    '/manifest.json'
+    '/images/nexipro-icon.svg'
 ];
 
 // Instalação do Service Worker & Cache de Assets Estáticos

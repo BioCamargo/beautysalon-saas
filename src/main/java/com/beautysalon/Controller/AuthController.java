@@ -3,6 +3,7 @@ package com.beautysalon.Controller;
 import com.beautysalon.DTO.RegisterEmpresaDTO;
 import com.beautysalon.Inteface.EmpresaService;
 import com.beautysalon.model.Empresa;
+import com.beautysalon.model.User;
 import com.beautysalon.repository.EmpresaRepository;
 import jakarta.validation.Valid;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -34,7 +35,38 @@ public class AuthController {
     }
 
     @GetMapping({"/login", "/{slug}/login"})
-    public String login(@PathVariable(required = false) String slug, Model model) {
+    public String login(@PathVariable(required = false) String slug,
+                        @CookieValue(name = "nexipro_last_slug", required = false) String lastSlug,
+                        org.springframework.security.core.Authentication authentication,
+                        Model model) {
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            if (slug != null && !slug.isBlank()) {
+                return "redirect:/" + slug.trim().toLowerCase() + "/home";
+            }
+            if (authentication.getPrincipal() instanceof com.beautysalon.tenant.TenantUserDetails tud && tud.getEmpresaSlug() != null) {
+                return "redirect:/" + tud.getEmpresaSlug() + "/home";
+            }
+            Optional<User> userOpt = userRepository.findByUsername(authentication.getName());
+            if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
+                return "redirect:/" + userOpt.get().getEmpresa().getSlug() + "/home";
+            }
+            if (lastSlug != null && !lastSlug.isBlank()) {
+                return "redirect:/" + lastSlug.trim().toLowerCase() + "/home";
+            }
+            return "redirect:/";
+        }
+
+        // Se acessou "/login" genérico sem slug, mas possui empresa registrada/acessada no dispositivo:
+        if ((slug == null || slug.isBlank()) && lastSlug != null && !lastSlug.isBlank()) {
+            try {
+                String cleanSlug = java.net.URLDecoder.decode(lastSlug, java.nio.charset.StandardCharsets.UTF_8).trim().toLowerCase();
+                Optional<Empresa> empOpt = empresaRepository.findBySlug(cleanSlug);
+                if (empOpt.isPresent()) {
+                    return "redirect:/" + empOpt.get().getSlug() + "/login";
+                }
+            } catch (Exception ignored) {}
+        }
+
         if (slug != null && !slug.isBlank()) {
             Optional<Empresa> empresaOpt = empresaRepository.findBySlug(slug);
             if (empresaOpt.isPresent()) {
@@ -52,6 +84,10 @@ public class AuthController {
         }
         model.addAttribute("contentPage", "auth/login");
         return "home/index";
+    }
+
+    public String login(String slug, org.springframework.security.core.Authentication authentication, Model model) {
+        return login(slug, null, authentication, model);
     }
 
     @GetMapping("/select-tenant")

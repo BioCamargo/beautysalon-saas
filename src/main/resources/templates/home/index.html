@@ -29,12 +29,12 @@
     <link th:href="@{/css/style.css}" rel="stylesheet" />
 
     <!-- PWA (Progressive Web App) Manifest & Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" th:href="${empresaSlug != null and !#strings.isEmpty(empresaSlug)} ? @{/{slug}/manifest.json(slug=${empresaSlug})} : @{/manifest.json}">
     <meta name="theme-color" content="#00D2EE">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NEXI PRO">
+    <meta name="apple-mobile-web-app-title" th:content="${empresaNome != null ? empresaNome : 'NEXI PRO'}">
 
     <!-- OPENREPLAY TRACKER (OBSERVABILIDADE NO HEAD) -->
     <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>

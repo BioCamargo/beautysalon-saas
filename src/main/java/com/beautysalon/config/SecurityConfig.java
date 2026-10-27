@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/favicon.ico",
                                 "/manifest.json",
+                                "/*/manifest.json",
                                 "/service-worker.js",
                                 "/error",
                                 "/api/auth/**",
@@ -148,6 +149,40 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            String uri = request.getRequestURI();
+                            if (uri != null && uri.length() > 1) {
+                                String clean = uri.startsWith("/") ? uri.substring(1) : uri;
+                                String[] parts = clean.split("/");
+                                if (parts.length > 0) {
+                                    String candidateSlug = parts[0].trim().toLowerCase();
+                                    if (!isSystemRoute(candidateSlug)) {
+                                        response.sendRedirect("/" + candidateSlug + "/login");
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // Verifica se há cookie de empresa registrada/acessada anteriormente
+                            jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+                            if (cookies != null) {
+                                for (jakarta.servlet.http.Cookie c : cookies) {
+                                    if ("nexipro_last_slug".equals(c.getName()) && c.getValue() != null && !c.getValue().isBlank()) {
+                                        try {
+                                            String slugCookie = java.net.URLDecoder.decode(c.getValue(), java.nio.charset.StandardCharsets.UTF_8);
+                                            if (!slugCookie.isBlank() && !isSystemRoute(slugCookie)) {
+                                                response.sendRedirect("/" + slugCookie.trim().toLowerCase() + "/login");
+                                                return;
+                                            }
+                                        } catch (Exception ignored) {}
+                                    }
+                                }
+                            }
+
+                            response.sendRedirect("/login");
+                        })
+                )
 
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -159,5 +194,16 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    private static final java.util.Set<String> SYSTEM_ROUTES = java.util.Set.of(
+            "login", "register", "register-empresa", "select-tenant",
+            "termos", "privacidade", "css", "js", "images", "uploads",
+            "favicon.ico", "manifest.json", "service-worker.js", "error",
+            "api", "v3", "swagger-ui", "swagger-ui.html"
+    );
+
+    private boolean isSystemRoute(String route) {
+        return SYSTEM_ROUTES.contains(route.toLowerCase());
     }
 }

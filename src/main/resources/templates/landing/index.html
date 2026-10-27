@@ -26,6 +26,19 @@
     <!-- CSS Customizado da Landing Page (Mobile-First) -->
     <link th:href="@{/css/landing.css}" rel="stylesheet">
 
+    <!-- Redirecionamento automático de App PWA para a empresa do usuário -->
+    <script>
+        (function() {
+            try {
+                var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                var lastSlug = localStorage.getItem('nexipro_last_slug');
+                if ((isStandalone || window.location.search.indexOf('pwa=true') !== -1) && lastSlug && lastSlug.trim() !== '') {
+                    window.location.replace('/' + encodeURIComponent(lastSlug.trim()) + '/login');
+                }
+            } catch(e) {}
+        })();
+    </script>
+
     <!-- OPENREPLAY TRACKER (OBSERVABILIDADE NO HEAD) -->
     <th:block th:replace="~{fragments/analytics :: openreplay}"></th:block>
 </head>

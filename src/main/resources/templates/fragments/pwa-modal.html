@@ -228,8 +228,23 @@
                 }
             }
 
+            function getAppOfficialUrl() {
+                try {
+                    const slugMatch = window.location.pathname.match(/^\/([^\/]+)/);
+                    const systemRoutes = ['login', 'register', 'register-empresa', 'select-tenant', 'termos', 'privacidade'];
+                    if (slugMatch && slugMatch[1] && !systemRoutes.includes(slugMatch[1])) {
+                        return window.location.origin + '/' + slugMatch[1] + '/login';
+                    }
+                    const saved = localStorage.getItem('nexipro_last_slug');
+                    if (saved && saved.trim() !== '') {
+                        return window.location.origin + '/' + encodeURIComponent(saved.trim()) + '/login';
+                    }
+                } catch(e) {}
+                return window.location.origin + window.location.pathname;
+            }
+
             function copiarLinkApp() {
-                const url = window.location.origin + window.location.pathname;
+                const url = getAppOfficialUrl();
                 navigator.clipboard.writeText(url).then(() => {
                     const btn = document.getElementById('btnCopyAppLinkText');
                     if (btn) {
@@ -243,8 +258,8 @@
             }
 
             function enviarAppWhatsApp() {
-                const url = window.location.origin + window.location.pathname;
-                const msg = encodeURIComponent(`📲 *Acesso ao Aplicativo NEXI PRO*\n\nAbra este link no navegador do seu aparelho para instalar o app e entrar direto:\n${url}`);
+                const url = getAppOfficialUrl();
+                const msg = encodeURIComponent(`📲 *Acesso ao Aplicativo Oficial NEXI PRO*\n\nAbra este link exclusivo no navegador do seu celular ou notebook para baixar o app e entrar direto:\n${url}`);
                 window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
             }
 
