@@ -156,20 +156,21 @@
 
         <!-- BOTÃO FIXO: BAIXAR APLICATIVO (PWA) -->
         <div class="px-3 mb-2" id="sidebarPwaWrap">
-            <button type="button" class="btn btn-sm w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 fw-bold shadow-sm"
+            <button type="button" class="btn btn-sm w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 fw-bold shadow-sm"
                     onclick="abrirModalInstalarApp()"
-                    style="background: rgba(0, 210, 238, 0.12); color: #00d2ee; border: 1px solid rgba(0, 210, 238, 0.35); padding: 0.45rem 0.75rem; font-size: 0.78rem;">
-                <i class="bi bi-download text-info"></i>
-                <span>Baixar App</span>
+                    style="background: linear-gradient(135deg, rgba(0, 210, 238, 0.16) 0%, rgba(0, 210, 238, 0.04) 100%); color: #00d2ee; border: 1px solid rgba(0, 210, 238, 0.35); padding: 0.5rem 0.75rem; font-size: 0.8rem; transition: all 0.2s ease;">
+                <i class="bi bi-phone-fill text-info"></i>
+                <span>Instalar / Baixar App</span>
             </button>
         </div>
 
         <!-- USUÁRIO LOGADO & LOGOUT -->
         <div class="sidebar-footer">
             <div class="sidebar-user">
-                <div class="user-avatar">
+                <div class="user-avatar position-relative">
                     <span
                         th:text="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #strings.substring(#authentication.name, 0, 1).toUpperCase() : 'U'}">U</span>
+                    <span class="position-absolute bg-success border border-dark rounded-circle" style="width: 10px; height: 10px; bottom: 1px; right: 1px;" title="Online"></span>
                 </div>
                 <div class="user-info">
                     <div class="user-name"
