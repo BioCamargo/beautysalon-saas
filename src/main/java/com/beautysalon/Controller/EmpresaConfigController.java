@@ -4,6 +4,7 @@ import com.beautysalon.model.Empresa;
 import com.beautysalon.model.SegmentoEmpresa;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.tenant.TenantContext;
+import com.beautysalon.util.TextNormalizationUtil;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,11 +55,11 @@ public class EmpresaConfigController {
             if (formEmpresa.getNome() != null && !formEmpresa.getNome().isBlank()) {
                 empresa.setNome(formEmpresa.getNome());
             }
-            empresa.setCnpj(formEmpresa.getCnpj());
-            empresa.setTelefone(formEmpresa.getTelefone());
-            empresa.setEmail(formEmpresa.getEmail());
-            empresa.setChavePix(formEmpresa.getChavePix());
-            empresa.setCidade(formEmpresa.getCidade());
+            empresa.setCnpj(TextNormalizationUtil.cleanDigits(formEmpresa.getCnpj()));
+            empresa.setTelefone(TextNormalizationUtil.normalizePhone(formEmpresa.getTelefone()));
+            empresa.setEmail(TextNormalizationUtil.normalizeEmail(formEmpresa.getEmail()));
+            empresa.setChavePix(formEmpresa.getChavePix() != null ? formEmpresa.getChavePix().trim() : null);
+            empresa.setCidade(TextNormalizationUtil.capitalizeTitle(formEmpresa.getCidade()));
             if (formEmpresa.getSegmento() != null) {
                 empresa.setSegmento(formEmpresa.getSegmento());
             }

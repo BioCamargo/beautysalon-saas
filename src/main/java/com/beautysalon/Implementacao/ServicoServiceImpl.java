@@ -7,6 +7,7 @@ import com.beautysalon.model.Servico;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.ServicoRepository;
 import com.beautysalon.tenant.TenantContext;
+import com.beautysalon.util.TextNormalizationUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class ServicoServiceImpl implements ServicoService {
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada no contexto"));
 
         Servico servico = new Servico();
-        servico.setNome(dto.getNome());
+        servico.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
         servico.setDescricao(dto.getDescricao());
         servico.setPreco(dto.getPreco());
         servico.setImagem(dto.getImagem());
@@ -78,7 +79,7 @@ public class ServicoServiceImpl implements ServicoService {
         Servico servico = servicoRepository.findByIdAndEmpresaId(id, empresaId)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
 
-        servico.setNome(dto.getNome());
+        servico.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
         servico.setDescricao(dto.getDescricao());
         servico.setPreco(dto.getPreco());
         if (dto.getImagem() != null && !dto.getImagem().isBlank()) {

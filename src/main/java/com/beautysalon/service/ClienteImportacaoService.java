@@ -5,6 +5,7 @@ import com.beautysalon.model.Cliente;
 import com.beautysalon.model.Empresa;
 import com.beautysalon.repository.ClienteRepository;
 import com.beautysalon.repository.EmpresaRepository;
+import com.beautysalon.util.TextNormalizationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -253,7 +254,7 @@ public class ClienteImportacaoService {
         }
 
         Cliente cliente = Cliente.builder()
-                .nome(nome.trim())
+                .nome(TextNormalizationUtil.capitalizeTitle(nome))
                 .telefone(telSanitizado)
                 .email(emailSanitizado)
                 .dataNascimento(dataNascimento)

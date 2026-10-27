@@ -127,7 +127,7 @@
                                     <label class="form-label fw-semibold">Nome Fantasia / Razão Social <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                        <input type="text" name="nome" class="form-control" th:value="${empresa.nome}" required placeholder="Ex: NEXI PRO Beauty & Spa">
+                                        <input type="text" name="nome" class="form-control" th:value="${empresa.nome}" required placeholder="Ex: NEXI PRO Beauty & Spa" autocapitalize="words">
                                     </div>
                                     <small class="text-muted">Nome exibido na barra superior, cupons e mensagens para clientes.</small>
                                 </div>
@@ -137,7 +137,7 @@
                                         <label class="form-label fw-semibold">CNPJ / CPF</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                            <input type="text" name="cnpj" class="form-control" th:value="${empresa.cnpj}" placeholder="00.000.000/0001-00">
+                                            <input type="text" name="cnpj" class="form-control" th:value="${empresa.cnpj}" placeholder="00.000.000/0001-00" inputmode="numeric">
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -158,14 +158,14 @@
                                         <label class="form-label fw-semibold">Telefone / WhatsApp Oficial</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-whatsapp text-success"></i></span>
-                                            <input type="text" name="telefone" class="form-control" th:value="${empresa.telefone}" placeholder="(11) 99999-9999">
+                                            <input type="tel" name="telefone" class="form-control" th:value="${empresa.telefone}" placeholder="(11) 99999-9999" inputmode="tel" autocomplete="tel">
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-semibold">E-mail Comercial</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                            <input type="email" name="email" class="form-control" th:value="${empresa.email}" placeholder="contato@nexipro.com.br">
+                                            <input type="email" name="email" class="form-control" th:value="${empresa.email}" placeholder="contato@nexipro.com.br" autocapitalize="none" autocomplete="email" spellcheck="false">
                                         </div>
                                     </div>
                                 </div>

@@ -52,7 +52,7 @@
                         <label class="form-label-modern" for="nome">
                             <i class="bi bi-person me-1 text-muted"></i> Nome Completo:
                         </label>
-                        <input type="text" id="nome" th:field="*{nome}" class="form-control-modern" placeholder="Ex: Keilla Silva" required />
+                        <input type="text" id="nome" th:field="*{nome}" class="form-control-modern" placeholder="Ex: Keilla Silva" autocapitalize="words" autocomplete="name" required />
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></span>
                     </div>
 
@@ -61,7 +61,7 @@
                         <label class="form-label-modern" for="email">
                             <i class="bi bi-envelope me-1 text-muted"></i> Endereço de E-mail:
                         </label>
-                        <input type="email" id="email" th:field="*{email}" class="form-control-modern" placeholder="cliente@exemplo.com" required />
+                        <input type="email" id="email" th:field="*{email}" class="form-control-modern" placeholder="cliente@exemplo.com" autocapitalize="none" autocomplete="email" spellcheck="false" required />
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
                     </div>
 
@@ -71,7 +71,7 @@
                             <label class="form-label-modern" for="telefone">
                                 <i class="bi bi-telephone me-1 text-muted"></i> Telefone / WhatsApp:
                             </label>
-                            <input type="text" id="telefone" th:field="*{telefone}" class="form-control-modern" placeholder="(11) 98888-7777" />
+                            <input type="tel" id="telefone" th:field="*{telefone}" class="form-control-modern" placeholder="(11) 98888-7777" inputmode="tel" autocomplete="tel" />
                             <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></span>
                         </div>
 

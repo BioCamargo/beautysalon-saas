@@ -22,6 +22,9 @@ public class GlobalDataBinderAdvice {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
+        // Trimming automático em todos os campos String e conversão de strings vazias para null
+        binder.registerCustomEditor(String.class, new org.springframework.beans.propertyeditors.StringTrimmerEditor(true));
+
         // Suporte a BigDecimal em formulários e parâmetros
         binder.registerCustomEditor(BigDecimal.class, new PropertyEditorSupport() {
             @Override

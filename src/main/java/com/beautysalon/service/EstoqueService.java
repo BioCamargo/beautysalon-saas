@@ -9,6 +9,7 @@ import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.MovimentacaoEstoqueRepository;
 import com.beautysalon.repository.ProdutoRepository;
 import com.beautysalon.tenant.TenantContext;
+import com.beautysalon.util.TextNormalizationUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,12 @@ public class EstoqueService {
             Empresa empresa = empresaRepository.findById(TenantContext.getEmpresaId())
                     .orElseThrow(() -> new IllegalStateException("Empresa não encontrada no contexto"));
             produto.setEmpresa(empresa);
+        }
+        if (produto.getNome() != null) {
+            produto.setNome(TextNormalizationUtil.capitalizeTitle(produto.getNome()));
+        }
+        if (produto.getCodigoBarras() != null) {
+            produto.setCodigoBarras(TextNormalizationUtil.normalizeCode(produto.getCodigoBarras()));
         }
         return produtoRepository.save(produto);
     }

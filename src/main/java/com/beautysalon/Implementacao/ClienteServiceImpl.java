@@ -7,6 +7,7 @@ import com.beautysalon.model.Empresa;
 import com.beautysalon.repository.ClienteRepository;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.tenant.TenantContext;
+import com.beautysalon.util.TextNormalizationUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,9 +49,9 @@ public class ClienteServiceImpl implements ClienteService {
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada no contexto"));
 
         Cliente cliente = new Cliente();
-        cliente.setNome(dto.getNome());
-        cliente.setEmail(dto.getEmail());
-        cliente.setTelefone(dto.getTelefone());
+        cliente.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
+        cliente.setEmail(TextNormalizationUtil.normalizeEmail(dto.getEmail()));
+        cliente.setTelefone(TextNormalizationUtil.normalizePhone(dto.getTelefone()));
         cliente.setDataNascimento(dto.getDataNascimento());
         cliente.setAlergias(dto.getAlergias());
         cliente.setTipoCabeloPele(dto.getTipoCabeloPele());
@@ -75,9 +76,9 @@ public class ClienteServiceImpl implements ClienteService {
         Long empresaId = TenantContext.getEmpresaId();
         Cliente cliente = clienteRepository.findByIdAndEmpresaId(id, empresaId)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        cliente.setNome(dto.getNome());
-        cliente.setEmail(dto.getEmail());
-        cliente.setTelefone(dto.getTelefone());
+        cliente.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
+        cliente.setEmail(TextNormalizationUtil.normalizeEmail(dto.getEmail()));
+        cliente.setTelefone(TextNormalizationUtil.normalizePhone(dto.getTelefone()));
         cliente.setDataNascimento(dto.getDataNascimento());
         cliente.setAlergias(dto.getAlergias());
         cliente.setTipoCabeloPele(dto.getTipoCabeloPele());

@@ -52,7 +52,7 @@
                         <label class="form-label-modern" for="nome">
                             <i class="bi bi-tag-fill text-muted me-1"></i> Nome do Procedimento:
                         </label>
-                        <input type="text" id="nome" th:field="*{nome}" class="form-control-modern" placeholder="Ex: Escova Progressiva, Corte Feminino, Manicure" required />
+                        <input type="text" id="nome" th:field="*{nome}" class="form-control-modern" placeholder="Ex: Escova Progressiva, Corte Feminino, Manicure" autocapitalize="words" required />
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></span>
                     </div>
 
@@ -61,7 +61,7 @@
                         <label class="form-label-modern" for="descricao">
                             <i class="bi bi-text-paragraph text-muted me-1"></i> Descrição Detalhada:
                         </label>
-                        <textarea id="descricao" th:field="*{descricao}" class="form-control-modern" placeholder="Detalhes do que está incluso neste atendimento..."></textarea>
+                        <textarea id="descricao" th:field="*{descricao}" class="form-control-modern" placeholder="Detalhes do que está incluso neste atendimento..." autocapitalize="sentences"></textarea>
                         <span class="text-danger small mt-1 d-block" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></span>
                     </div>
 

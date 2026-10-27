@@ -7,6 +7,7 @@ import com.beautysalon.model.TenantRole;
 import com.beautysalon.model.User;
 import com.beautysalon.repository.EmpresaRepository;
 import com.beautysalon.repository.UserRepository;
+import com.beautysalon.util.TextNormalizationUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,16 +82,16 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 
         User user = new User();
-        user.setNome(dto.getNome());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
+        user.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
+        user.setUsername(dto.getUsername() != null ? dto.getUsername().trim().toLowerCase() : null);
+        user.setEmail(TextNormalizationUtil.normalizeEmail(dto.getEmail()));
         user.setAtivo(true);
         user.setTenantRole(dto.getTenantRole() != null ? dto.getTenantRole() : TenantRole.FUNCIONARIO);
         user.setEmpresa(empresa);
 
         user.setPercentualComissao(dto.getPercentualComissao() != null ? dto.getPercentualComissao() : java.math.BigDecimal.ZERO);
         user.setEspecialidade(dto.getEspecialidade());
-        user.setTelefone(dto.getTelefone());
+        user.setTelefone(TextNormalizationUtil.normalizePhone(dto.getTelefone()));
         user.setChavePix(dto.getChavePix());
         if (dto.getHoraInicioExpediente() != null) user.setHoraInicioExpediente(dto.getHoraInicioExpediente());
         if (dto.getHoraFimExpediente() != null) user.setHoraFimExpediente(dto.getHoraFimExpediente());
@@ -115,13 +116,13 @@ public class UserServiceImpl implements UserService {
         User existente = userRepository.findByIdAndEmpresaId(id, empresaId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        existente.setNome(dto.getNome());
-        existente.setEmail(dto.getEmail());
+        existente.setNome(TextNormalizationUtil.capitalizeTitle(dto.getNome()));
+        existente.setEmail(TextNormalizationUtil.normalizeEmail(dto.getEmail()));
         if (dto.getPercentualComissao() != null) {
             existente.setPercentualComissao(dto.getPercentualComissao());
         }
         existente.setEspecialidade(dto.getEspecialidade());
-        existente.setTelefone(dto.getTelefone());
+        existente.setTelefone(TextNormalizationUtil.normalizePhone(dto.getTelefone()));
         existente.setChavePix(dto.getChavePix());
         if (dto.getHoraInicioExpediente() != null) existente.setHoraInicioExpediente(dto.getHoraInicioExpediente());
         if (dto.getHoraFimExpediente() != null) existente.setHoraFimExpediente(dto.getHoraFimExpediente());
