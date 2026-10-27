@@ -119,14 +119,19 @@ public class HomeController {
 
         long totalServicos = servicoRepository.countByEmpresaId(empresaId);
         long totalProfissionais = userRepository.countByEmpresaId(empresaId);
+        long totalClientes = clienteRepository.countByEmpresaId(empresaId);
+        long totalProdutos = estoqueService.contarTotalProdutos();
         long totalAgendamentosGeral = agendamentoRepository.countByEmpresaId(empresaId);
 
-        model.addAttribute("totalClientes", clienteRepository.countByEmpresaId(empresaId));
+        model.addAttribute("totalClientes", totalClientes);
         model.addAttribute("totalServicos", totalServicos);
         model.addAttribute("totalProfissionais", totalProfissionais);
+        model.addAttribute("totalProdutos", totalProdutos);
         model.addAttribute("totalAgendamentosGeral", totalAgendamentosGeral);
         model.addAttribute("hasServicos", totalServicos > 0);
         model.addAttribute("hasProfissionais", totalProfissionais > 1);
+        model.addAttribute("hasClientes", totalClientes > 0);
+        model.addAttribute("hasProdutos", totalProdutos > 0);
         model.addAttribute("hasAgendamentos", totalAgendamentosGeral > 0);
         model.addAttribute("agendamentosHoje", agendamentoRepository.countByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));
         model.addAttribute("listaAgendamentosHoje", agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, hojeInicio, hojeFim));

@@ -53,6 +53,10 @@ public class EstoqueService {
         return produtoRepository.countProdutosEstoqueBaixo(TenantContext.getEmpresaId());
     }
 
+    public long contarTotalProdutos() {
+        return produtoRepository.countByEmpresaIdAndAtivoTrue(TenantContext.getEmpresaId());
+    }
+
     public Produto buscarPorId(Long id) {
         return produtoRepository.findByIdAndEmpresaId(id, TenantContext.getEmpresaId())
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com id: " + id));

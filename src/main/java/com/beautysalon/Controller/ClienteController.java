@@ -108,6 +108,40 @@ public class ClienteController {
         return "clientes/list";
     }
 
+    @PostMapping("/api/rapido")
+    @ResponseBody
+    public ResponseEntity<?> criarClienteRapido(@PathVariable String slug, @RequestBody java.util.Map<String, String> payload) {
+        String nome = payload.get("nome");
+        String telefone = payload.get("telefone");
+        String email = payload.get("email");
+
+        if (nome == null || nome.trim().length() < 2) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "O nome do cliente deve ter pelo menos 2 caracteres."));
+        }
+
+        if (email == null || email.isBlank()) {
+            String cleanPhone = telefone != null ? telefone.replaceAll("\\D", "") : "";
+            email = "cliente." + System.currentTimeMillis() + (cleanPhone.isEmpty() ? "" : "." + cleanPhone) + "@cliente.local";
+        }
+
+        ClienteDTO dto = new ClienteDTO();
+        dto.setNome(nome.trim());
+        dto.setTelefone(telefone != null && !telefone.isBlank() ? telefone.trim() : null);
+        dto.setEmail(email.trim());
+
+        try {
+            ClienteDTO salvo = clienteService.salvar(dto);
+            return ResponseEntity.ok(java.util.Map.of(
+                    "success", true,
+                    "id", salvo.getId(),
+                    "nome", salvo.getNome(),
+                    "telefone", salvo.getTelefone() != null ? salvo.getTelefone() : ""
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Erro ao cadastrar cliente: " + ex.getMessage()));
+        }
+    }
+
     // ================= ANAMNESE DIGITAL & FOTOS ANTES/DEPOIS =================
 
     @GetMapping("/{id}/anamnese")

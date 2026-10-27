@@ -59,7 +59,7 @@
                                 <h5 class="mb-0 fw-bold text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;">Guia de Ativação da Empresa</h5>
                                 <span class="badge" style="background: rgba(0, 210, 238, 0.2); color: #00D2EE; border: 1px solid rgba(0, 210, 238, 0.4); font-size: 0.7rem;">PLG SETUP</span>
                             </div>
-                            <small class="text-white-50">Complete os 4 passos essenciais para habilitar o modo de alta performance da sua empresa</small>
+                            <small class="text-white-50">Complete os 6 passos essenciais para habilitar o modo de alta performance da sua empresa</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-2">
@@ -75,7 +75,7 @@
                 <div class="mb-4 p-3 rounded-3" style="background: rgba(11, 14, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.05);">
                     <div class="d-flex justify-content-between text-white-50 mb-2" style="font-size: 0.82rem; font-weight: 600;">
                         <span class="text-white"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Progresso de Configuração</span>
-                        <span id="onboardingPercentText" class="fw-bold" style="color: #00D2EE;">0% Concluído (0 de 4 passos)</span>
+                        <span id="onboardingPercentText" class="fw-bold" style="color: #00D2EE;">0% Concluído (0 de 6 passos)</span>
                     </div>
                     <div class="progress" style="height: 10px; border-radius: 9999px; background: rgba(255, 255, 255, 0.1);">
                         <div id="onboardingProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
@@ -239,26 +239,32 @@
             /*<![CDATA[*/
             const totalServicos = /*[[${totalServicos != null ? totalServicos : 0}]]*/ 0;
             const totalProfissionais = /*[[${totalProfissionais != null ? totalProfissionais : 0}]]*/ 0;
+            const totalClientes = /*[[${totalClientes != null ? totalClientes : 0}]]*/ 0;
+            const totalProdutos = /*[[${totalProdutos != null ? totalProdutos : 0}]]*/ 0;
             const totalAgendamentosGeral = /*[[${totalAgendamentosGeral != null ? totalAgendamentosGeral : 0}]]*/ 0;
             const empresaSlug = /*[[${empresaSlug != null ? empresaSlug : ''}]]*/ '';
 
             function calcularProgressoOnboarding() {
-                // Passo 1: Empresa cadastrada (sempre concluído = 1)
+                // Passo 1: Empresa cadastrada (sempre concluÃ­do = 1)
                 let concluidos = 1;
-                // Passo 2: Catálogo de serviços cadastrado
+                // Passo 2: CatÃ¡logo de serviÃ§os cadastrado
                 if (totalServicos > 0) concluidos++;
                 // Passo 3: Equipe cadastrada (> 1 para incluir profissionais parceiros)
                 if (totalProfissionais > 1) concluidos++;
-                // Passo 4: Primeiro agendamento realizado
+                // Passo 4: Base de clientes
+                if (totalClientes > 0) concluidos++;
+                // Passo 5: Estoque / Produtos cadastrados
+                if (totalProdutos > 0) concluidos++;
+                // Passo 6: Primeiro agendamento realizado
                 if (totalAgendamentosGeral > 0) concluidos++;
 
-                const percent = Math.round((concluidos / 4) * 100);
+                const percent = Math.round((concluidos / 6) * 100);
                 const bar = document.getElementById('onboardingProgressBar');
                 const text = document.getElementById('onboardingPercentText');
                 const celebration = document.getElementById('onboardingCelebration');
 
                 if (bar) bar.style.width = percent + '%';
-                if (text) text.innerText = percent + '% Concluído (' + concluidos + ' de 4 passos)';
+                if (text) text.innerText = percent + '% Concluído (' + concluidos + ' de 6 passos)';
 
                 if (percent === 100 && celebration) {
                     celebration.classList.remove('d-none');

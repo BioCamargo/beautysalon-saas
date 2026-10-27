@@ -92,9 +92,14 @@
 
                     <!-- CLIENTE COM AUTOCOMPLETE -->
                     <div class="form-group-modern">
-                        <label class="form-label-modern" for="clienteId">
-                            <i class="bi bi-person-fill text-muted me-1"></i> Cliente (digite para buscar):
-                        </label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label-modern mb-0" for="clienteId">
+                                <i class="bi bi-person-fill text-muted me-1"></i> Cliente (digite para buscar):
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" style="font-size: 0.78rem; border-radius: 6px;" onclick="abrirModalClienteRapido()">
+                                <i class="bi bi-person-plus-fill me-1"></i> + Novo Cliente
+                            </button>
+                        </div>
                         <select id="clienteId" th:field="*{clienteId}" class="form-control-modern tom-select-autocomplete" required placeholder="Digite o nome ou telefone do cliente...">
                             <option value=""></option>
                             <option th:each="c : ${clientes}"
@@ -212,6 +217,9 @@
             if (!el.value) {
                 ts.clear(true);
             }
+            if (el.id === "clienteId") {
+                window.clienteTomSelect = ts;
+            }
         });
 
         // Configura data/hora mínima permitida (Agora)
@@ -269,5 +277,131 @@
     });
 </script>
 
+<!-- MODAL DE CADASTRO RÃPIDO DE CLIENTE -->
+<div class="modal fade" id="modalNovoClienteRapido" tabindex="-1" aria-labelledby="modalNovoClienteRapidoLabel" aria-hidden="true" style="z-index: 1080 !important;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: #0f172a; color: #ffffff; border: 1px solid rgba(0, 210, 238, 0.3);">
+            <div class="modal-header border-0 py-3" style="background: rgba(255, 255, 255, 0.05);">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill text-info fs-5"></i>
+                    <h5 class="modal-title fw-bold fs-6 mb-0 text-white" id="modalNovoClienteRapidoLabel">Cadastro RÃ¡pido de Cliente</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="formClienteRapido" onsubmit="salvarClienteRapido(event)">
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold small text-white-50" for="rapidoNome">Nome Completo *</label>
+                        <input type="text" class="form-control" id="rapidoNome" required placeholder="Ex: Camila Ferreira" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #fff;">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold small text-white-50" for="rapidoTelefone">WhatsApp / Telefone</label>
+                        <input type="text" class="form-control" id="rapidoTelefone" placeholder="(11) 98765-4321" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #fff;">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-semibold small text-white-50" for="rapidoEmail">E-mail (opcional)</label>
+                        <input type="email" class="form-control" id="rapidoEmail" placeholder="cliente@email.com" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #fff;">
+                    </div>
+                    <div id="rapidoFeedbackErro" class="alert alert-danger py-2 small d-none"></div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="btnSalvarClienteRapido" class="btn btn-info btn-sm rounded-pill px-4 fw-bold text-dark" style="background: #00D2EE; border: none;">
+                            <i class="bi bi-check-lg me-1"></i> Salvar e Selecionar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let clienteModalInstance = null;
+    const currentSlug = /*[[${empresaSlug}]]*/ 'studio';
+
+    function abrirModalClienteRapido() {
+        const el = document.getElementById('modalNovoClienteRapido');
+        if (el) {
+            document.getElementById('formClienteRapido').reset();
+            document.getElementById('rapidoFeedbackErro').classList.add('d-none');
+            clienteModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+            clienteModalInstance.show();
+            setTimeout(() => {
+                const inp = document.getElementById('rapidoNome');
+                if (inp) inp.focus();
+            }, 300);
+        }
+    }
+
+    function salvarClienteRapido(e) {
+        e.preventDefault();
+        const nome = document.getElementById('rapidoNome').value.trim();
+        const telefone = document.getElementById('rapidoTelefone').value.trim();
+        const email = document.getElementById('rapidoEmail').value.trim();
+        const btn = document.getElementById('btnSalvarClienteRapido');
+        const erroDiv = document.getElementById('rapidoFeedbackErro');
+
+        if (!nome || nome.length < 2) {
+            erroDiv.textContent = 'Informe o nome do cliente (mÃ­nimo 2 letras).';
+            erroDiv.classList.remove('d-none');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Salvando...';
+
+        const token = document.querySelector('meta[name="_csrf"]') ? document.querySelector('meta[name="_csrf"]').getAttribute('content') : '';
+        const header = document.querySelector('meta[name="_csrf_header"]') ? document.querySelector('meta[name="_csrf_header"]').getAttribute('content') : 'X-CSRF-TOKEN';
+
+        fetch('/' + currentSlug + '/clientes/api/rapido', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [header]: token
+            },
+            body: JSON.stringify({ nome: nome, telefone: telefone, email: email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Salvar e Selecionar';
+
+            if (data.success && data.id) {
+                const label = data.nome + (data.telefone ? ' - ' + data.telefone : '');
+                
+                // Adiciona e seleciona no TomSelect
+                if (window.clienteTomSelect) {
+                    window.clienteTomSelect.addOption({ value: data.id, text: label });
+                    window.clienteTomSelect.setValue(data.id);
+                } else {
+                    const sel = document.getElementById('clienteId');
+                    if (sel) {
+                        const opt = new Option(label, data.id, true, true);
+                        sel.add(opt);
+                    }
+                }
+
+                if (clienteModalInstance) {
+                    clienteModalInstance.hide();
+                }
+
+                if (typeof showLuxToast === 'function') {
+                    showLuxToast('Cliente Cadastrado', data.nome + ' foi cadastrado(a) e selecionado(a)!', 'success');
+                }
+            } else {
+                erroDiv.textContent = data.message || 'Erro ao cadastrar cliente.';
+                erroDiv.classList.remove('d-none');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Salvar e Selecionar';
+            erroDiv.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
+            erroDiv.classList.remove('d-none');
+        });
+    }
+    /*]]>*/
+</script>
 </body>
 </html>
