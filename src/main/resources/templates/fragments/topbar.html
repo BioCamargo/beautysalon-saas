@@ -485,6 +485,18 @@
                     onConfirm: onConfirm
                 });
             };
+
+            // Normalização ergonômica global para formulários com campos numéricos
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (!form || !form.querySelectorAll) return;
+                const numInputs = form.querySelectorAll('input[type="number"]');
+                numInputs.forEach(input => {
+                    if (input.value && input.value.includes(',')) {
+                        input.value = input.value.replace(',', '.');
+                    }
+                });
+            }, true);
         </script>
     </header>
 

@@ -54,4 +54,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
     }
+
+    @Override
+    public void addFormatters(@NonNull org.springframework.format.FormatterRegistry registry) {
+        registry.addConverter(new com.beautysalon.converter.StringToBigDecimalConverter());
+        registry.addConverter(new com.beautysalon.converter.StringToDoubleConverter());
+        registry.addConverter(new com.beautysalon.converter.StringToIntegerConverter());
+        registry.addConverter(new com.beautysalon.converter.StringToLocalDateConverter());
+    }
 }
