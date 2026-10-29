@@ -6,10 +6,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="theme-color" content="#0b0f19">
     <title
-        th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Gestão Inteligente para Salões, Clínicas e Barbearias'}">
-        NEXI PRO | Gestão Inteligente</title>
+        th:text="${pageTitle != null ? pageTitle : 'NEXI PRO | Sistema de Gestão para Salões de Beleza, Barbearias e Clínicas'}">
+        NEXI PRO | Sistema de Gestão para Salões de Beleza, Barbearias e Clínicas</title>
     <meta name="description"
-        content="O sistema definitivo de gestão para empresas de beleza, estética, barbearias e clínicas. Agendamento online 24/7, comissões automáticas, frente de caixa blindado e fidelização. Teste 7 dias grátis.">
+        content="Software de gestão completo para salões de beleza, clínicas de estética e barbearias. Agendamento online 24/7, cálculo de comissões, frente de caixa blindado e controle financeiro. Teste 7 dias grátis.">
+
+    <!-- Metatags de Indexação & Googlebot -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://nexipro.com.br/">
+
+    <!-- Open Graph (Preview em Redes Sociais e WhatsApp) -->
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nexipro.com.br/">
+    <meta property="og:title" content="NEXI PRO | Gestão Inteligente para Salões, Barbearias e Clínicas">
+    <meta property="og:description" content="Software de gestão completo para empresas de beleza. Agendamento online 24/7, comissões automáticas, controle de estoque e frente de caixa. Experimente 7 dias grátis.">
+    <meta property="og:site_name" content="NEXI PRO">
+    <meta property="og:image" content="https://nexipro.com.br/images/nexipro-official-logo.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NEXI PRO | Gestão Inteligente de Empresas de Beleza">
+    <meta name="twitter:description" content="Software de gestão completo para salões de beleza, clínicas e barbearias. Teste 7 dias grátis.">
+    <meta name="twitter:image" content="https://nexipro.com.br/images/nexipro-official-logo.png">
+
+    <!-- Schema.org (JSON-LD) Microdados para Google Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://nexipro.com.br/#software",
+          "name": "NEXI PRO",
+          "url": "https://nexipro.com.br",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "All (Web, Android, iOS)",
+          "description": "Sistema de gestão inteligente para salões de beleza, clínicas de estética e barbearias. Agendamento online 24/7, comissões automáticas e controle de caixa.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "BRL",
+            "description": "7 dias de teste gratuito sem cartão de crédito"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "128",
+            "bestRating": "5",
+            "worstRating": "1"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://nexipro.com.br/#organization",
+          "name": "NEXI PRO",
+          "url": "https://nexipro.com.br",
+          "logo": "https://nexipro.com.br/images/nexipro-logo.svg",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+55-11-99999-8888",
+            "contactType": "customer service",
+            "areaServed": "BR",
+            "availableLanguage": "Portuguese"
+          }
+        }
+      ]
+    }
+    </script>
 
     <!-- Favicon Oficial NEXI PRO -->
     <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">

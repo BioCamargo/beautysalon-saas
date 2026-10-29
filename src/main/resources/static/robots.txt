@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /termos
+Allow: /privacidade
+Allow: /*/agendar
+Allow: /p/*
+
+# Bloquear indexação de áreas restritas, autenticadas e administrativas
+Disallow: /*/home
+Disallow: /*/financeiro
+Disallow: /*/estoque
+Disallow: /*/clientes
+Disallow: /*/servicos
+Disallow: /*/usuarios
+Disallow: /*/configuracoes
+Disallow: /*/relatorios
+Disallow: /*/assinatura
+Disallow: /api/
+Disallow: /actuator/
+
+Sitemap: https://nexipro.com.br/sitemap.xml

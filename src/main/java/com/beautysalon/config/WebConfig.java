@@ -30,6 +30,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/images/**",
                         "/uploads/**",
                         "/favicon.ico",
+                        "/robots.txt",
+                        "/sitemap.xml",
                         "/error"
                 );
     }

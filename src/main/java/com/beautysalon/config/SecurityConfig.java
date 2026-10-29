@@ -87,6 +87,8 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/uploads/**",
                                 "/favicon.ico",
+                                "/robots.txt",
+                                "/sitemap.xml",
                                 "/manifest.json",
                                 "/*/manifest.json",
                                 "/service-worker.js",

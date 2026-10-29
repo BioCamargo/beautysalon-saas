@@ -84,7 +84,7 @@ public class HomeController {
             } catch (Exception ignored) {}
         }
 
-        model.addAttribute("pageTitle", "NEXI PRO | Gestão Inteligente & Alta Performance para Empresas, Barbearias e Clínicas");
+        model.addAttribute("pageTitle", "NEXI PRO | Sistema de Gestão para Salões de Beleza, Barbearias e Clínicas");
         return "landing/index";
     }
 
