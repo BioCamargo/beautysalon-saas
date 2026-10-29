@@ -38,9 +38,9 @@
       "@graph": [
         {
           "@type": "SoftwareApplication",
-          "@id": "https://nexipro.com.br/#software",
+          "@id": "https://www.nexipro.com.br/#software",
           "name": "NEXI PRO",
-          "url": "https://nexipro.com.br",
+          "url": "https://www.nexipro.com.br",
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "All (Web, Android, iOS)",
           "description": "Sistema de gestão inteligente para salões de beleza, clínicas de estética e barbearias. Agendamento online 24/7, comissões automáticas e controle de caixa.",
@@ -60,10 +60,10 @@
         },
         {
           "@type": "Organization",
-          "@id": "https://nexipro.com.br/#organization",
+          "@id": "https://www.nexipro.com.br/#organization",
           "name": "NEXI PRO",
-          "url": "https://nexipro.com.br",
-          "logo": "https://nexipro.com.br/images/nexipro-logo.svg",
+          "url": "https://www.nexipro.com.br",
+          "logo": "https://www.nexipro.com.br/images/nexipro-logo.svg",
           "contactPoint": {
             "@type": "ContactPoint",
             "telephone": "+55-11-99999-8888",
@@ -71,6 +71,52 @@
             "areaServed": "BR",
             "availableLanguage": "Portuguese"
           }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.nexipro.com.br/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Como funciona o período de teste grátis de 7 dias?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Você cria sua conta em menos de 2 minutos sem precisar de cartão de crédito. Durante 7 dias, tem acesso VIP completo a todos os recursos de agendamento online, frente de caixa, comissões e relatórios."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Preciso instalar algum programa ou aplicativo no computador?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Não! O NEXI PRO é 100% em nuvem. Você pode acessar diretamente pelo navegador do seu celular, tablet, notebook ou computador do balcão sem ocupar espaço de memória."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Como funciona o link de agendamento online para os clientes?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Assim que você cadastra sua empresa, é gerado um link exclusivo como nexipro.com.br/p/sua-empresa. Basta colocar esse link na bio do Instagram ou no Google Meu Negócio para seus clientes agendarem sozinhos 24 horas por dia."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Os dados dos meus clientes e faturamento estão seguros?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sim. O NEXI PRO utiliza arquitetura multi-tenant com isolamento rigoroso por empresa. Cada estabelecimento possui seus dados blindados com criptografia de ponta a ponta e total conformidade com a LGPD."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Posso cancelar a assinatura quando eu quiser?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sim! Não exigimos nenhum contrato de fidelidade ou multa rescisória. Você é livre para cancelar a qualquer momento diretamente pelo seu painel administrativo."
+              }
+            }
+          ]
         }
       ]
     }
