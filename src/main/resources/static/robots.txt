@@ -20,4 +20,5 @@ Disallow: /*/assinatura
 Disallow: /api/
 Disallow: /actuator/
 
+Sitemap: https://www.nexipro.com.br/sitemap.xml
 Sitemap: https://nexipro.com.br/sitemap.xml

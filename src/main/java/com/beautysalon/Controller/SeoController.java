@@ -39,6 +39,7 @@ public class SeoController {
             Disallow: /api/
             Disallow: /actuator/
 
+            Sitemap: https://www.nexipro.com.br/sitemap.xml
             Sitemap: https://nexipro.com.br/sitemap.xml
             """;
 
@@ -46,31 +47,31 @@ public class SeoController {
             <?xml version="1.0" encoding="UTF-8"?>
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                 <url>
-                    <loc>https://nexipro.com.br/</loc>
+                    <loc>https://www.nexipro.com.br/</loc>
                     <lastmod>2026-10-29</lastmod>
                     <changefreq>daily</changefreq>
                     <priority>1.0</priority>
                 </url>
                 <url>
-                    <loc>https://nexipro.com.br/register</loc>
+                    <loc>https://www.nexipro.com.br/register</loc>
                     <lastmod>2026-10-29</lastmod>
                     <changefreq>weekly</changefreq>
                     <priority>0.9</priority>
                 </url>
                 <url>
-                    <loc>https://nexipro.com.br/login</loc>
+                    <loc>https://www.nexipro.com.br/login</loc>
                     <lastmod>2026-10-29</lastmod>
                     <changefreq>monthly</changefreq>
                     <priority>0.8</priority>
                 </url>
                 <url>
-                    <loc>https://nexipro.com.br/termos</loc>
+                    <loc>https://www.nexipro.com.br/termos</loc>
                     <lastmod>2026-10-29</lastmod>
                     <changefreq>monthly</changefreq>
                     <priority>0.5</priority>
                 </url>
                 <url>
-                    <loc>https://nexipro.com.br/privacidade</loc>
+                    <loc>https://www.nexipro.com.br/privacidade</loc>
                     <lastmod>2026-10-29</lastmod>
                     <changefreq>monthly</changefreq>
                     <priority>0.5</priority>
