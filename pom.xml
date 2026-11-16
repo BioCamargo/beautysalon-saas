@@ -11,8 +11,8 @@
     <groupId>com.beautysalon</groupId>
     <artifactId>BeautySalon</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>BeautySalon</name>
-    <description>BeautySalon</description>
+    <name>NEXI PRO SaaS</name>
+    <description>NEXI PRO - Sistema Multi-Tenant SaaS para Gestão Inteligente de Salões de Beleza, Estética e Barbearias</description>
     <url/>
     <licenses>
         <license/>

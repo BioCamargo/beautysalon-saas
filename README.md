@@ -1,6 +1,17 @@
-# ✂️ NEXI PRO - Gestão Inteligente para Salões de Beleza, Estética & Barbearias (Multi-Tenant SaaS)
+<p align="center">
+  <img src="src/main/resources/static/images/nexipro-logo.svg" alt="NEXI PRO - Gestão Inteligente" width="340" />
+</p>
+
+<h1 align="center">✂️ NEXI PRO — Gestão Inteligente Multi-Tenant SaaS</h1>
 
 <p align="center">
+  <em>Ecossistema completo de alta performance para salões de beleza, clínicas de estética, barbearias e lash designers.</em>
+</p>
+
+<p align="center">
+  <a href="https://github.com/BioCamargo/beautysalon-saas/actions">
+    <img src="https://github.com/BioCamargo/beautysalon-saas/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline" />
+  </a>
   <img src="https://img.shields.io/badge/Java-17%20%2F%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
   <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot" />
   <img src="https://img.shields.io/badge/Spring_Security-6-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" alt="Spring Security" />
