@@ -444,7 +444,7 @@
              * Atalho simplificado para exclusões e remoções seguras
              * Suporta forms, botões dentro de forms, URLs e callbacks
              */
-            window.luxConfirmDelete = function(target, title, message) {
+            window.luxConfirmDelete = function(target, title, message, confirmText, type) {
                 let formToSubmit = null;
                 let urlToRedirect = null;
                 let callbackToRun = null;
@@ -464,9 +464,9 @@
                 window.luxConfirmAction({
                     title: title || 'Confirmar Exclusão',
                     message: message || 'Deseja realmente excluir este registro? Esta ação é irreversível.',
-                    confirmText: 'Sim, Excluir',
+                    confirmText: confirmText || 'Sim, Excluir',
                     cancelText: 'Cancelar',
-                    type: 'danger',
+                    type: type || 'danger',
                     onConfirm: () => {
                         if (callbackToRun) {
                             callbackToRun();
@@ -484,13 +484,13 @@
             };
 
             // Compatibilidade retroativa para chamadas luxConfirm
-            window.luxConfirm = function(title, message, onConfirm) {
+            window.luxConfirm = function(title, message, onConfirm, confirmText, type) {
                 window.luxConfirmAction({
                     title: title,
                     message: message,
-                    confirmText: 'Confirmar',
+                    confirmText: confirmText || 'Confirmar',
                     cancelText: 'Cancelar',
-                    type: 'gold',
+                    type: type || 'gold',
                     onConfirm: onConfirm
                 });
             };

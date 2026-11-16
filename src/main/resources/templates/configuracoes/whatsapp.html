@@ -175,9 +175,10 @@
                                 <a href="#secaoTeste" class="btn btn-light fw-bold px-3">
                                     <i class="bi bi-send me-1"></i> Testar Envio
                                 </a>
-                                <form th:action="@{/{slug}/configuracoes/whatsapp/desconectar(slug=${empresaSlug})}" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja desconectar o WhatsApp? As mensagens automáticas serão pausadas até que você reconecte.');">
+                                <form th:action="@{/{slug}/configuracoes/whatsapp/desconectar(slug=${empresaSlug})}" method="post" class="d-inline">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <button type="submit" class="btn btn-outline-light px-3" title="Desconectar e parear outro aparelho">
+                                    <button type="button" class="btn btn-outline-light px-3" title="Desconectar e parear outro aparelho"
+                                            onclick="luxConfirmDelete(this.form, 'Desconectar WhatsApp', 'Tem certeza que deseja desconectar o WhatsApp? As mensagens automáticas serão pausadas até que você reconecte.', 'Sim, Desconectar', 'warning')">
                                         <i class="bi bi-box-arrow-right me-1"></i> Desconectar
                                     </button>
                                 </form>

@@ -348,7 +348,8 @@
                                             </div>
                                             <form th:action="@{/{slug}/financeiro/comandas/{id}/pagamentos/{pagamentoId}/remover(slug=${empresaSlug}, id=${comanda.id}, pagamentoId=${pg.id})}" method="post" style="display:inline;">
                                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Remover fração">
+                                                <button type="button" class="btn btn-sm btn-link text-danger p-0" title="Remover fração"
+                                                        onclick="luxConfirmDelete(this.form, 'Remover Fração de Pagamento', 'Deseja realmente remover esta fração de pagamento da comanda?');">
                                                     <i class="bi bi-x-circle"></i>
                                                 </button>
                                             </form>
