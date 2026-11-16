@@ -19,6 +19,7 @@ public class ClienteDTO
     private String email;
 
     private String telefone; 
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataNascimento; 
     private String alergias;
     private String tipoCabeloPele;

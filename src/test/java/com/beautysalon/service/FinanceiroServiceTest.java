@@ -60,6 +60,12 @@ class FinanceiroServiceTest {
     @Mock
     private PagamentoComandaRepository pagamentoComandaRepository;
 
+    @Mock
+    private CupomDescontoRepository cupomDescontoRepository;
+
+    @Mock
+    private AuditoriaService auditoriaService;
+
     @InjectMocks
     private FinanceiroService financeiroService;
 

@@ -29,6 +29,7 @@ public class FinanceiroService {
     private final AgendamentoRepository agendamentoRepository;
 
     private final PagamentoComandaRepository pagamentoComandaRepository;
+    private final CupomDescontoRepository cupomDescontoRepository;
     private final AuditoriaService auditoriaService;
 
     public FinanceiroService(CaixaRepository caixaRepository,
@@ -42,6 +43,7 @@ public class FinanceiroService {
                              WhatsAppService whatsAppService,
                              AgendamentoRepository agendamentoRepository,
                              PagamentoComandaRepository pagamentoComandaRepository,
+                             CupomDescontoRepository cupomDescontoRepository,
                              AuditoriaService auditoriaService) {
         this.caixaRepository = caixaRepository;
         this.comandaRepository = comandaRepository;
@@ -54,6 +56,7 @@ public class FinanceiroService {
         this.whatsAppService = whatsAppService;
         this.agendamentoRepository = agendamentoRepository;
         this.pagamentoComandaRepository = pagamentoComandaRepository;
+        this.cupomDescontoRepository = cupomDescontoRepository;
         this.auditoriaService = auditoriaService;
     }
 
@@ -349,11 +352,30 @@ public class FinanceiroService {
         Caixa caixa = caixaOpt.get();
 
         comanda.setCaixa(caixa);
-        if (cupomCodigo != null && !cupomCodigo.isBlank()) {
-            comanda.setCupomAplicado(cupomCodigo.trim().toUpperCase());
-        }
         if (desconto != null) comanda.setDesconto(desconto);
         if (acrescimo != null) comanda.setAcrescimo(acrescimo);
+
+        if (cupomCodigo != null && !cupomCodigo.isBlank()) {
+            String codigoClean = cupomCodigo.trim().toUpperCase();
+            comanda.setCupomAplicado(codigoClean);
+            cupomDescontoRepository.findByCodigoIgnoreCaseAndEmpresaId(codigoClean, TenantContext.getEmpresaId())
+                    .filter(CupomDesconto::isValido)
+                    .ifPresent(cupom -> {
+                        if (desconto == null || desconto.compareTo(BigDecimal.ZERO) == 0) {
+                            comanda.recalcularTotais();
+                            BigDecimal base = comanda.getSubtotalServicos().add(comanda.getSubtotalProdutos());
+                            if ("PERCENTUAL".equalsIgnoreCase(cupom.getTipoDesconto())) {
+                                BigDecimal descCalc = base.multiply(cupom.getValorDesconto())
+                                        .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                                comanda.setDesconto(descCalc);
+                            } else {
+                                comanda.setDesconto(cupom.getValorDesconto());
+                            }
+                        }
+                        cupom.setUsosAtuais((cupom.getUsosAtuais() != null ? cupom.getUsosAtuais() : 0) + 1);
+                        cupomDescontoRepository.save(cupom);
+                    });
+        }
         comanda.recalcularTotais();
 
         // Se houver pagamentos fracionados já lançados, valida ou gera o pagamento integral

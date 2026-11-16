@@ -242,7 +242,7 @@ public class FinanceiroController {
     @PostMapping("/comandas/{id}/fechar")
     public String fecharComanda(@PathVariable String slug,
                                 @PathVariable Long id,
-                                @RequestParam String formaPagamento,
+                                @RequestParam(required = false, defaultValue = "MULTIPLO") String formaPagamento,
                                 @RequestParam(required = false) String detalheMultiplo,
                                 @RequestParam(required = false) BigDecimal desconto,
                                 @RequestParam(required = false) BigDecimal acrescimo,

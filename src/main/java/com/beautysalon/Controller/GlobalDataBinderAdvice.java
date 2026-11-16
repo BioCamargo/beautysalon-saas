@@ -82,5 +82,20 @@ public class GlobalDataBinderAdvice {
                 return value != null ? value.toString() : "";
             }
         });
+
+        // Suporte a LocalDate (aceita ISO yyyy-MM-dd de <input type="date"> e dd/MM/yyyy brasileiro)
+        com.beautysalon.converter.StringToLocalDateConverter localDateConverter = new com.beautysalon.converter.StringToLocalDateConverter();
+        binder.registerCustomEditor(java.time.LocalDate.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                setValue(localDateConverter.convert(text));
+            }
+
+            @Override
+            public String getAsText() {
+                java.time.LocalDate value = (java.time.LocalDate) getValue();
+                return value != null ? value.toString() : "";
+            }
+        });
     }
 }

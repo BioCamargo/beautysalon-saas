@@ -473,8 +473,8 @@
                     const endHora = String((parseInt(hora, 10) + 1) % 24).padStart(2, '0');
                     const endIso = `${ano}${mes}${dia}T${endHora}${min}00`;
 
-                    const title = encodeURIComponent(`${servico} @ ${salao}`);
-                    const details = encodeURIComponent(`Agendamento de ${servico} confirmado com sucesso no ${salao}.`);
+                    const title = encodeURIComponent(`${servico} @ ${empresaNome}`);
+                    const details = encodeURIComponent(`Agendamento de ${servico} confirmado com sucesso na ${empresaNome}.`);
                     const locationEnc = encodeURIComponent(local);
 
                     btnCal.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startIso}/${endIso}&details=${details}&location=${locationEnc}`;

@@ -50,6 +50,19 @@ public class UserController {
     @org.springframework.web.bind.annotation.InitBinder
     public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new org.springframework.beans.propertyeditors.StringTrimmerEditor(true));
+        com.beautysalon.converter.StringToLocalDateConverter localDateConverter = new com.beautysalon.converter.StringToLocalDateConverter();
+        binder.registerCustomEditor(LocalDate.class, new java.beans.PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                setValue(localDateConverter.convert(text));
+            }
+
+            @Override
+            public String getAsText() {
+                LocalDate value = (LocalDate) getValue();
+                return value != null ? value.toString() : "";
+            }
+        });
     }
 
     @GetMapping("/novo")
