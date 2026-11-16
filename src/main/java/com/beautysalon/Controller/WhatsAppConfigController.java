@@ -14,9 +14,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class WhatsAppConfigController {
 
     private final WhatsAppService whatsAppService;
+    private final com.beautysalon.service.LembreteAgendamentoScheduler lembreteScheduler;
 
-    public WhatsAppConfigController(WhatsAppService whatsAppService) {
+    public WhatsAppConfigController(WhatsAppService whatsAppService,
+                                    com.beautysalon.service.LembreteAgendamentoScheduler lembreteScheduler) {
         this.whatsAppService = whatsAppService;
+        this.lembreteScheduler = lembreteScheduler;
     }
 
     @GetMapping
@@ -94,11 +97,12 @@ public class WhatsAppConfigController {
             }
             String linkDiretoWa = "https://wa.me/" + telLimpo + "?text=" + java.net.URLEncoder.encode(mensagemTeste, java.nio.charset.StandardCharsets.UTF_8);
             redirectAttributes.addFlashAttribute("linkDiretoWaTeste", linkDiretoWa);
+            redirectAttributes.addFlashAttribute("autoOpenWaLink", true);
 
             if (enviado) {
-                redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem de teste processada para " + telefoneTeste + "! Caso não utilize Evolution API em nuvem, clique em 'Enviar Mensagem no WhatsApp Agora' abaixo para abrir direto no aparelho.");
+                redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem de teste pronta para " + telefoneTeste + "! Abrindo o WhatsApp automaticamente (ou clique no botão verde ao lado).");
             } else {
-                redirectAttributes.addFlashAttribute("mensagemErro", "Não foi possível enviar o teste automático. Verifique suas credenciais ou use o envio direto pelo WhatsApp.");
+                redirectAttributes.addFlashAttribute("mensagemErro", "Não foi possível enviar o teste automático. Clique no botão verde para abrir direto pelo WhatsApp.");
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao testar envio: " + e.getMessage());
@@ -179,6 +183,28 @@ public class WhatsAppConfigController {
             return java.util.Map.of("sucesso", false, "mensagem", "Nenhuma configuração encontrada.");
         }
         return whatsAppService.obterQrCodeInstancia(config);
+    }
+
+    /**
+     * Aciona manualmente o disparo imediato dos lembretes pendentes de hoje/amanhã para a empresa.
+     */
+    @PostMapping("/disparar-lembretes-agora")
+    public String dispararLembretesAgora(@PathVariable String slug,
+                                         RedirectAttributes redirectAttributes) {
+        try {
+            Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+            int totalEnviados = lembreteScheduler.dispararLembretesImediatosDaEmpresa(empresaId);
+            if (totalEnviados > 0) {
+                redirectAttributes.addFlashAttribute("mensagemSucesso",
+                        "⏰ Rotina de lembretes executada com sucesso! " + totalEnviados + " lembrete(s) de agendamento disparado(s).");
+            } else {
+                redirectAttributes.addFlashAttribute("mensagemSucesso",
+                        "⏰ Verificação concluída: Todos os agendamentos de hoje/amanhã já estão com lembretes em dia (ou não há horários pendentes).");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao processar lembretes: " + e.getMessage());
+        }
+        return "redirect:/" + slug + "/configuracoes/whatsapp";
     }
 
     /**

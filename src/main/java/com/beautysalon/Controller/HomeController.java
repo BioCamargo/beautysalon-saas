@@ -109,7 +109,7 @@ public class HomeController {
         return "redirect:/" + slug + "/agendar";
     }
 
-    @GetMapping("/{slug:^(?!login$|register$|register-empresa$|select-tenant$|termos$|privacidade$|error$|favicon\\.ico$|robots\\.txt$|sitemap\\.xml$|manifest\\.json$|service-worker\\.js$).+}")
+    @GetMapping("/{slug:^(?!login$|register$|register-empresa$|select-tenant$|whatsapp-pair$|termos$|privacidade$|error$|favicon\\.ico$|robots\\.txt$|sitemap\\.xml$|manifest\\.json$|service-worker\\.js$).+}")
     public String dashboardRoot(@PathVariable String slug, Model model) {
         return dashboard(slug, model);
     }

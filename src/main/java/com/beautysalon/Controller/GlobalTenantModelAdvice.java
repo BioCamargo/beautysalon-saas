@@ -20,7 +20,7 @@ import java.util.Set;
 public class GlobalTenantModelAdvice {
 
     private static final Set<String> SYSTEM_ROUTES = Set.of(
-            "login", "register", "register-empresa", "select-tenant",
+            "login", "register", "register-empresa", "select-tenant", "whatsapp-pair",
             "termos", "privacidade", "css", "js", "images", "uploads",
             "favicon.ico", "manifest.json", "service-worker.js", "error",
             "api", "v3", "swagger-ui", "swagger-ui.html"

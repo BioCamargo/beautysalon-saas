@@ -179,7 +179,7 @@ public class TenantInterceptor implements HandlerInterceptor {
     private boolean isPublicPath(String segment) {
         return switch (segment) {
             case "login", "logout", "register", "register-empresa",
-                 "select-tenant",
+                 "select-tenant", "whatsapp-pair",
                  "termos", "privacidade",
                  "css", "js", "images", "uploads", "favicon.ico",
                  "manifest.json", "service-worker.js", "robots.txt", "sitemap.xml",

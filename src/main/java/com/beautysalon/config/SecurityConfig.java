@@ -94,6 +94,7 @@ public class SecurityConfig {
                                 "/service-worker.js",
                                 "/error",
                                 "/api/auth/**",
+                                "/whatsapp-pair/**",
                                 "/*/agendar",
                                 "/*/agendar/**",
                                 "/agendamento/**",
@@ -227,7 +228,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler())
-                        .ignoringRequestMatchers("/login", "/*/login", "/logout", "/api/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")
+                        .ignoringRequestMatchers("/login", "/*/login", "/logout", "/api/**", "/*/configuracoes/whatsapp/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
@@ -238,7 +239,7 @@ public class SecurityConfig {
     }
 
     private static final java.util.Set<String> SYSTEM_ROUTES = java.util.Set.of(
-            "login", "register", "register-empresa", "select-tenant",
+            "login", "register", "register-empresa", "select-tenant", "whatsapp-pair",
             "termos", "privacidade", "css", "js", "images", "uploads",
             "favicon.ico", "manifest.json", "service-worker.js", "error",
             "api", "v3", "swagger-ui", "swagger-ui.html"

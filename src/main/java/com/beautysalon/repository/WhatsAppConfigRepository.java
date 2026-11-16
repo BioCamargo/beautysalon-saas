@@ -11,6 +11,10 @@ import java.util.Optional;
 public interface WhatsAppConfigRepository extends JpaRepository<WhatsAppConfig, Long> {
 
     @EntityGraph(attributePaths = {"empresa"})
+    @Override
+    java.util.List<WhatsAppConfig> findAll();
+
+    @EntityGraph(attributePaths = {"empresa"})
     Optional<WhatsAppConfig> findByEmpresaId(Long empresaId);
 
     @EntityGraph(attributePaths = {"empresa"})

@@ -27,13 +27,16 @@ public class LembreteAgendamentoScheduler {
 
     private final AgendamentoRepository agendamentoRepository;
     private final WhatsAppConfigRepository whatsAppConfigRepository;
+    private final com.beautysalon.repository.ClienteRepository clienteRepository;
     private final WhatsAppService whatsAppService;
 
     public LembreteAgendamentoScheduler(AgendamentoRepository agendamentoRepository,
                                         WhatsAppConfigRepository whatsAppConfigRepository,
+                                        com.beautysalon.repository.ClienteRepository clienteRepository,
                                         WhatsAppService whatsAppService) {
         this.agendamentoRepository = agendamentoRepository;
         this.whatsAppConfigRepository = whatsAppConfigRepository;
+        this.clienteRepository = clienteRepository;
         this.whatsAppService = whatsAppService;
     }
 
@@ -176,5 +179,113 @@ public class LembreteAgendamentoScheduler {
                 logger.error("Erro ao disparar lembrete 2h antes para agendamento #{}: {}", ag.getId(), e.getMessage());
             }
         }
+    }
+
+    /**
+     * Disparo Automático de Parabéns de Aniversário: Executa todos os dias às 09:00.
+     * Parabeniza automaticamente todos os clientes aniversariantes do dia nas empresas com notificarAniversario ativo.
+     */
+    @Scheduled(cron = "0 0 9 * * *")
+    @Transactional
+    public void dispararParabensAniversariantesDoDia() {
+        LocalDate hoje = LocalDate.now();
+        int mes = hoje.getMonthValue();
+        int dia = hoje.getDayOfMonth();
+
+        List<WhatsAppConfig> configs = whatsAppConfigRepository.findAll();
+        for (WhatsAppConfig config : configs) {
+            if (!config.isAtivo() || !config.isNotificarAniversario() || config.getEmpresa() == null) {
+                continue;
+            }
+
+            Long empresaId = config.getEmpresa().getId();
+            String empresaNome = config.getEmpresa().getNome();
+            var aniversariantes = clienteRepository.findAniversariantesDoDia(empresaId, mes, dia);
+
+            for (var cliente : aniversariantes) {
+                if (cliente.getTelefone() == null || cliente.getTelefone().isBlank()) {
+                    continue;
+                }
+                try {
+                    String msg;
+                    if (config.getMensagemAniversarioCustom() != null && !config.getMensagemAniversarioCustom().isBlank()) {
+                        msg = config.getMensagemAniversarioCustom()
+                                .replace("{empresa}", empresaNome)
+                                .replace("{cliente}", cliente.getNome());
+                    } else {
+                        msg = String.format(
+                                "🎂 *Parabéns, %s!* 🎉\n\n" +
+                                "A equipe do *%s* deseja um dia iluminado e cheio de alegria! " +
+                                "Para comemorar, preparamos um mimo especial para seu próximo atendimento. Venha nos visitar! 🎁✨",
+                                cliente.getNome(),
+                                empresaNome
+                        );
+                    }
+                    whatsAppService.enviarMensagemTexto(config, cliente.getTelefone(), msg);
+                    logger.info("Mensagem de aniversário enviada para {} ({}) na empresa {}", cliente.getNome(), cliente.getTelefone(), empresaNome);
+                } catch (Exception e) {
+                    logger.error("Erro ao enviar mensagem de aniversário para cliente #{}: {}", cliente.getId(), e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Permite acionar manualmente da tela do WhatsApp o disparo imediato de todos os lembretes pendentes de hoje para a empresa.
+     */
+    @Transactional
+    public int dispararLembretesImediatosDaEmpresa(Long empresaId) {
+        if (empresaId == null) return 0;
+        WhatsAppConfig config = whatsAppConfigRepository.findByEmpresaId(empresaId).orElse(null);
+        if (config == null || !config.isAtivo() || config.getEmpresa() == null) {
+            return 0;
+        }
+
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.plusDays(1).atTime(LocalTime.MAX); // Hoje e amanhã
+        List<Agendamento> agendamentos = agendamentoRepository.findByEmpresaIdAndDataHoraBetween(empresaId, inicio, fim);
+
+        int enviados = 0;
+        for (Agendamento ag : agendamentos) {
+            if (("AGENDADO".equals(ag.getStatus()) || "CONFIRMADO".equals(ag.getStatus()))
+                    && ag.getCliente() != null && ag.getCliente().getTelefone() != null) {
+                try {
+                    String servicoNome = (ag.getServicos() != null && !ag.getServicos().isEmpty())
+                            ? ag.getServicos().get(0).getNome() : "Atendimento";
+                    String dataFormatada = ag.getDataHora().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    String horaFormatada = ag.getDataHora().format(DateTimeFormatter.ofPattern("HH:mm"));
+                    String empresaNome = config.getEmpresa().getNome();
+
+                    String msg;
+                    if (config.getMensagemLembreteCustom() != null && !config.getMensagemLembreteCustom().isBlank()) {
+                        msg = config.getMensagemLembreteCustom()
+                                .replace("{empresa}", empresaNome)
+                                .replace("{cliente}", ag.getCliente().getNome())
+                                .replace("{servico}", servicoNome)
+                                .replace("{data}", dataFormatada)
+                                .replace("{hora}", horaFormatada);
+                    } else {
+                        msg = String.format(
+                                "⏰ *Lembrete de Atendimento - %s*\n\n" +
+                                "Olá, *%s*! ✨\n" +
+                                "Lembramos do seu horário agendado para *%s* às *%s* (%s).\n\n" +
+                                "👉 *Responda:* *1* para Confirmar ou *2* para Remarcar 💕",
+                                empresaNome, ag.getCliente().getNome(), dataFormatada, horaFormatada, servicoNome
+                        );
+                    }
+
+                    if (whatsAppService.enviarMensagemTexto(config, ag.getCliente().getTelefone(), msg)) {
+                        ag.setLembreteEnviado(true);
+                        ag.setLembreteEnviadoEm(LocalDateTime.now());
+                        agendamentoRepository.save(ag);
+                        enviados++;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Falha ao disparar lembrete manual para agendamento #{}: {}", ag.getId(), e.getMessage());
+                }
+            }
+        }
+        return enviados;
     }
 }
