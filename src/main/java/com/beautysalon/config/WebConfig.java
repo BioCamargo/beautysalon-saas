@@ -32,6 +32,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/favicon.ico",
                         "/robots.txt",
                         "/sitemap.xml",
+                        "/service-worker.js",
+                        "/manifest.json",
+                        "/*/manifest.json",
                         "/error"
                 );
     }
@@ -55,6 +58,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/js/");
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/service-worker.js")
+                .addResourceLocations("classpath:/static/service-worker.js");
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations("classpath:/static/favicon.ico", "classpath:/static/images/nexipro-icon.svg");
     }
 
     @Override
