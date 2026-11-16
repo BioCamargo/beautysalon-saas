@@ -15,11 +15,19 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         (function() {
+            var SYSTEM_ROUTES = ['login','logout','register','register-empresa','select-tenant','whatsapp-pair','termos','privacidade','error','api','actuator','p','agendamento','agendar'];
+            try {
+                var saved = localStorage.getItem('nexipro_last_slug');
+                if (saved && SYSTEM_ROUTES.indexOf(saved.trim().toLowerCase()) !== -1) {
+                    localStorage.removeItem('nexipro_last_slug');
+                    document.cookie = "nexipro_last_slug=; path=/; max-age=0; SameSite=Lax";
+                }
+            } catch(e) {}
             var currentSlug = /*[[${empresaSlug}]]*/ null;
             if (!currentSlug || currentSlug === '') {
                 try {
                     var lastSlug = localStorage.getItem('nexipro_last_slug');
-                    if (lastSlug && lastSlug.trim() !== '') {
+                    if (lastSlug && lastSlug.trim() !== '' && SYSTEM_ROUTES.indexOf(lastSlug.trim().toLowerCase()) === -1) {
                         window.location.replace('/' + encodeURIComponent(lastSlug.trim()) + '/login' + window.location.search);
                     }
                 } catch(e) {}
@@ -168,23 +176,9 @@
 
 <script th:inline="javascript">
     const currentSlug = /*[[${empresaSlug}]]*/ null;
+    const LOGIN_SYSTEM_ROUTES = ['login','logout','register','register-empresa','select-tenant','whatsapp-pair','termos','privacidade','error','api','actuator','p','agendamento','agendar'];
 
-    // Garante limpeza de qualquer sessão anterior nesta aba
-    try {
-        sessionStorage.removeItem('nexi_tab_authenticated');
-    } catch(e) {}
-
-    // Ao enviar formulário de login com sucesso nesta aba, marca como autenticada
-    const loginForm = document.querySelector('form[action*="/login"]');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function() {
-            try {
-                sessionStorage.setItem('nexi_tab_authenticated', 'true');
-            } catch(e) {}
-        });
-    }
-
-    if (currentSlug) {
+    if (currentSlug && LOGIN_SYSTEM_ROUTES.indexOf(String(currentSlug).toLowerCase()) === -1) {
         // Salva nos cookies e local storage para acessos futuros
         try {
             localStorage.setItem('nexipro_last_slug', currentSlug);
@@ -202,7 +196,7 @@
         // Se estiver no login genérico, redireciona imediatamente se houver empresa salva
         try {
             const lastSlug = localStorage.getItem('nexipro_last_slug');
-            if (lastSlug && lastSlug.trim() !== '') {
+            if (lastSlug && lastSlug.trim() !== '' && LOGIN_SYSTEM_ROUTES.indexOf(lastSlug.trim().toLowerCase()) === -1) {
                 window.location.replace('/' + encodeURIComponent(lastSlug.trim()) + '/login' + window.location.search);
             }
         } catch(e) {}

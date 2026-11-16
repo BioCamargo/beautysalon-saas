@@ -35,7 +35,7 @@ public class DivulgacaoController {
         String linkAgendar = baseUrl + "/" + slug + "/agendar";
         boolean isLocalhost = "localhost".equalsIgnoreCase(request.getServerName()) 
                 || "127.0.0.1".equals(request.getServerName());
-        String linkBioProducao = "https://app.nexipro.com.br/p/" + slug;
+        String linkBioProducao = "https://www.nexipro.com.br/p/" + slug;
 
         model.addAttribute("empresa", empresa);
         model.addAttribute("empresaSlug", slug);

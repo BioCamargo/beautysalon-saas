@@ -40,7 +40,7 @@ public class AuthController {
                         org.springframework.security.core.Authentication authentication,
                         Model model) {
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
-            if (slug != null && !slug.isBlank()) {
+            if (slug != null && !slug.isBlank() && !com.beautysalon.tenant.TenantInterceptor.isSystemRoute(slug)) {
                 return "redirect:/" + slug.trim().toLowerCase() + "/home";
             }
             if (authentication.getPrincipal() instanceof com.beautysalon.tenant.TenantUserDetails tud && tud.getEmpresaSlug() != null) {
@@ -50,7 +50,7 @@ public class AuthController {
             if (userOpt.isPresent() && userOpt.get().getEmpresa() != null) {
                 return "redirect:/" + userOpt.get().getEmpresa().getSlug() + "/home";
             }
-            if (lastSlug != null && !lastSlug.isBlank()) {
+            if (lastSlug != null && !lastSlug.isBlank() && !com.beautysalon.tenant.TenantInterceptor.isSystemRoute(lastSlug)) {
                 return "redirect:/" + lastSlug.trim().toLowerCase() + "/home";
             }
             return "redirect:/";
@@ -60,15 +60,21 @@ public class AuthController {
         if ((slug == null || slug.isBlank()) && lastSlug != null && !lastSlug.isBlank()) {
             try {
                 String cleanSlug = java.net.URLDecoder.decode(lastSlug, java.nio.charset.StandardCharsets.UTF_8).trim().toLowerCase();
-                Optional<Empresa> empOpt = empresaRepository.findBySlug(cleanSlug);
-                if (empOpt.isPresent()) {
-                    return "redirect:/" + empOpt.get().getSlug() + "/login";
+                if (!com.beautysalon.tenant.TenantInterceptor.isSystemRoute(cleanSlug)) {
+                    Optional<Empresa> empOpt = empresaRepository.findBySlug(cleanSlug);
+                    if (empOpt.isPresent()) {
+                        return "redirect:/" + empOpt.get().getSlug() + "/login";
+                    }
                 }
             } catch (Exception ignored) {}
         }
 
         if (slug != null && !slug.isBlank()) {
-            Optional<Empresa> empresaOpt = empresaRepository.findBySlug(slug);
+            String cleanSlug = slug.trim().toLowerCase();
+            if (com.beautysalon.tenant.TenantInterceptor.isSystemRoute(cleanSlug)) {
+                return "redirect:/login";
+            }
+            Optional<Empresa> empresaOpt = empresaRepository.findBySlug(cleanSlug);
             if (empresaOpt.isPresent()) {
                 Empresa emp = empresaOpt.get();
                 model.addAttribute("empresaNome", emp.getNome());
@@ -76,8 +82,7 @@ public class AuthController {
                 model.addAttribute("empresaLogo", emp.getLogoUrl());
                 model.addAttribute("pageTitle", "Login - " + emp.getNome());
             } else {
-                model.addAttribute("empresaSlug", slug);
-                model.addAttribute("pageTitle", "Login - NEXI PRO");
+                return "redirect:/login";
             }
         } else {
             model.addAttribute("pageTitle", "Login - NEXI PRO");

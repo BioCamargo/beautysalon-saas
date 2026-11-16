@@ -595,7 +595,12 @@
             .replace(/\{hora\}/g, hora);
 
         const texto = encodeURIComponent(msgBruta);
-        window.open('https://wa.me/' + tel + '?text=' + texto, '_blank');
+        const urlWa = 'https://wa.me/' + tel + '?text=' + texto;
+        const win = window.open(urlWa, '_blank');
+        if (!win) {
+            // Pop-up bloqueado: abre na mesma aba (a sessão não é mais derrubada ao sair da página)
+            window.location.href = urlWa;
+        }
     }
 
     // Templates padrão para restauração instantânea
@@ -718,7 +723,18 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         if (AUTO_OPEN_WA_LINK && LINK_DIRETO_WA_TESTE) {
-            window.open(LINK_DIRETO_WA_TESTE, '_blank');
+            const win = window.open(LINK_DIRETO_WA_TESTE, '_blank');
+            if (!win || win.closed || typeof win.closed === 'undefined') {
+                // Navegador bloqueou o pop-up automático: orienta o usuário a usar o botão verde
+                if (typeof showLuxToast === 'function') {
+                    showLuxToast('WhatsApp', 'Seu navegador bloqueou a abertura automática. Clique no botão verde "Abrir no WhatsApp Agora" no topo da página.', 'warning');
+                }
+                const alertBtn = document.querySelector('a[href^="https://wa.me/"]');
+                if (alertBtn) {
+                    alertBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    alertBtn.classList.add('shadow-lg');
+                }
+            }
         }
 
         const area = document.getElementById('qrCodeArea');

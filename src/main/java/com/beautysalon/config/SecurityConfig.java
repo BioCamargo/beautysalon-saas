@@ -77,6 +77,7 @@ public class SecurityConfig {
                                 "/",
                                 "/login",
                                 "/*/login",
+                                "/logout",
                                 "/select-tenant",
                                 "/register",
                                 "/register-empresa",
@@ -156,8 +157,34 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout"))
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            String slug = null;
+                            if (authentication != null && authentication.getPrincipal() instanceof TenantUserDetails tud && tud.getEmpresaSlug() != null) {
+                                slug = tud.getEmpresaSlug();
+                            }
+                            if (slug == null || slug.isBlank()) {
+                                jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+                                if (cookies != null) {
+                                    for (jakarta.servlet.http.Cookie c : cookies) {
+                                        if ("nexipro_last_slug".equals(c.getName()) && c.getValue() != null && !c.getValue().isBlank()) {
+                                            try {
+                                                String decoded = java.net.URLDecoder.decode(c.getValue(), java.nio.charset.StandardCharsets.UTF_8).trim().toLowerCase();
+                                                if (!decoded.isBlank() && !isSystemRoute(decoded)) {
+                                                    slug = decoded;
+                                                }
+                                            } catch (Exception ignored) {}
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (slug != null && !slug.isBlank() && !isSystemRoute(slug)) {
+                                response.sendRedirect("/" + slug.trim().toLowerCase() + "/login?logout");
+                            } else {
+                                response.sendRedirect("/login?logout");
+                            }
+                        })
                         .permitAll()
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -238,14 +265,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private static final java.util.Set<String> SYSTEM_ROUTES = java.util.Set.of(
-            "login", "register", "register-empresa", "select-tenant", "whatsapp-pair",
-            "termos", "privacidade", "css", "js", "images", "uploads",
-            "favicon.ico", "manifest.json", "service-worker.js", "error",
-            "api", "v3", "swagger-ui", "swagger-ui.html"
-    );
-
     private boolean isSystemRoute(String route) {
-        return SYSTEM_ROUTES.contains(route.toLowerCase());
+        return com.beautysalon.tenant.TenantInterceptor.isSystemRoute(route);
     }
 }

@@ -121,6 +121,7 @@ public class RelatorioController {
         LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
 
         User profissional = userRepository.findById(profissionalId)
+                .filter(u -> u.getEmpresa() != null && u.getEmpresa().getId().equals(empresaId))
                 .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
 
         var itens = comandaItemRepository.findItensPorProfissionalEPeriodo(empresaId, profissionalId, inicio, fim);

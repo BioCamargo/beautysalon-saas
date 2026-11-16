@@ -173,19 +173,25 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.clear();
     }
 
+    public static final java.util.Set<String> SYSTEM_ROUTES = java.util.Set.of(
+            "login", "logout", "register", "register-empresa",
+            "select-tenant", "whatsapp-pair",
+            "termos", "privacidade",
+            "css", "js", "images", "uploads", "favicon.ico",
+            "manifest.json", "service-worker.js", "robots.txt", "sitemap.xml",
+            "swagger-ui", "swagger-ui.html", "v3",
+            "api", "actuator", "error", "p", "agendamento", "agendar", ""
+    );
+
+    public static boolean isSystemRoute(String segment) {
+        if (segment == null) return true;
+        return SYSTEM_ROUTES.contains(segment.trim().toLowerCase());
+    }
+
     /**
      * Paths que não representam slugs de empresa e devem ser ignorados pelo interceptor.
      */
     private boolean isPublicPath(String segment) {
-        return switch (segment) {
-            case "login", "logout", "register", "register-empresa",
-                 "select-tenant", "whatsapp-pair",
-                 "termos", "privacidade",
-                 "css", "js", "images", "uploads", "favicon.ico",
-                 "manifest.json", "service-worker.js", "robots.txt", "sitemap.xml",
-                 "swagger-ui", "swagger-ui.html", "v3",
-                 "api", "actuator", "error", "p", "agendamento", "" -> true;
-            default -> false;
-        };
+        return isSystemRoute(segment);
     }
 }

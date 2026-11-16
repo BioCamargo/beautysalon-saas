@@ -333,6 +333,11 @@ public class FinanceiroService {
         if (!"ABERTA".equals(comanda.getStatus())) {
             throw new IllegalStateException("Não é possível remover pagamentos de comanda finalizada.");
         }
+        boolean pertence = comanda.getPagamentos().stream()
+                .anyMatch(p -> p.getId() != null && p.getId().equals(pagamentoId));
+        if (!pertence) {
+            throw new IllegalArgumentException("Pagamento não pertence a esta comanda.");
+        }
         comanda.getPagamentos().removeIf(p -> p.getId() != null && p.getId().equals(pagamentoId));
         pagamentoComandaRepository.deleteById(pagamentoId);
         comandaRepository.save(comanda);

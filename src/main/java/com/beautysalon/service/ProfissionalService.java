@@ -33,7 +33,10 @@ public class ProfissionalService {
 
     public User buscarPorId(Long id) {
         if (id == null) return null;
-        return userRepository.findById(id).orElse(null);
+        Long empresaId = TenantContext.getEmpresaId();
+        return userRepository.findById(id)
+                .filter(u -> empresaId == null || (u.getEmpresa() != null && empresaId.equals(u.getEmpresa().getId())))
+                .orElse(null);
     }
 
     public List<AusenciaProfissional> listarAusencias() {
@@ -55,6 +58,10 @@ public class ProfissionalService {
 
     @Transactional
     public void removerAusencia(Long id) {
-        ausenciaProfissionalRepository.deleteById(id);
+        if (id == null) return;
+        Long empresaId = TenantContext.getEmpresaId();
+        ausenciaProfissionalRepository.findById(id)
+                .filter(a -> a.getEmpresa() != null && a.getEmpresa().getId().equals(empresaId))
+                .ifPresent(ausenciaProfissionalRepository::delete);
     }
 }

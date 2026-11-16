@@ -117,7 +117,9 @@ class RelatorioControllerTest {
     @DisplayName("Deve carregar extrato de comissões individual de profissional")
     void deveCarregarExtratoComissoesProfissional() {
         Model model = new ConcurrentModel();
-        User profissional = User.builder().id(5L).nome("Camila Manicure").build();
+        com.beautysalon.model.Empresa empresa = new com.beautysalon.model.Empresa();
+        empresa.setId(EMPRESA_ID);
+        User profissional = User.builder().id(5L).nome("Camila Manicure").empresa(empresa).build();
 
         when(userRepository.findById(5L)).thenReturn(Optional.of(profissional));
         when(comandaItemRepository.findItensPorProfissionalEPeriodo(eq(EMPRESA_ID), eq(5L), any(LocalDateTime.class), any(LocalDateTime.class)))

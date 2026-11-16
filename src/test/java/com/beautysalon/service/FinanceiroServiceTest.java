@@ -439,6 +439,7 @@ class FinanceiroServiceTest {
                 .build();
 
         when(caixaRepository.findByIdAndEmpresaId(1L, EMPRESA_ID)).thenReturn(Optional.of(caixa));
+        when(movimentacaoFinanceiraRepository.save(any(MovimentacaoFinanceira.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Sangria de 30.00
         financeiroService.registrarMovimentacaoCaixa(1L, "SANGRIA", new BigDecimal("30.00"), "Retirada", "Sangria para cofre", operadorMock);

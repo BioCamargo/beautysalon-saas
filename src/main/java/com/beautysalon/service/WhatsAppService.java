@@ -380,7 +380,7 @@ public class WhatsAppService {
             ag.setStatus("CANCELADO");
             agendamentoRepository.save(ag);
 
-            String linkAutoatendimento = "https://app.nexipro.com.br/" + ag.getEmpresa().getSlug() + "/agendar";
+            String linkAutoatendimento = "https://www.nexipro.com.br/" + ag.getEmpresa().getSlug() + "/agendar";
             String resposta = String.format(
                     "🌸 *Horário Cancelado!*\n\n" +
                     "Tudo bem, *%s*! Compreendemos perfeitamente. Seu horário das *%s* foi cancelado e liberado na agenda.\n\n" +

@@ -169,8 +169,16 @@ public class ServicoController {
                                 @PathVariable Long id,
                                 @PathVariable Long insumoId,
                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
-        servicoInsumoRepository.deleteById(insumoId);
-        redirectAttributes.addFlashAttribute("mensagemSucesso", "Insumo removido da ficha técnica!");
+        Long empresaId = com.beautysalon.tenant.TenantContext.getEmpresaId();
+        var insumoOpt = servicoInsumoRepository.findById(insumoId)
+                .filter(i -> i.getEmpresa() != null && i.getEmpresa().getId().equals(empresaId)
+                        && i.getServico() != null && i.getServico().getId().equals(id));
+        if (insumoOpt.isPresent()) {
+            servicoInsumoRepository.delete(insumoOpt.get());
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Insumo removido da ficha técnica!");
+        } else {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Insumo não encontrado para este serviço.");
+        }
         return "redirect:/" + slug + "/servicos/edit/" + id;
     }
 

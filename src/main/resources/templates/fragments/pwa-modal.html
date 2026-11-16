@@ -231,12 +231,12 @@
             function getAppOfficialUrl() {
                 try {
                     const slugMatch = window.location.pathname.match(/^\/([^\/]+)/);
-                    const systemRoutes = ['login', 'register', 'register-empresa', 'select-tenant', 'termos', 'privacidade'];
+                    const systemRoutes = ['login', 'logout', 'register', 'register-empresa', 'select-tenant', 'whatsapp-pair', 'termos', 'privacidade', 'error', 'api', 'actuator', 'p', 'agendamento', 'agendar'];
                     if (slugMatch && slugMatch[1] && !systemRoutes.includes(slugMatch[1])) {
                         return window.location.origin + '/' + slugMatch[1] + '/login';
                     }
                     const saved = localStorage.getItem('nexipro_last_slug');
-                    if (saved && saved.trim() !== '') {
+                    if (saved && saved.trim() !== '' && !systemRoutes.includes(saved.trim().toLowerCase())) {
                         return window.location.origin + '/' + encodeURIComponent(saved.trim()) + '/login';
                     }
                 } catch(e) {}

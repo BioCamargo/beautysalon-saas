@@ -19,12 +19,7 @@ import java.util.Set;
 @ControllerAdvice(basePackages = "com.beautysalon.Controller")
 public class GlobalTenantModelAdvice {
 
-    private static final Set<String> SYSTEM_ROUTES = Set.of(
-            "login", "register", "register-empresa", "select-tenant", "whatsapp-pair",
-            "termos", "privacidade", "css", "js", "images", "uploads",
-            "favicon.ico", "manifest.json", "service-worker.js", "error",
-            "api", "v3", "swagger-ui", "swagger-ui.html"
-    );
+    private static final Set<String> SYSTEM_ROUTES = com.beautysalon.tenant.TenantInterceptor.SYSTEM_ROUTES;
 
     private final EmpresaRepository empresaRepository;
     private final UserRepository userRepository;
