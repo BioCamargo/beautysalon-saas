@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexipro-cache-v4';
+const CACHE_NAME = 'nexipro-cache-v5';
 const STATIC_ASSETS = [
     '/css/style.css',
     '/images/pwa-icon-192.png',

@@ -90,6 +90,11 @@
         <span>Sessão encerrada com segurança.</span>
     </div>
 
+    <div th:if="${param.expired}" class="auth-alert auth-alert-info" style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); color: #0369a1;">
+        <i class="bi bi-arrow-clockwise"></i>
+        <span>Sua página foi atualizada após reinício do servidor. Por favor, entre novamente.</span>
+    </div>
+
     <!-- FORMULÁRIO DE LOGIN -->
     <form th:action="@{/login}" method="post">
         

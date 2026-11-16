@@ -192,11 +192,42 @@ public class SecurityConfig {
 
                             response.sendRedirect("/login");
                         })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            // Se falhou por token CSRF expirado/ausente (comum após reinício do servidor / Render ou aba inativa)
+                            if (accessDeniedException instanceof org.springframework.security.web.csrf.CsrfException) {
+                                String slug = request.getParameter("slug");
+                                if (slug == null || slug.isBlank()) {
+                                    jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+                                    if (cookies != null) {
+                                        for (jakarta.servlet.http.Cookie c : cookies) {
+                                            if ("nexipro_last_slug".equals(c.getName()) && c.getValue() != null && !c.getValue().isBlank()) {
+                                                try {
+                                                    String decoded = java.net.URLDecoder.decode(c.getValue(), java.nio.charset.StandardCharsets.UTF_8).trim().toLowerCase();
+                                                    if (!decoded.isBlank() && !isSystemRoute(decoded)) {
+                                                        slug = decoded;
+                                                    }
+                                                } catch (Exception ignored) {}
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (slug != null && !slug.isBlank() && !isSystemRoute(slug.trim())) {
+                                    response.sendRedirect("/" + slug.trim().toLowerCase() + "/login?expired=true");
+                                } else {
+                                    response.sendRedirect("/login?expired=true");
+                                }
+                                return;
+                            }
+
+                            response.sendError(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
+                        })
                 )
 
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")
+                        .csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler())
+                        .ignoringRequestMatchers("/login", "/*/login", "/logout", "/api/**", "/h2-console/**", "/*/agendar", "/*/agendar/**")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
