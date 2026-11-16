@@ -24,7 +24,13 @@ public class WhatsAppConfigController {
         WhatsAppConfig config = whatsAppService.obterConfiguracaoAtual()
                 .orElseGet(() -> WhatsAppConfig.builder().provider("META_OFFICIAL").ativo(false).build());
 
+        String telPadrao = config.getNumeroConectado();
+        if ((telPadrao == null || telPadrao.isBlank()) && config.getEmpresa() != null) {
+            telPadrao = config.getEmpresa().getTelefone();
+        }
+
         model.addAttribute("config", config);
+        model.addAttribute("empresaTelefone", telPadrao != null ? telPadrao : "");
         model.addAttribute("empresaSlug", slug);
         model.addAttribute("pageTitle", "Integração WhatsApp");
         return "configuracoes/whatsapp";
@@ -82,10 +88,17 @@ public class WhatsAppConfigController {
                     mensagemTeste
             );
 
+            String telLimpo = telefoneTeste != null ? telefoneTeste.replaceAll("[^0-9]", "") : "";
+            if (!telLimpo.startsWith("55") && (telLimpo.length() == 10 || telLimpo.length() == 11)) {
+                telLimpo = "55" + telLimpo;
+            }
+            String linkDiretoWa = "https://wa.me/" + telLimpo + "?text=" + java.net.URLEncoder.encode(mensagemTeste, java.nio.charset.StandardCharsets.UTF_8);
+            redirectAttributes.addFlashAttribute("linkDiretoWaTeste", linkDiretoWa);
+
             if (enviado) {
-                redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem de teste enviada com sucesso para " + telefoneTeste + "!");
+                redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem de teste processada para " + telefoneTeste + "! Caso não utilize Evolution API em nuvem, clique em 'Enviar Mensagem no WhatsApp Agora' abaixo para abrir direto no aparelho.");
             } else {
-                redirectAttributes.addFlashAttribute("mensagemErro", "Não foi possível enviar o teste. Verifique suas credenciais e formato do número.");
+                redirectAttributes.addFlashAttribute("mensagemErro", "Não foi possível enviar o teste automático. Verifique suas credenciais ou use o envio direto pelo WhatsApp.");
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao testar envio: " + e.getMessage());

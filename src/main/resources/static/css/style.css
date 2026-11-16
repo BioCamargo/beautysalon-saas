@@ -887,6 +887,18 @@ a {
     border-color: var(--text-muted);
 }
 
+.btn-success {
+    background-color: #16a34a !important;
+    border-color: #15803d !important;
+    color: #ffffff !important;
+}
+
+.btn-success:hover, .btn-success:focus {
+    background-color: #15803d !important;
+    border-color: #166534 !important;
+    color: #ffffff !important;
+}
+
 .btn-danger {
     background-color: var(--accent-rose);
     color: #ffffff;
