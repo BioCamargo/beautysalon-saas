@@ -170,12 +170,12 @@
             <div class="sidebar-user">
                 <div class="user-avatar position-relative">
                     <span
-                        th:text="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #strings.substring(#authentication.name, 0, 1).toUpperCase() : 'U'}">U</span>
+                        th:text="${usuarioNome != null ? #strings.substring(usuarioNome, 0, 1).toUpperCase() : (#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #strings.substring(#authentication.name, 0, 1).toUpperCase() : 'U')}">U</span>
                     <span class="position-absolute bg-success border border-dark rounded-circle" style="width: 10px; height: 10px; bottom: 1px; right: 1px;" title="Online"></span>
                 </div>
                 <div class="user-info">
                     <div class="user-name"
-                        th:text="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #authentication.name : 'Visitante'}">
+                        th:text="${usuarioNome != null ? usuarioNome : (#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #authentication.name : 'Visitante')}">
                         Operador</div>
                     <div class="user-role" sec:authorize="hasRole('OWNER')">Proprietário (Owner)</div>
                     <div class="user-role" sec:authorize="hasRole('ADMIN') and !hasRole('OWNER')">Administrador</div>

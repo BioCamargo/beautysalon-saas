@@ -21,9 +21,15 @@
                         </span>
                     </div>
                     <h2 class="mb-1" style="font-family: var(--font-serif); font-size: 1.75rem; color: #ffffff;">
-                        Olá, <span
-                            th:text="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser' ? #authentication.name : 'Visitante'}"
-                            style="color: var(--accent-gold);">Operador</span>!
+                        Olá, <th:block th:if="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser'}">
+                            <span style="color: var(--accent-gold); font-weight: 700;" 
+                                  th:text="${usuarioNome != null ? usuarioNome : (#authentication.principal instanceof T(com.beautysalon.tenant.TenantUserDetails) ? #authentication.principal.nome : #authentication.name)}">Nome</span>
+                            <span th:if="${(usuarioLogin != null ? usuarioLogin : #authentication.name) != null}"
+                                  style="color: rgba(255, 255, 255, 0.75); font-size: 1.2rem; font-weight: 400; font-family: var(--font-sans, sans-serif);"> - <span th:text="${usuarioLogin != null ? usuarioLogin : #authentication.name}">usuario</span></span>
+                        </th:block>
+                        <th:block th:unless="${#authentication != null and #authentication.name != null and #authentication.name != 'anonymousUser'}">
+                            <span style="color: var(--accent-gold);">Visitante</span>
+                        </th:block>!
                     </h2>
                     <p class="mb-0 text-white-50" style="font-size: 0.92rem;">
                         Bem-vindo ao <strong>NEXI PRO</strong>. Acompanhe atendimentos, equipe e faturamento em tempo real no próximo nível do seu negócio.

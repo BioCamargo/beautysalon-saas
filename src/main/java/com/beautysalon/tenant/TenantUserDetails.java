@@ -52,6 +52,10 @@ public class TenantUserDetails implements UserDetails {
         return authorities;
     }
 
+    public String getNome() {
+        return user != null && user.getNome() != null && !user.getNome().isBlank() ? user.getNome() : username;
+    }
+
     @Override
     public String getPassword() {
         return password;

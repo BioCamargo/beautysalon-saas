@@ -51,17 +51,39 @@ public class GlobalTenantModelAdvice {
         }
 
         // 2. Se não detectou na URL, tenta do usuário autenticado
-        if (detectedSlug == null && authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
-            if (authentication.getPrincipal() instanceof TenantUserDetails tud && tud.getEmpresaSlug() != null) {
-                detectedSlug = tud.getEmpresaSlug();
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
+            String username = authentication.getName();
+            String nomeUsuario = null;
+
+            if (authentication.getPrincipal() instanceof TenantUserDetails tud) {
+                if (detectedSlug == null && tud.getEmpresaSlug() != null) {
+                    detectedSlug = tud.getEmpresaSlug();
+                }
+                if (tud.getUser() != null && tud.getUser().getNome() != null && !tud.getUser().getNome().isBlank()) {
+                    nomeUsuario = tud.getUser().getNome();
+                }
             } else {
-                userRepository.findByUsername(authentication.getName()).ifPresent(u -> {
-                    if (u.getEmpresa() != null) {
+                Optional<com.beautysalon.model.User> uOpt = userRepository.findByUsername(username);
+                if (uOpt.isEmpty()) {
+                    uOpt = userRepository.findFirstByUsername(username);
+                }
+                if (uOpt.isPresent()) {
+                    com.beautysalon.model.User u = uOpt.get();
+                    if (u.getNome() != null && !u.getNome().isBlank()) {
+                        nomeUsuario = u.getNome();
+                    }
+                    if (detectedSlug == null && u.getEmpresa() != null) {
                         model.addAttribute("empresaSlug", u.getEmpresa().getSlug());
                         model.addAttribute("empresaNome", u.getEmpresa().getNome());
                     }
-                });
+                }
             }
+
+            if (nomeUsuario == null || nomeUsuario.isBlank()) {
+                nomeUsuario = username;
+            }
+            model.addAttribute("usuarioNome", nomeUsuario);
+            model.addAttribute("usuarioLogin", username);
         }
 
         // 3. Se ainda não detectou, tenta do cookie "nexipro_last_slug"
