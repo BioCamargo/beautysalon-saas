@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface PacoteComboRepository extends JpaRepository<PacoteCombo, Long> {
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"servicos"})
     List<PacoteCombo> findByEmpresaIdAndAtivoTrue(Long empresaId);
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"servicos"})
     Optional<PacoteCombo> findByIdAndEmpresaId(Long id, Long empresaId);
 }

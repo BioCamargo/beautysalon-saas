@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface ServicoInsumoRepository extends JpaRepository<ServicoInsumo, Long> {
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"produto", "servico"})
     List<ServicoInsumo> findByServicoIdAndEmpresaId(Long servicoId, Long empresaId);
 
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"produto", "servico"})

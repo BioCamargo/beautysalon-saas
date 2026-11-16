@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface VoucherPresenteRepository extends JpaRepository<VoucherPresente, Long> {
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"clienteComprador"})
     List<VoucherPresente> findByEmpresaIdOrderByValidadeDesc(Long empresaId);
 
     Optional<VoucherPresente> findByCodigoIgnoreCaseAndEmpresaId(String codigo, Long empresaId);
