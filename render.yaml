@@ -7,14 +7,18 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: DB_URL
-        value: "jdbc:postgresql://aws-1-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
+        sync: false
       - key: DB_USERNAME
-        value: "postgres.cmvcguiwtpecegsrbpjo"
+        sync: false
       - key: DB_PASSWORD
-        value: "NexiPro2026@Pass"
+        sync: false
       - key: RABBITMQ_ENABLED
         value: "false"
       - key: OPENREPLAY_ENABLED
         value: "true"
       - key: OPENREPLAY_PROJECT_KEY
-        value: "OuLAJttNYuOR1kDgjTiZ"
+        sync: false
+      - key: ASAAS_API_KEY
+        sync: false
+      - key: ASAAS_WEBHOOK_TOKEN
+        sync: false
