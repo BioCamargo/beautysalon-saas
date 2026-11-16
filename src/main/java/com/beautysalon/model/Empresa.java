@@ -126,11 +126,18 @@ public class Empresa {
     }
 
     /**
-     * Retorna se a conta possui acesso regular ao SaaS (Trial ativo ou Assinatura paga).
+     * Retorna se a empresa possui contrato vitalício (isenta de cobranças e planos).
+     */
+    public boolean isVitalicio() {
+        return statusAssinatura == StatusAssinatura.VITALICIO || plano == PlanoSaaS.VITALICIO;
+    }
+
+    /**
+     * Retorna se a conta possui acesso regular ao SaaS (Vitalício, Trial ativo ou Assinatura paga).
      */
     public boolean isAssinaturaValida() {
         if (!ativo) return false;
-        if (statusAssinatura == StatusAssinatura.ATIVA) return true;
+        if (isVitalicio() || statusAssinatura == StatusAssinatura.ATIVA) return true;
         return isTrialAtivo();
     }
 
@@ -138,6 +145,7 @@ public class Empresa {
      * Retorna se a empresa está com fatura em atraso.
      */
     public boolean isInadimplente() {
+        if (isVitalicio()) return false;
         return statusAssinatura == StatusAssinatura.INADIMPLENTE;
     }
 
@@ -150,6 +158,7 @@ public class Empresa {
      */
     public boolean isBloqueioSuaveAtivo() {
         if (!ativo) return true;
+        if (isVitalicio()) return false;
         if (statusAssinatura == StatusAssinatura.CANCELADA || statusAssinatura == StatusAssinatura.EXPIRADA) {
             return true;
         }

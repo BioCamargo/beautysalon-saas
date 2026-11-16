@@ -57,17 +57,20 @@ public class EmpresaServiceImpl implements EmpresaService {
             slugFinal = slug + "-" + contador++;
         }
 
-        // Cria a empresa com Plano Studio em período de teste de 7 dias
+        // Verifica se a empresa faz parte da lista de contratos vitalícios (ex: Studio Helen Coltro)
+        boolean vitalicio = isEmpresaVitalicia(dto.getNomeEmpresa(), slugFinal, dto.getCnpj(), dto.getEmailEmpresa(), dto.getEmailUsuario(), dto.getUsername());
+
+        // Cria a empresa (Vitalícia VIP ou Plano Studio em período de teste de 7 dias)
         Empresa empresa = Empresa.builder()
                 .nome(dto.getNomeEmpresa())
                 .slug(slugFinal)
                 .email(dto.getEmailEmpresa())
                 .telefone(dto.getTelefoneEmpresa())
                 .cnpj(dto.getCnpj())
-                .segmento(dto.getSegmento() != null ? dto.getSegmento() : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA)
-                .plano(com.beautysalon.model.PlanoSaaS.STUDIO)
-                .statusAssinatura(com.beautysalon.model.StatusAssinatura.TRIAL)
-                .dataExpiracaoTrial(java.time.LocalDateTime.now().plusDays(7))
+                .segmento(dto.getSegmento() != null ? dto.getSegmento() : (vitalicio ? com.beautysalon.model.SegmentoEmpresa.LASH_BROW : com.beautysalon.model.SegmentoEmpresa.SALAO_BELEZA))
+                .plano(vitalicio ? com.beautysalon.model.PlanoSaaS.VITALICIO : com.beautysalon.model.PlanoSaaS.STUDIO)
+                .statusAssinatura(vitalicio ? com.beautysalon.model.StatusAssinatura.VITALICIO : com.beautysalon.model.StatusAssinatura.TRIAL)
+                .dataExpiracaoTrial(vitalicio ? null : java.time.LocalDateTime.now().plusDays(7))
                 .ativo(true)
                 .build();
 
@@ -145,6 +148,22 @@ public class EmpresaServiceImpl implements EmpresaService {
                 .replaceAll("\\s+", "-")
                 .replaceAll("-+", "-");
         return normalizado.length() > 50 ? normalizado.substring(0, 50) : normalizado;
+    }
+
+    public static boolean isEmpresaVitalicia(String nome, String slug, String cnpj, String emailEmpresa, String emailUsuario, String username) {
+        String combined = ((nome != null ? nome : "") + " " +
+                (slug != null ? slug : "") + " " +
+                (emailEmpresa != null ? emailEmpresa : "") + " " +
+                (emailUsuario != null ? emailUsuario : "") + " " +
+                (username != null ? username : "")).toLowerCase();
+        String cnpjDigits = cnpj != null ? cnpj.replaceAll("\\D", "") : "";
+
+        return cnpjDigits.equals("46101466000184")
+                || combined.contains("helencoltro")
+                || combined.contains("helen coltro")
+                || combined.contains("helen-coltro")
+                || combined.contains("studiohelencoltro")
+                || combined.contains("studio-helen-coltro");
     }
 
     private EmpresaDTO toDTO(Empresa e) {

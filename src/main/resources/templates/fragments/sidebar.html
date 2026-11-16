@@ -146,7 +146,8 @@
                 <span>Dados da Empresa & Pix</span>
             </a>
 
-            <a th:href="@{/{slug}/assinatura(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
+            <a th:if="${empresaStatusAssinatura == null or empresaStatusAssinatura.name() != 'VITALICIO'}"
+                th:href="@{/{slug}/assinatura(slug=${empresaSlug != null ? empresaSlug : 'nexipro'})}" class="nav-link"
                 th:classappend="${activePage == 'assinatura'} ? 'active' : ''"
                 sec:authorize="hasAnyRole('OWNER', 'ADMIN')">
                 <i class="bi bi-gem text-warning"></i>

@@ -90,6 +90,15 @@ public class TenantInterceptor implements HandlerInterceptor {
             }
         }
 
+        // Auto-promoção para Contrato Vitalício se pertencer à lista de exceções vitalícias (ex: Studio Helen Coltro)
+        if (!empresa.isVitalicio() && com.beautysalon.Implementacao.EmpresaServiceImpl.isEmpresaVitalicia(
+                empresa.getNome(), empresa.getSlug(), empresa.getCnpj(), empresa.getEmail(), null, null)) {
+            empresa.setPlano(com.beautysalon.model.PlanoSaaS.VITALICIO);
+            empresa.setStatusAssinatura(com.beautysalon.model.StatusAssinatura.VITALICIO);
+            empresa.setDataExpiracaoTrial(null);
+            empresaRepository.save(empresa);
+        }
+
         // Preenche o contexto do tenant
         TenantContext.setEmpresaId(empresa.getId());
         TenantContext.setSlug(slug);

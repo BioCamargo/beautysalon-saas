@@ -62,6 +62,15 @@
                 <span th:text="${empresaPlano != null ? empresaPlano.nomeExibicao : 'Plano Studio'}">Plano Studio</span>
             </div>
 
+            <!-- 3b. Contrato Vitalício VIP (Isento de Planos e Mensalidades) -->
+            <div class="btn-trial-badge trial-active"
+                th:if="${empresaStatusAssinatura != null and empresaStatusAssinatura.name() == 'VITALICIO'}"
+                style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(16, 185, 129, 0.18) 100%); border-color: rgba(212, 175, 55, 0.55); color: #f7df99; cursor: default;"
+                title="Contrato Vitalício VIP — Acesso Ilimitado e Isento">
+                <i class="bi bi-patch-check-fill text-warning"></i>
+                <span>Contrato Vitalício VIP</span>
+            </div>
+
             <!-- 4. Fatura em Atraso / Inadimplente -->
             <button type="button" class="btn-trial-badge trial-expired" data-bs-toggle="modal"
                 data-bs-target="#modalPlanosSaaS"

@@ -198,6 +198,12 @@
                                 </span>
                             </p>
 
+                            <!-- Cenário 2b: Contrato Vitalício VIP (Isento de Planos) -->
+                            <p class="text-light opacity-75 mb-0" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'VITALICIO'}">
+                                <i class="bi bi-patch-check-fill text-warning me-1"></i>
+                                Este estabelecimento possui <strong>Contrato Vitalício VIP</strong> com acesso integral e ilimitado a todos os recursos, totalmente isento de planos ou mensalidades.
+                            </p>
+
                             <!-- Cenário 3: Fatura em Atraso (Inadimplente) -->
                             <p class="text-warning mb-3" th:if="${empresa.statusAssinatura != null and empresa.statusAssinatura.name() == 'INADIMPLENTE'}">
                                 <i class="bi bi-exclamation-triangle-fill me-1"></i>
@@ -205,7 +211,7 @@
                             </p>
                         </div>
 
-                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0" th:if="${empresa.statusAssinatura == null or empresa.statusAssinatura.name() != 'VITALICIO'}">
                             <!-- Botão de Fatura Direta Asaas -->
                             <a th:if="${empresa.linkFaturaAtual != null and !empresa.linkFaturaAtual.isBlank()}" 
                                th:href="${empresa.linkFaturaAtual}" target="_blank"
@@ -225,7 +231,8 @@
                     </div>
                 </div>
 
-                <!-- MATRIZ DE PLANOS -->
+                <!-- MATRIZ DE PLANOS (Oculta para Contratos Vitalícios) -->
+                <th:block th:if="${empresa.statusAssinatura == null or empresa.statusAssinatura.name() != 'VITALICIO'}">
                 <div class="text-center mb-4">
                     <h3 class="fw-bold text-dark">Planos Feitos para Escalar seu Negócio</h3>
                     <p class="text-muted">Sem fidelidade forçada. Cancele ou mude de plano a qualquer momento.</p>
@@ -327,6 +334,7 @@
                             </form>
                     </div>
                 </div>
+                </th:block>
 
             </div>
         </main>

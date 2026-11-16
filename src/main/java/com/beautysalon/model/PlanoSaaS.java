@@ -12,7 +12,8 @@ public enum PlanoSaaS {
 
     SOLO("Plano Solo", new BigDecimal("59.00"), 1, "Para autônomos e pequenos negócios individuais"),
     STUDIO("Plano Studio", new BigDecimal("129.00"), 5, "Para empresas e clínicas com equipe até 5 profissionais"),
-    VIP("Plano Premium VIP", new BigDecimal("229.00"), 999, "Equipe ilimitada, DRE contábil e anti-churn");
+    VIP("Plano Premium VIP", new BigDecimal("229.00"), 999, "Equipe ilimitada, DRE contábil e anti-churn"),
+    VITALICIO("Contrato Vitalício VIP", BigDecimal.ZERO, 999, "Acesso vitalício integral e ilimitado (Isento de mensalidades)");
 
     private final String nomeExibicao;
     private final BigDecimal precoMensal;
