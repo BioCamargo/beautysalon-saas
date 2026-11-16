@@ -224,18 +224,18 @@
                             </form>
 
                             <div class="small text-muted mb-2">
-                                <i class="bi bi-info-circle me-1"></i> Você também pode parear via QR Code oficial apontando a câmera do WhatsApp no quadro ao lado.
+                                <i class="bi bi-check2-circle text-success me-1"></i> Basta informar seu número com DDD acima e clicar em <strong>Ativar WhatsApp Agora</strong> — sem necessidade de escanear QR Code!
                             </div>
                         </div>
 
-                        <!-- Lado Direito: Área de QR Code ou Aviso de Serviço -->
+                        <!-- Lado Direito: Área de QR Code ou Card de Como Funciona -->
                         <div class="col-lg-5 text-center">
                             <div class="wa-qr-container w-100">
                                 <div id="qrLoadingSpinner" class="py-4">
                                     <div class="spinner-border text-success" role="status">
                                         <span class="visually-hidden">Verificando serviço WhatsApp...</span>
                                     </div>
-                                    <p class="text-muted small mt-3 mb-0">Verificando leitor de QR Code...</p>
+                                    <p class="text-muted small mt-3 mb-0">Preparando conexão rápida...</p>
                                 </div>
 
                                 <!-- QR CODE OFICIAL (SE EVOLUTION API ESTIVER RODANDO) -->
@@ -249,16 +249,34 @@
                                     </small>
                                 </div>
 
-                                <!-- AVISO CASO EVOLUTION API ESTEJA OFFLINE -->
-                                <div id="qrOfflineArea" style="display: none;" class="p-3">
-                                    <i class="bi bi-phone text-muted display-4 d-block mb-2"></i>
-                                    <h6 class="fw-bold text-dark mb-1">Pareamento Direto Recomendado</h6>
-                                    <p class="text-muted small mb-3">
-                                        O leitor por câmera exige o container Docker local ativo. Para testar o sistema agora sem precisar configurar Docker, use o campo ao lado <strong>"Ativar WhatsApp Agora"</strong>!
-                                    </p>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="recarregarQrCode()">
-                                        <i class="bi bi-arrow-clockwise me-1"></i> Verificar Leitor Novamente
-                                    </button>
+                                <!-- CARD EXPLICATIVO AMIGÁVEL DE ATIVAÇÃO EM 1 CLIQUE -->
+                                <div id="qrOfflineArea" style="display: none;" class="p-3 text-start">
+                                    <div class="text-center mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2" style="width: 56px; height: 56px; background: rgba(37, 211, 102, 0.14); color: #16a34a; font-size: 1.75rem;">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark mb-1">Ativação Rápida sem QR Code</h6>
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1" style="font-size: 0.72rem;">Pronto em 5 segundos</span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2 small text-secondary mb-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="wa-step-badge" style="width: 24px; height: 24px; font-size: 0.75rem;">1</span>
+                                            <span>Digite o <strong>WhatsApp da sua empresa</strong> no campo ao lado.</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="wa-step-badge" style="width: 24px; height: 24px; font-size: 0.75rem;">2</span>
+                                            <span>Clique no botão verde <strong>"Ativar WhatsApp Agora"</strong>.</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="wa-step-badge" style="width: 24px; height: 24px; font-size: 0.75rem;">3</span>
+                                            <span>Pronto! Seus links de confirmação, lembretes e recibos já ficam liberados.</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold" onclick="document.getElementById('inputTelefoneConectar').focus();">
+                                            <i class="bi bi-arrow-left me-1"></i> Digitar Número ao Lado
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
