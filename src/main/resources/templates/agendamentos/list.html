@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>Agenda & Atendimentos | NEXI PRO</title>
     <!-- Favicon Oficial NEXI PRO & PWA -->
     <link rel="icon" type="image/svg+xml" th:href="@{/images/nexipro-icon.svg}">
     <link rel="alternate icon" th:href="@{/favicon.ico}">
     <link rel="apple-touch-icon" href="/images/pwa-icon-192.png">
-    <link rel="manifest" th:href="${empresaSlug != null and !#strings.isEmpty(empresaSlug)} ? @{/{slug}/manifest.json(slug=${empresaSlug})} : @{/manifest.json}">
+    <link rel="manifest"
+        th:href="${empresaSlug != null and !#strings.isEmpty(empresaSlug)} ? @{/{slug}/manifest.json(slug=${empresaSlug})} : @{/manifest.json}">
     <meta name="theme-color" content="#0B0E14">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,90 +22,103 @@
     <!-- Bootstrap 5 & Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- FullCalendar CDN (v6 já injeta os estilos automaticamente via JS) -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales-all.global.min.js"></script>
 
 
     <!-- Fonts & Style -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="app-layout">
-    <!-- SIDEBAR -->
-    <div th:replace="~{fragments/sidebar :: sidebar('agendamentos')}"></div>
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragments/sidebar :: sidebar('agendamentos')}"></div>
 
-    <!-- MAIN AREA -->
-    <div class="app-main">
-        <!-- TOPBAR -->
-        <div th:replace="~{fragments/topbar :: topbar('Agenda & Atendimentos', 'Gerenciamento de horários e sessões da empresa')}"></div>
+        <!-- MAIN AREA -->
+        <div class="app-main">
+            <!-- TOPBAR -->
+            <div
+                th:replace="~{fragments/topbar :: topbar('Agenda & Atendimentos', 'Gerenciamento de horários e sessões da empresa')}">
+            </div>
 
-        <!-- CONTEÚDO PRINCIPAL -->
-        <main class="page-content">
-            <!-- CARD PRINCIPAL COM TABS DE VISUALIZAÇÃO -->
-            <div class="content-card">
-                <div class="card-header-custom">
-                    <div class="d-flex align-items-center gap-3">
-                        <h2 class="card-title-custom">
-                            <i class="bi bi-calendar3 text-warning"></i>
-                            <span>Atendimentos Agendados</span>
-                        </h2>
+            <!-- CONTEÚDO PRINCIPAL -->
+            <main class="page-content">
+                <!-- CARD PRINCIPAL COM TABS DE VISUALIZAÇÃO -->
+                <div class="content-card">
+                    <div class="card-header-custom">
+                        <div class="d-flex align-items-center gap-3">
+                            <h2 class="card-title-custom">
+                                <i class="bi bi-calendar3 text-warning"></i>
+                                <span>Atendimentos Agendados</span>
+                            </h2>
 
-                        <!-- BOTOES DE ALTERNANCIA TABELA X CALENDARIO -->
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-primary active" id="btnViewTable" onclick="showTableView()">
-                                <i class="bi bi-list-ul"></i> Tabela
-                            </button>
-                            <button type="button" class="btn btn-secondary" id="btnViewCalendar" onclick="showCalendarView()">
-                                <i class="bi bi-calendar-week"></i> Calendário
-                            </button>
+                            <!-- BOTOES DE ALTERNANCIA TABELA X CALENDARIO -->
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-primary active" id="btnViewTable"
+                                    onclick="showTableView()">
+                                    <i class="bi bi-list-ul"></i> Tabela
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btnViewCalendar"
+                                    onclick="showCalendarView()">
+                                    <i class="bi bi-calendar-week"></i> Calendário
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-actions-custom d-flex gap-2">
+                            <a th:href="@{/{slug}/divulgacao(slug=${empresaSlug})}"
+                                class="btn btn-outline-primary btn-sm" title="Gerar QR Code de Balcão e Link da Bio">
+                                <i class="bi bi-qr-code-scan"></i> QR Code de Balcão
+                            </a>
+                            <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" target="_blank"
+                                class="btn btn-outline-secondary btn-sm"
+                                title="Abrir página pública de autoatendimento que o cliente usa">
+                                <i class="bi bi-box-arrow-up-right"></i> Portal Online
+                            </a>
+                            <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
+                                <i class="bi bi-plus-lg"></i> Novo Agendamento
+                            </a>
                         </div>
                     </div>
 
-                    <div class="card-actions-custom d-flex gap-2">
-                        <a th:href="@{/{slug}/divulgacao(slug=${empresaSlug})}" class="btn btn-outline-primary btn-sm" title="Gerar QR Code de Balcão e Link da Bio">
-                            <i class="bi bi-qr-code-scan"></i> QR Code de Balcão
-                        </a>
-                        <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" target="_blank" class="btn btn-outline-secondary btn-sm" title="Abrir página pública de autoatendimento que o cliente usa">
-                            <i class="bi bi-box-arrow-up-right"></i> Portal Online
-                        </a>
-                        <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm">
-                            <i class="bi bi-plus-lg"></i> Novo Agendamento
-                        </a>
-                    </div>
-                </div>
-
-                <!-- 1. VISÃO EM TABELA -->
-                <div id="tableViewSection">
-                    <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light">
-                        <div class="search-box">
-                            <i class="bi bi-search"></i>
-                            <input type="text" id="agendamentoSearchInput" placeholder="Filtrar por cliente ou serviço..." onkeyup="filterAgendamentosTable()" />
+                    <!-- 1. VISÃO EM TABELA -->
+                    <div id="tableViewSection">
+                        <div
+                            class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light">
+                            <div class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" id="agendamentoSearchInput"
+                                    placeholder="Filtrar por cliente ou serviço..."
+                                    onkeyup="filterAgendamentosTable()" />
+                            </div>
+                            <div class="text-muted small">
+                                <span th:text="${agendamentos != null ? #lists.size(agendamentos) : '0'}">0</span>
+                                agendamentos registrados
+                            </div>
                         </div>
-                        <div class="text-muted small">
-                            <span th:text="${agendamentos != null ? #lists.size(agendamentos) : '0'}">0</span> agendamentos registrados
-                        </div>
-                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table-modern" id="agendamentosTable">
-                            <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Serviço</th>
-                                <th>Profissional</th>
-                                <th>Data</th>
-                                <th>Horário</th>
-                                <th>Status</th>
-                                <th style="text-align: right;">Ações</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="a : ${agendamentos}" 
-                                th:attr="data-id=${a.id},
+                        <div class="table-responsive">
+                            <table class="table-modern" id="agendamentosTable">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Serviço</th>
+                                        <th>Profissional</th>
+                                        <th>Data</th>
+                                        <th>Horário</th>
+                                        <th>Status</th>
+                                        <th style="text-align: right;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a : ${agendamentos}" th:attr="data-id=${a.id},
                                          data-duracao=${a.duracaoMinutos != null ? a.duracaoMinutos : 30},
                                          data-cliente=${a.clienteNome},
                                          data-telefone=${a.clienteTelefoneLimpo},
@@ -113,436 +128,465 @@
                                          data-status=${a.status},
                                          data-data=${#temporals.format(a.dataHora, 'dd/MM/yyyy')},
                                          data-hora=${#temporals.format(a.dataHora, 'HH:mm')}">
-                                <td>
-                                    <div class="client-cell">
-                                        <div class="cell-avatar">
-                                            <span th:text="${a.clienteNome != null and !#strings.isEmpty(a.clienteNome) ? #strings.substring(a.clienteNome, 0, 1).toUpperCase() : 'C'}">C</span>
-                                        </div>
-                                        <div>
-                                            <div class="cell-name d-flex align-items-center flex-wrap gap-2">
-                                                <span th:text="${a.clienteNome} ?: 'Cliente não identificado'">Cliente</span>
-                                                <!-- DEV-02: BOTAO WHATSAPP 1-CLIQUE RAPIDO JUNTO AO NOME NA GRADE -->
-                                                <a th:if="${a.clienteTelefoneLimpo != null and !#strings.isEmpty(a.clienteTelefoneLimpo)}"
-                                                   th:href="'https://wa.me/' + (${#strings.startsWith(a.clienteTelefoneLimpo, '55')} ? ${a.clienteTelefoneLimpo} : ('55' + ${a.clienteTelefoneLimpo})) + '?text=' + ${'Ol%C3%A1%20' + a.clienteNome + '%21%20Passando%20para%20confirmar%20seu%20hor%C3%A1rio%20de%20' + (a.servicoNome != null ? a.servicoNome : 'atendimento') + '%20no%20dia%20' + #temporals.format(a.dataHora, 'dd/MM/yyyy') + '%20%C3%A0s%20' + #temporals.format(a.dataHora, 'HH:mm') + '.%20Podemos%20confirmar%3F'}"
-                                                   target="_blank" class="badge text-decoration-none d-inline-flex align-items-center gap-1 shadow-sm"
-                                                   style="background: #25D366; color: #ffffff; font-size: 0.72rem; padding: 0.22rem 0.55rem; border-radius: 9999px; transition: transform 0.15s ease;"
-                                                   onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
-                                                   title="Chamar cliente no WhatsApp em 1 clique">
-                                                    <i class="bi bi-whatsapp"></i> <span>Chamar</span>
-                                                </a>
+                                        <td>
+                                            <div class="client-cell">
+                                                <div class="cell-avatar">
+                                                    <span
+                                                        th:text="${a.clienteNome != null and !#strings.isEmpty(a.clienteNome) ? #strings.substring(a.clienteNome, 0, 1).toUpperCase() : 'C'}">C</span>
+                                                </div>
+                                                <div>
+                                                    <div class="cell-name d-flex align-items-center flex-wrap gap-2">
+                                                        <span
+                                                            th:text="${a.clienteNome} ?: 'Cliente não identificado'">Cliente</span>
+                                                        <!-- DEV-02: BOTAO WHATSAPP 1-CLIQUE RAPIDO JUNTO AO NOME NA GRADE -->
+                                                        <a th:if="${a.clienteTelefoneLimpo != null and !#strings.isEmpty(a.clienteTelefoneLimpo)}"
+                                                            th:href="'https://wa.me/' + (${#strings.startsWith(a.clienteTelefoneLimpo, '55')} ? ${a.clienteTelefoneLimpo} : ('55' + ${a.clienteTelefoneLimpo})) + '?text=' + ${'Ol%C3%A1%20' + a.clienteNome + '%21%20Passando%20para%20confirmar%20seu%20hor%C3%A1rio%20de%20' + (a.servicoNome != null ? a.servicoNome : 'atendimento') + '%20no%20dia%20' + #temporals.format(a.dataHora, 'dd/MM/yyyy') + '%20%C3%A0s%20' + #temporals.format(a.dataHora, 'HH:mm') + '.%20Podemos%20confirmar%3F'}"
+                                                            target="_blank"
+                                                            class="badge text-decoration-none d-inline-flex align-items-center gap-1 shadow-sm"
+                                                            style="background: #25D366; color: #ffffff; font-size: 0.72rem; padding: 0.22rem 0.55rem; border-radius: 9999px; transition: transform 0.15s ease;"
+                                                            onmouseover="this.style.transform='scale(1.05)'"
+                                                            onmouseout="this.style.transform='scale(1)'"
+                                                            title="Chamar cliente no WhatsApp em 1 clique">
+                                                            <i class="bi bi-whatsapp"></i> <span>Chamar</span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="cell-sub" th:if="${a.clienteTelefone != null}"
+                                                        th:text="${a.clienteTelefone}"></div>
+                                                    <div class="cell-sub"
+                                                        th:if="${a.clienteTelefone == null and a.clienteId != null}"
+                                                        th:text="'ID: #' + ${a.clienteId}"></div>
+                                                </div>
                                             </div>
-                                            <div class="cell-sub" th:if="${a.clienteTelefone != null}" th:text="${a.clienteTelefone}"></div>
-                                            <div class="cell-sub" th:if="${a.clienteTelefone == null and a.clienteId != null}" th:text="'ID: #' + ${a.clienteId}"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 600; padding: 0.4rem 0.65rem;"
-                                          th:text="${a.servicoNome} ?: 'Serviço'">Corte</span>
-                                    <div class="text-muted small mt-1" th:if="${a.duracaoMinutos != null}">
-                                        <i class="bi bi-hourglass-split"></i> <span th:text="${a.duracaoMinutos} + ' min'">30 min</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <i class="bi bi-person-badge text-muted me-1"></i>
-                                    <span th:text="${a.profissionalNome} ?: 'Qualquer disponível'">Keilla</span>
-                                </td>
-                                <td>
-                                    <i class="bi bi-calendar-event text-muted me-1"></i>
-                                    <span th:text="${#temporals.format(a.dataHora, 'dd/MM/yyyy')}">01/01/2026</span>
-                                </td>
-                                <td>
-                                    <i class="bi bi-clock text-muted me-1"></i>
-                                    <strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}">14:00</strong>
-                                </td>
-                                <td>
-                                    <span class="badge" 
-                                          th:classappend="${a.status == 'CONCLUIDO' ? 'bg-success text-white' : (a.status == 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (a.status == 'CANCELADO' ? 'bg-danger text-white' : 'bg-primary text-white'))}"
-                                          th:text="${a.status} ?: 'AGENDADO'">AGENDADO</span>
-                                </td>
-                                <td style="text-align: right;">
-                                    <div class="action-buttons justify-content-end">
-                                        <form th:if="${a.status != 'CONCLUIDO' and a.status != 'CANCELADO'}" 
-                                              th:action="@{/{slug}/agendamentos/{id}/iniciar-comanda(slug=${empresaSlug}, id=${a.id})}" 
-                                              method="post" style="display: inline-block;">
-                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                            <button type="submit" class="btn btn-sm btn-gold" title="Iniciar Atendimento & Abrir Comanda" style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
-                                                <i class="bi bi-play-circle-fill"></i> Atender
-                                            </button>
-                                        </form>
-                                        <!-- BOTAO WHATSAPP LEMBRETE -->
-                                        <a th:if="${a.clienteTelefoneLimpo != null and !#strings.isEmpty(a.clienteTelefoneLimpo)}"
-                                           th:href="'https://wa.me/' + (${#strings.startsWith(a.clienteTelefoneLimpo, '55')} ? ${a.clienteTelefoneLimpo} : ('55' + ${a.clienteTelefoneLimpo})) + '?text=' + ${'Ol%C3%A1%20' + a.clienteNome + '%21%20Passando%20para%20confirmar%20seu%20atendimento%20de%20' + (a.servicoNome != null ? a.servicoNome : 'servi%C3%A7o') + '%20no%20dia%20' + #temporals.format(a.dataHora, 'dd/MM/yyyy') + '%20%C3%A0s%20' + #temporals.format(a.dataHora, 'HH:mm') + '.%20Podemos%20confirmar%3F'}"
-                                           target="_blank" class="btn-icon sms" title="Enviar Lembrete / Confirmação via WhatsApp" style="color: #25D366; border-color: rgba(37, 211, 102, 0.3);">
-                                            <i class="bi bi-whatsapp"></i>
-                                        </a>
-                                        <a class="btn-icon edit" th:href="@{/{slug}/agendamentos/{id}(slug=${empresaSlug}, id=${a.id})}" title="Editar Atendimento">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </a>
-                                        <button type="button" class="btn-icon delete btn-delete-agendamento" 
-                                                th:attr="data-id=${a.id}, data-cliente=${a.clienteNome}, data-slug=${empresaSlug}" title="Excluir Atendimento">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
-                                <td colspan="7" class="p-0 border-0">
-                                    <div class="empty-state-lux m-3">
-                                        <div class="empty-state-icon">
-                                            <i class="bi bi-calendar2-heart"></i>
-                                        </div>
-                                        <h3 class="empty-state-title">Sua agenda está pronta para os atendimentos</h3>
-                                        <p class="empty-state-desc">
-                                            Nenhum agendamento marcado para esta data. Crie um novo atendimento interno ou receba novos agendamentos pelo seu Portal Online do Estabelecimento.
-                                        </p>
-                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                            <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}" class="btn btn-gold btn-sm px-3 py-2 fw-bold">
-                                                <i class="bi bi-calendar-plus-fill me-1"></i> Novo Agendamento
-                                            </a>
-                                            <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" target="_blank" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold">
-                                                <i class="bi bi-globe me-1"></i> Abrir Portal Online
-                                            </a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                style="background-color: var(--accent-gold-light); color: var(--accent-gold-hover); font-weight: 600; padding: 0.4rem 0.65rem;"
+                                                th:text="${a.servicoNome} ?: 'Serviço'">Corte</span>
+                                            <div class="text-muted small mt-1" th:if="${a.duracaoMinutos != null}">
+                                                <i class="bi bi-hourglass-split"></i> <span
+                                                    th:text="${a.duracaoMinutos} + ' min'">30 min</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-person-badge text-muted me-1"></i>
+                                            <span th:text="${a.profissionalNome} ?: 'Qualquer disponível'">Keilla</span>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-calendar-event text-muted me-1"></i>
+                                            <span
+                                                th:text="${#temporals.format(a.dataHora, 'dd/MM/yyyy')}">01/01/2026</span>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-clock text-muted me-1"></i>
+                                            <strong th:text="${#temporals.format(a.dataHora, 'HH:mm')}">14:00</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                th:classappend="${a.status == 'CONCLUIDO' ? 'bg-success text-white' : (a.status == 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (a.status == 'CANCELADO' ? 'bg-danger text-white' : 'bg-primary text-white'))}"
+                                                th:text="${a.status} ?: 'AGENDADO'">AGENDADO</span>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <div class="action-buttons justify-content-end">
+                                                <form th:if="${a.status != 'CONCLUIDO' and a.status != 'CANCELADO'}"
+                                                    th:action="@{/{slug}/agendamentos/{id}/iniciar-comanda(slug=${empresaSlug}, id=${a.id})}"
+                                                    method="post" style="display: inline-block;">
+                                                    <input type="hidden" th:name="${_csrf.parameterName}"
+                                                        th:value="${_csrf.token}" />
+                                                    <button type="submit" class="btn btn-sm btn-gold"
+                                                        title="Iniciar Atendimento & Abrir Comanda"
+                                                        style="padding: 0.25rem 0.6rem; font-size: 0.78rem;">
+                                                        <i class="bi bi-play-circle-fill"></i> Atender
+                                                    </button>
+                                                </form>
+                                                <!-- BOTAO WHATSAPP LEMBRETE -->
+                                                <a th:if="${a.clienteTelefoneLimpo != null and !#strings.isEmpty(a.clienteTelefoneLimpo)}"
+                                                    th:href="'https://wa.me/' + (${#strings.startsWith(a.clienteTelefoneLimpo, '55')} ? ${a.clienteTelefoneLimpo} : ('55' + ${a.clienteTelefoneLimpo})) + '?text=' + ${'Ol%C3%A1%20' + a.clienteNome + '%21%20Passando%20para%20confirmar%20seu%20atendimento%20de%20' + (a.servicoNome != null ? a.servicoNome : 'servi%C3%A7o') + '%20no%20dia%20' + #temporals.format(a.dataHora, 'dd/MM/yyyy') + '%20%C3%A0s%20' + #temporals.format(a.dataHora, 'HH:mm') + '.%20Podemos%20confirmar%3F'}"
+                                                    target="_blank" class="btn-icon sms"
+                                                    title="Enviar Lembrete / Confirmação via WhatsApp"
+                                                    style="color: #25D366; border-color: rgba(37, 211, 102, 0.3);">
+                                                    <i class="bi bi-whatsapp"></i>
+                                                </a>
+                                                <a class="btn-icon edit"
+                                                    th:href="@{/{slug}/agendamentos/{id}(slug=${empresaSlug}, id=${a.id})}"
+                                                    title="Editar Atendimento">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <button type="button" class="btn-icon delete btn-delete-agendamento"
+                                                    th:attr="data-id=${a.id}, data-cliente=${a.clienteNome}, data-slug=${empresaSlug}"
+                                                    title="Excluir Atendimento">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
+                                        <td colspan="7" class="p-0 border-0">
+                                            <div class="empty-state-lux m-3">
+                                                <div class="empty-state-icon">
+                                                    <i class="bi bi-calendar2-heart"></i>
+                                                </div>
+                                                <h3 class="empty-state-title">Sua agenda está pronta para os
+                                                    atendimentos</h3>
+                                                <p class="empty-state-desc">
+                                                    Nenhum agendamento marcado para esta data. Crie um novo atendimento
+                                                    interno ou receba novos agendamentos pelo seu Portal Online do
+                                                    Estabelecimento.
+                                                </p>
+                                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                                    <a th:href="@{/{slug}/agendamentos/novo(slug=${empresaSlug})}"
+                                                        class="btn btn-gold btn-sm px-3 py-2 fw-bold">
+                                                        <i class="bi bi-calendar-plus-fill me-1"></i> Novo Agendamento
+                                                    </a>
+                                                    <a th:href="@{/{slug}/agendar(slug=${empresaSlug})}" target="_blank"
+                                                        class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold">
+                                                        <i class="bi bi-globe me-1"></i> Abrir Portal Online
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. VISÃO EM CALENDÁRIO INTERATIVO -->
+                    <div id="calendarViewSection" style="display: none;" class="p-3">
+                        <div id="fullCalendarAgendamentos"></div>
                     </div>
                 </div>
 
-                <!-- 2. VISÃO EM CALENDÁRIO INTERATIVO -->
-                <div id="calendarViewSection" style="display: none;" class="p-3">
-                    <div id="fullCalendarAgendamentos"></div>
-                </div>
-            </div>
-
-            <!-- CONTAINER OCULTO DE AUSÊNCIAS & FOLGAS (TC-USR-03) -->
-            <div id="ausenciasDataContainer" style="display: none;">
-                <div th:each="aus : ${ausencias}" class="ausencia-item"
-                     th:attr="data-prof=${aus.profissional != null ? aus.profissional.nome : 'Profissional'},
+                <!-- CONTAINER OCULTO DE AUSÊNCIAS & FOLGAS (TC-USR-03) -->
+                <div id="ausenciasDataContainer" style="display: none;">
+                    <div th:each="aus : ${ausencias}" class="ausencia-item" th:attr="data-prof=${aus.profissional != null ? aus.profissional.nome : 'Profissional'},
                               data-tipo=${aus.tipo},
                               data-motivo=${aus.motivo},
                               data-data=${aus.dataEspecifica},
                               data-dia=${aus.diaSemanaRecorrente},
                               data-inicio=${aus.horaInicio},
                               data-fim=${aus.horaFim}">
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script th:inline="javascript">
-    const EMPRESA_SLUG = /*[[${empresaSlug}]]*/ '';
-    let calendarInstance = null;
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        const EMPRESA_SLUG = /*[[${empresaSlug}]]*/ '';
+        let calendarInstance = null;
 
-    function showTableView() {
-        document.getElementById('tableViewSection').style.display = 'block';
-        document.getElementById('calendarViewSection').style.display = 'none';
-        document.getElementById('btnViewTable').classList.add('active', 'btn-primary');
-        document.getElementById('btnViewTable').classList.remove('btn-secondary');
-        document.getElementById('btnViewCalendar').classList.remove('active', 'btn-primary');
-        document.getElementById('btnViewCalendar').classList.add('btn-secondary');
-    }
-
-    function showCalendarView() {
-        document.getElementById('tableViewSection').style.display = 'none';
-        document.getElementById('calendarViewSection').style.display = 'block';
-        document.getElementById('btnViewCalendar').classList.add('active', 'btn-primary');
-        document.getElementById('btnViewCalendar').classList.remove('btn-secondary');
-        document.getElementById('btnViewTable').classList.remove('active', 'btn-primary');
-        document.getElementById('btnViewTable').classList.add('btn-secondary');
-
-        setTimeout(() => {
-            if (!calendarInstance) {
-                initFullCalendar();
-            } else {
-                calendarInstance.render();
-                calendarInstance.updateSize();
-            }
-        }, 50);
-    }
-
-    function initFullCalendar() {
-        const calendarEl = document.getElementById('fullCalendarAgendamentos');
-        if (!calendarEl) return;
-        if (typeof FullCalendar === 'undefined') {
-            calendarEl.innerHTML = '<div class="alert alert-warning text-center my-4"><i class="bi bi-exclamation-triangle me-2"></i>Não foi possível carregar a biblioteca de calendário. Verifique a conexão com a internet.</div>';
-            return;
+        function showTableView() {
+            document.getElementById('tableViewSection').style.display = 'block';
+            document.getElementById('calendarViewSection').style.display = 'none';
+            document.getElementById('btnViewTable').classList.add('active', 'btn-primary');
+            document.getElementById('btnViewTable').classList.remove('btn-secondary');
+            document.getElementById('btnViewCalendar').classList.remove('active', 'btn-primary');
+            document.getElementById('btnViewCalendar').classList.add('btn-secondary');
         }
-        
-        const events = [];
-        const rows = document.querySelectorAll('#agendamentosTable tbody tr');
-        rows.forEach(r => {
-            const cliente = r.getAttribute('data-cliente') || r.querySelector('.cell-name')?.textContent?.trim();
-            const servico = r.getAttribute('data-servico') || r.querySelector('td:nth-child(2) span')?.textContent?.trim();
-            const profissional = r.getAttribute('data-profissional') || r.querySelector('td:nth-child(3) span')?.textContent?.trim();
-            const dataText = r.getAttribute('data-data') || r.querySelector('td:nth-child(4) span')?.textContent?.trim();
-            const horaText = r.getAttribute('data-hora') || r.querySelector('td:nth-child(5) strong')?.textContent?.trim();
-            const status = r.getAttribute('data-status') || r.querySelector('td:nth-child(6) span')?.textContent?.trim();
-            const duracao = parseInt(r.getAttribute('data-duracao')) || 30;
-            
-            if (dataText && horaText && cliente) {
-                const parts = dataText.split('/');
-                if (parts.length === 3) {
-                    const isoDateStart = `${parts[2]}-${parts[1]}-${parts[0]}T${horaText}:00`;
-                    const startDateObj = new Date(isoDateStart);
-                    const endDateObj = new Date(startDateObj.getTime() + duracao * 60000);
-                    const pad = (n) => String(n).padStart(2, '0');
-                    const isoDateEnd = `${endDateObj.getFullYear()}-${pad(endDateObj.getMonth() + 1)}-${pad(endDateObj.getDate())}T${pad(endDateObj.getHours())}:${pad(endDateObj.getMinutes())}:00`;
-                    
-                    let bg = '#c5a059';
-                    let border = '#b08d46';
-                    if (status === 'CONCLUIDO') {
-                        bg = '#198754';
-                        border = '#157347';
-                    } else if (status === 'EM_ATENDIMENTO') {
-                        bg = '#ffc107';
-                        border = '#e0a800';
-                    } else if (status === 'CANCELADO') {
-                        bg = '#dc3545';
-                        border = '#bb2d3b';
-                    }
 
-                    events.push({
-                        title: `${cliente} (${servico || 'Atendimento'}${profissional ? ' - ' + profissional : ''})`,
-                        start: isoDateStart,
-                        end: isoDateEnd,
-                        backgroundColor: bg,
-                        borderColor: border,
-                        textColor: status === 'EM_ATENDIMENTO' ? '#212529' : '#ffffff',
-                        extendedProps: {
-                            id: r.getAttribute('data-id'),
-                            cliente: cliente,
-                            telefone: r.getAttribute('data-telefone'),
-                            telefoneFormatado: r.getAttribute('data-telefone-formatado'),
-                            servico: servico,
-                            profissional: profissional,
-                            data: r.getAttribute('data-data') || dataText,
-                            hora: r.getAttribute('data-hora') || horaText,
-                            status: status
+        function showCalendarView() {
+            document.getElementById('tableViewSection').style.display = 'none';
+            document.getElementById('calendarViewSection').style.display = 'block';
+            document.getElementById('btnViewCalendar').classList.add('active', 'btn-primary');
+            document.getElementById('btnViewCalendar').classList.remove('btn-secondary');
+            document.getElementById('btnViewTable').classList.remove('active', 'btn-primary');
+            document.getElementById('btnViewTable').classList.add('btn-secondary');
+
+            setTimeout(() => {
+                if (!calendarInstance) {
+                    initFullCalendar();
+                } else {
+                    calendarInstance.render();
+                    calendarInstance.updateSize();
+                }
+            }, 50);
+        }
+
+        function initFullCalendar() {
+            const calendarEl = document.getElementById('fullCalendarAgendamentos');
+            if (!calendarEl) return;
+            if (typeof FullCalendar === 'undefined') {
+                calendarEl.innerHTML = '<div class="alert alert-warning text-center my-4"><i class="bi bi-exclamation-triangle me-2"></i>Não foi possível carregar a biblioteca de calendário. Verifique a conexão com a internet.</div>';
+                return;
+            }
+
+            const events = [];
+            const rows = document.querySelectorAll('#agendamentosTable tbody tr');
+            rows.forEach(r => {
+                const cliente = r.getAttribute('data-cliente') || r.querySelector('.cell-name')?.textContent?.trim();
+                const servico = r.getAttribute('data-servico') || r.querySelector('td:nth-child(2) span')?.textContent?.trim();
+                const profissional = r.getAttribute('data-profissional') || r.querySelector('td:nth-child(3) span')?.textContent?.trim();
+                const dataText = r.getAttribute('data-data') || r.querySelector('td:nth-child(4) span')?.textContent?.trim();
+                const horaText = r.getAttribute('data-hora') || r.querySelector('td:nth-child(5) strong')?.textContent?.trim();
+                const status = r.getAttribute('data-status') || r.querySelector('td:nth-child(6) span')?.textContent?.trim();
+                const duracao = parseInt(r.getAttribute('data-duracao')) || 30;
+
+                if (dataText && horaText && cliente) {
+                    const parts = dataText.split('/');
+                    if (parts.length === 3) {
+                        const isoDateStart = `${parts[2]}-${parts[1]}-${parts[0]}T${horaText}:00`;
+                        const startDateObj = new Date(isoDateStart);
+                        const endDateObj = new Date(startDateObj.getTime() + duracao * 60000);
+                        const pad = (n) => String(n).padStart(2, '0');
+                        const isoDateEnd = `${endDateObj.getFullYear()}-${pad(endDateObj.getMonth() + 1)}-${pad(endDateObj.getDate())}T${pad(endDateObj.getHours())}:${pad(endDateObj.getMinutes())}:00`;
+
+                        let bg = '#c5a059';
+                        let border = '#b08d46';
+                        if (status === 'CONCLUIDO') {
+                            bg = '#198754';
+                            border = '#157347';
+                        } else if (status === 'EM_ATENDIMENTO') {
+                            bg = '#ffc107';
+                            border = '#e0a800';
+                        } else if (status === 'CANCELADO') {
+                            bg = '#dc3545';
+                            border = '#bb2d3b';
                         }
+
+                        events.push({
+                            title: `${cliente} (${servico || 'Atendimento'}${profissional ? ' - ' + profissional : ''})`,
+                            start: isoDateStart,
+                            end: isoDateEnd,
+                            backgroundColor: bg,
+                            borderColor: border,
+                            textColor: status === 'EM_ATENDIMENTO' ? '#212529' : '#ffffff',
+                            extendedProps: {
+                                id: r.getAttribute('data-id'),
+                                cliente: cliente,
+                                telefone: r.getAttribute('data-telefone'),
+                                telefoneFormatado: r.getAttribute('data-telefone-formatado'),
+                                servico: servico,
+                                profissional: profissional,
+                                data: r.getAttribute('data-data') || dataText,
+                                hora: r.getAttribute('data-hora') || horaText,
+                                status: status
+                            }
+                        });
+                    }
+                }
+            });
+
+            // INCLUSÃO DOS BLOQUEIOS DE AUSÊNCIAS, FOLGAS E FÉRIAS (TC-USR-03)
+            document.querySelectorAll('.ausencia-item').forEach(el => {
+                const prof = el.dataset.prof;
+                const motivo = el.dataset.motivo || el.dataset.tipo || 'Folga / Ausência';
+                const dataEsp = el.dataset.data;
+                const horaIni = el.dataset.inicio ? el.dataset.inicio.slice(0, 5) : '00:00';
+                const horaFim = el.dataset.fim ? el.dataset.fim.slice(0, 5) : '23:59';
+
+                if (dataEsp) {
+                    events.push({
+                        title: `⛔ BLOQUEADO: ${prof} (${motivo})`,
+                        start: `${dataEsp}T${horaIni}:00`,
+                        end: `${dataEsp}T${horaFim}:00`,
+                        backgroundColor: '#64748b',
+                        borderColor: '#475569',
+                        textColor: '#ffffff',
+                        display: 'block'
                     });
                 }
-            }
-        });
+            });
 
-        // INCLUSÃO DOS BLOQUEIOS DE AUSÊNCIAS, FOLGAS E FÉRIAS (TC-USR-03)
-        document.querySelectorAll('.ausencia-item').forEach(el => {
-            const prof = el.dataset.prof;
-            const motivo = el.dataset.motivo || el.dataset.tipo || 'Folga / Ausência';
-            const dataEsp = el.dataset.data;
-            const horaIni = el.dataset.inicio ? el.dataset.inicio.slice(0, 5) : '00:00';
-            const horaFim = el.dataset.fim ? el.dataset.fim.slice(0, 5) : '23:59';
-
-            if (dataEsp) {
-                events.push({
-                    title: `⛔ BLOQUEADO: ${prof} (${motivo})`,
-                    start: `${dataEsp}T${horaIni}:00`,
-                    end: `${dataEsp}T${horaFim}:00`,
-                    backgroundColor: '#64748b',
-                    borderColor: '#475569',
-                    textColor: '#ffffff',
-                    display: 'block'
-                });
-            }
-        });
-
-        calendarInstance = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridWeek',
-            locale: 'pt-br',
-            slotMinTime: "00:00:00",
-            slotMaxTime: "24:00:00",
-            firstDay: 0,
-            allDaySlot: false,
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'timeGridDay,timeGridWeek,dayGridMonth'
-            },
-            buttonText: {
-                today: 'Hoje',
-                month: 'Mês',
-                week: 'Semana',
-                day: 'Dia'
-            },
-            events: events,
-            eventClick: function(info) {
-                if (info.event.extendedProps && info.event.extendedProps.id) {
-                    abrirModalAgendamentoCalendar(info.event.extendedProps);
+            calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'pt-br',
+                slotMinTime: "00:00:00",
+                slotMaxTime: "24:00:00",
+                firstDay: 0,
+                allDaySlot: false,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                },
+                buttonText: {
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia'
+                },
+                events: events,
+                eventClick: function (info) {
+                    if (info.event.extendedProps && info.event.extendedProps.id) {
+                        abrirModalAgendamentoCalendar(info.event.extendedProps);
+                    }
                 }
+            });
+
+            calendarInstance.render();
+        }
+
+        function abrirModalAgendamentoCalendar(props) {
+            const modalEl = document.getElementById('modalAgendamentoCalendar');
+            if (!modalEl) return;
+
+            document.getElementById('modalCalClienteNome').textContent = props.cliente || 'Cliente';
+            document.getElementById('modalCalServico').textContent = props.servico || 'Não especificado';
+            document.getElementById('modalCalProfissional').textContent = props.profissional || 'Qualquer';
+            document.getElementById('modalCalDataHora').textContent = `${props.data} às ${props.hora}`;
+
+            const statusBadge = document.getElementById('modalCalStatus');
+            statusBadge.textContent = props.status || 'AGENDADO';
+            statusBadge.className = 'badge ' + (props.status === 'CONCLUIDO' ? 'bg-success' : (props.status === 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (props.status === 'CANCELADO' ? 'bg-danger' : 'bg-primary')));
+
+            // WhatsApp 1-Clique Link
+            const btnWpp = document.getElementById('modalCalBtnWpp');
+            const semTelAlert = document.getElementById('modalCalSemTel');
+            if (props.telefone && props.telefone.trim() !== '') {
+                let tel = props.telefone.replace(/\D/g, '');
+                if (!tel.startsWith('55')) tel = '55' + tel;
+                const msg = encodeURIComponent(`Olá ${props.cliente}! Passando para confirmar seu horário para ${props.servico} no dia ${props.data} às ${props.hora}. Podemos confirmar?`);
+                btnWpp.href = `https://wa.me/${tel}?text=${msg}`;
+                btnWpp.style.display = 'inline-flex';
+                if (semTelAlert) semTelAlert.style.display = 'none';
+            } else {
+                btnWpp.style.display = 'none';
+                if (semTelAlert) semTelAlert.style.display = 'block';
             }
-        });
 
-        calendarInstance.render();
-    }
+            // Form Atender / Iniciar Comanda
+            const formAtender = document.getElementById('modalCalFormAtender');
+            if (props.status === 'CONCLUIDO' || props.status === 'CANCELADO') {
+                formAtender.style.display = 'none';
+            } else {
+                formAtender.style.display = 'inline-block';
+                formAtender.action = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id + '/iniciar-comanda';
+            }
 
-    function abrirModalAgendamentoCalendar(props) {
-        const modalEl = document.getElementById('modalAgendamentoCalendar');
-        if (!modalEl) return;
+            // Link Editar
+            const btnEdit = document.getElementById('modalCalBtnEdit');
+            btnEdit.href = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id;
 
-        document.getElementById('modalCalClienteNome').textContent = props.cliente || 'Cliente';
-        document.getElementById('modalCalServico').textContent = props.servico || 'Não especificado';
-        document.getElementById('modalCalProfissional').textContent = props.profissional || 'Qualquer';
-        document.getElementById('modalCalDataHora').textContent = `${props.data} às ${props.hora}`;
-        
-        const statusBadge = document.getElementById('modalCalStatus');
-        statusBadge.textContent = props.status || 'AGENDADO';
-        statusBadge.className = 'badge ' + (props.status === 'CONCLUIDO' ? 'bg-success' : (props.status === 'EM_ATENDIMENTO' ? 'bg-warning text-dark' : (props.status === 'CANCELADO' ? 'bg-danger' : 'bg-primary')));
-
-        // WhatsApp 1-Clique Link
-        const btnWpp = document.getElementById('modalCalBtnWpp');
-        const semTelAlert = document.getElementById('modalCalSemTel');
-        if (props.telefone && props.telefone.trim() !== '') {
-            let tel = props.telefone.replace(/\D/g, '');
-            if (!tel.startsWith('55')) tel = '55' + tel;
-            const msg = encodeURIComponent(`Olá ${props.cliente}! Passando para confirmar seu horário para ${props.servico} no dia ${props.data} às ${props.hora}. Podemos confirmar?`);
-            btnWpp.href = `https://wa.me/${tel}?text=${msg}`;
-            btnWpp.style.display = 'inline-flex';
-            if (semTelAlert) semTelAlert.style.display = 'none';
-        } else {
-            btnWpp.style.display = 'none';
-            if (semTelAlert) semTelAlert.style.display = 'block';
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
         }
 
-        // Form Atender / Iniciar Comanda
-        const formAtender = document.getElementById('modalCalFormAtender');
-        if (props.status === 'CONCLUIDO' || props.status === 'CANCELADO') {
-            formAtender.style.display = 'none';
-        } else {
-            formAtender.style.display = 'inline-block';
-            formAtender.action = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id + '/iniciar-comanda';
+        function filterAgendamentosTable() {
+            const query = document.getElementById('agendamentoSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#agendamentosTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
         }
 
-        // Link Editar
-        const btnEdit = document.getElementById('modalCalBtnEdit');
-        btnEdit.href = '/' + EMPRESA_SLUG + '/agendamentos/' + props.id;
+        document.addEventListener('DOMContentLoaded', function () {
+            const csrfTokenEl = document.querySelector("meta[name='_csrf']");
+            const csrfHeaderEl = document.querySelector("meta[name='_csrf_header']");
+            const token = csrfTokenEl ? csrfTokenEl.getAttribute("content") : '';
+            const header = csrfHeaderEl ? csrfHeaderEl.getAttribute("content") : '';
 
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
-    }
+            document.querySelectorAll('.btn-delete-agendamento').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const id = this.dataset.id;
+                    const cliente = this.dataset.cliente || 'este agendamento';
+                    const slug = this.dataset.slug;
 
-    function filterAgendamentosTable() {
-        const query = document.getElementById('agendamentoSearchInput').value.toLowerCase();
-        const rows = document.querySelectorAll('#agendamentosTable tbody tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-        });
-    }
+                    window.luxConfirm(
+                        'Cancelar Agendamento',
+                        `Deseja realmente cancelar e remover o horário de ${cliente}?`,
+                        () => {
+                            const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                            if (header && token) headers[header] = token;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const csrfTokenEl = document.querySelector("meta[name='_csrf']");
-        const csrfHeaderEl = document.querySelector("meta[name='_csrf_header']");
-        const token = csrfTokenEl ? csrfTokenEl.getAttribute("content") : '';
-        const header = csrfHeaderEl ? csrfHeaderEl.getAttribute("content") : '';
-
-        document.querySelectorAll('.btn-delete-agendamento').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const id = this.dataset.id;
-                const cliente = this.dataset.cliente || 'este agendamento';
-                const slug = this.dataset.slug;
-
-                window.luxConfirm(
-                    'Cancelar Agendamento',
-                    `Deseja realmente cancelar e remover o horário de ${cliente}?`,
-                    () => {
-                        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-                        if (header && token) headers[header] = token;
-
-                        fetch(`/${slug}/agendamentos/deletar/${id}`, {
-                            method: 'POST',
-                            headers: headers,
-                            body: `_csrf=${encodeURIComponent(token)}`
-                        })
-                        .then(res => {
-                            if (res.ok) {
-                                window.showToast('Agendamento cancelado com sucesso!', 'success');
-                                setTimeout(() => location.reload(), 800);
-                            } else {
-                                return res.text().then(text => { throw new Error(text || 'Falha ao excluir'); });
-                            }
-                        })
-                        .catch(err => {
-                            window.showToast('Erro ao excluir: ' + err.message, 'error');
-                        });
-                    },
-                    'Sim, Cancelar',
-                    'danger'
-                );
+                            fetch(`/${slug}/agendamentos/deletar/${id}`, {
+                                method: 'POST',
+                                headers: headers,
+                                body: `_csrf=${encodeURIComponent(token)}`
+                            })
+                                .then(res => {
+                                    if (res.ok) {
+                                        window.showToast('Agendamento cancelado com sucesso!', 'success');
+                                        setTimeout(() => location.reload(), 800);
+                                    } else {
+                                        return res.text().then(text => { throw new Error(text || 'Falha ao excluir'); });
+                                    }
+                                })
+                                .catch(err => {
+                                    window.showToast('Erro ao excluir: ' + err.message, 'error');
+                                });
+                        },
+                        'Sim, Cancelar',
+                        'danger'
+                    );
+                });
             });
         });
-    });
-</script>
+    </script>
 
-<!-- MODAL INTERATIVO DE AGENDAMENTO (CALENDAR EVENT CLICK & WHATSAPP 1-CLIQUE) -->
-<div class="modal fade" id="modalAgendamentoCalendar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: #11151F; border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 16px; color: #ffffff; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
-            <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <span id="modalCalStatus" class="badge bg-primary">AGENDADO</span>
-                    <span class="text-white-50 small">Detalhes do Horário</span>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body py-3">
-                <div class="d-flex align-items-center gap-3 mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06);">
-                    <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0, 210, 238, 0.15); color: #00D2EE; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-                        <i class="bi bi-person-fill"></i>
+    <!-- MODAL INTERATIVO DE AGENDAMENTO (CALENDAR EVENT CLICK & WHATSAPP 1-CLIQUE) -->
+    <div class="modal fade" id="modalAgendamentoCalendar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"
+                style="background: #11151F; border: 1px solid rgba(0, 210, 238, 0.25); border-radius: 16px; color: #ffffff; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="modalCalStatus" class="badge bg-primary">AGENDADO</span>
+                        <span class="text-white-50 small">Detalhes do Horário</span>
                     </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold text-white" id="modalCalClienteNome">Cliente</h5>
-                        <div class="text-white-50 small" id="modalCalDataHora">01/01/2026 às 14:00</div>
-                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Fechar"></button>
                 </div>
-
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <div class="p-2 rounded-2" style="background: rgba(255,255,255,0.03);">
-                            <small class="text-muted d-block">Procedimento</small>
-                            <strong class="text-white" id="modalCalServico">Serviço</strong>
+                <div class="modal-body py-3">
+                    <div class="d-flex align-items-center gap-3 mb-3 p-3 rounded-3"
+                        style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0, 210, 238, 0.15); color: #00D2EE; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold text-white" id="modalCalClienteNome">Cliente</h5>
+                            <div class="text-white-50 small" id="modalCalDataHora">01/01/2026 às 14:00</div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="p-2 rounded-2" style="background: rgba(255,255,255,0.03);">
-                            <small class="text-muted d-block">Especialista</small>
-                            <strong class="text-white" id="modalCalProfissional">Profissional</strong>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 rounded-2" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block">Procedimento</small>
+                                <strong class="text-white" id="modalCalServico">Serviço</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded-2" style="background: rgba(255,255,255,0.03);">
+                                <small class="text-muted d-block">Especialista</small>
+                                <strong class="text-white" id="modalCalProfissional">Profissional</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="modalCalSemTel" class="alert alert-warning py-2 px-3 small" style="display: none; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #F59E0B;">
-                    <i class="bi bi-info-circle me-1"></i> Cliente sem telefone cadastrado para WhatsApp.
-                </div>
+                    <div id="modalCalSemTel" class="alert alert-warning py-2 px-3 small"
+                        style="display: none; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #F59E0B;">
+                        <i class="bi bi-info-circle me-1"></i> Cliente sem telefone cadastrado para WhatsApp.
+                    </div>
 
-                <!-- BOTAO WHATSAPP 1-CLIQUE DESTACADO -->
-                <a id="modalCalBtnWpp" href="#" target="_blank" class="btn w-100 fw-bold py-2 mb-2 d-inline-flex align-items-center justify-content-center gap-2"
-                   style="background: #25D366; color: #ffffff; border-radius: 10px; font-size: 0.92rem; text-decoration: none;">
-                    <i class="bi bi-whatsapp fs-5"></i> <span>Chamar Cliente no WhatsApp (1-Clique)</span>
-                </a>
-            </div>
-            <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
-                <a id="modalCalBtnEdit" href="#" class="btn btn-sm btn-outline-light" style="border-radius: 8px;">
-                    <i class="bi bi-pencil me-1"></i> Editar
-                </a>
-                <form id="modalCalFormAtender" method="post" style="display: inline-block;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="submit" class="btn btn-sm btn-gold fw-bold" style="border-radius: 8px;">
-                        <i class="bi bi-play-circle-fill me-1"></i> Atender (Abrir Comanda)
-                    </button>
-                </form>
+                    <!-- BOTAO WHATSAPP 1-CLIQUE DESTACADO -->
+                    <a id="modalCalBtnWpp" href="#" target="_blank"
+                        class="btn w-100 fw-bold py-2 mb-2 d-inline-flex align-items-center justify-content-center gap-2"
+                        style="background: #25D366; color: #ffffff; border-radius: 10px; font-size: 0.92rem; text-decoration: none;">
+                        <i class="bi bi-whatsapp fs-5"></i> <span>Chamar Cliente no WhatsApp (1-Clique)</span>
+                    </a>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+                    <a id="modalCalBtnEdit" href="#" class="btn btn-sm btn-outline-light" style="border-radius: 8px;">
+                        <i class="bi bi-pencil me-1"></i> Editar
+                    </a>
+                    <form id="modalCalFormAtender" method="post" style="display: inline-block;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-sm btn-gold fw-bold" style="border-radius: 8px;">
+                            <i class="bi bi-play-circle-fill me-1"></i> Atender (Abrir Comanda)
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- BOOTSTRAP 5 JS BUNDLE -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- BOOTSTRAP 5 JS BUNDLE -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
